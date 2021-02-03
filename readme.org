@@ -1,0 +1,26 @@
+#+TITLE: dotnix
+
+My flake-based NixOS config.
+The following is just some instructions for me to use when dealing with rebuilds and updates.
+
+* Rebuild
+Before committing, run a dry build to make sure everything will work as expected.
+#+begin_src sh
+sudo nixos-rebuild dry-build
+#+end_src
+
+After committing, run a rebuild to put the config into effect.
+#+begin_src sh
+sudo nixos-rebuild switch
+#+end_src
+
+* Updates
+To update a particular input to its latest revision, run the following at the root of the repo.
+#+begin_src sh
+nix flake update --update-input nixpkgs
+#+end_src
+
+To update all inputs to their latest revisions:
+#+begin_src sh
+nix flake update
+#+end_src
