@@ -20,6 +20,9 @@
     };
   };
 
+  security.doas.enable = true;
+  security.sudo.enable = false;
+
   # Use pulseaudio for sound.
   sound.enable = true;
   hardware.pulseaudio.enable = true;

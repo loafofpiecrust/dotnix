@@ -29,11 +29,11 @@
 
     # apps I want everywhere
     # chromium
-    firefox # primary browser
+    unstable.firefox # primary browser
     tridactyl-native
     cmus # music player
     libreoffice
-    spotify
+    unstable.spotify
     unstable.zoom-us
 
     # system tools
