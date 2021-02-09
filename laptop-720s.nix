@@ -40,6 +40,8 @@
       "kernel.nmi_watchdog" = 0;
       "vm.swappiness" = 1;
     };
+
+    tmpOnTmpfs = true;
   };
 
   nix.maxJobs = lib.mkDefault 8;
@@ -49,11 +51,13 @@
     "/" = {
       device = "/dev/disk/by-uuid/f0d28303-e417-46f9-b9da-e5be36d82283";
       fsType = "ext4";
+      options = [ "noatime" "commit=600" ];
     };
 
     "/home" = {
       device = "/dev/disk/by-uuid/0f5d6393-db5c-4411-a1b5-719beb051c6a";
       fsType = "ext4";
+      options = [ "relatime" "commit=600" ];
     };
 
     "/boot" = {
@@ -170,10 +174,11 @@
     discord
     slack
     teams
+    unstable.zoom-us
 
     # music
-    mpd
-    mpc_cli
+    unstable.spotify
+    libreoffice
 
     # misc
     ledger

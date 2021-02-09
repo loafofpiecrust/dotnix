@@ -6,12 +6,12 @@ The following is just some instructions for me to use when dealing with rebuilds
 * Rebuild
 Before committing, run a dry build to make sure everything will work as expected.
 #+begin_src sh
-sudo nixos-rebuild dry-build
+nixos-rebuild dry-build
 #+end_src
 
 After committing, run a rebuild to put the config into effect.
 #+begin_src sh
-sudo nixos-rebuild switch
+nixos-rebuild switch
 #+end_src
 
 * Updates

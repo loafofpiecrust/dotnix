@@ -17,7 +17,7 @@
     rofi-menugen
     feh # wallpapers
     wpgtk
-    caffeine-ng # prevent screen from sleeping sometimes
+    # caffeine-ng # prevent screen from sleeping sometimes
     gsettings-desktop-schemas
     farge # color picker
     scrot
@@ -31,10 +31,6 @@
     # chromium
     unstable.firefox # primary browser
     tridactyl-native
-    cmus # music player
-    libreoffice
-    unstable.spotify
-    unstable.zoom-us
 
     # system tools
     libnotify
