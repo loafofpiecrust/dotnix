@@ -24,7 +24,7 @@
     enable = true;
     extraRules = [{
       groups = [ "wheel" ];
-      persist = true;
+      noPass = true;
     }];
   };
   security.sudo.enable = false;

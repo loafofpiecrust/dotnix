@@ -107,6 +107,12 @@
         ];
       };
     };
+
+    # Lock the screen after some idle time, forcing me to login again.
+    xautolock = {
+      enable = true;
+      time = 20;
+    };
   };
 
   services.xserver.windowManager.session = lib.singleton {
