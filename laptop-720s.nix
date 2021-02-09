@@ -108,12 +108,19 @@
       };
     };
 
-    # Lock the screen after some idle time, forcing me to login again.
-    xautolock = {
-      enable = true;
-      time = 20;
-    };
   };
+
+  # Lock the screen after some idle time, forcing me to login again.
+  services.xserver.xautolock = {
+    enable = true;
+    time = 20;
+  };
+  # Don't require a password for doas, but lock the session.
+  # This is basically the same as persisting my password without a session lock.
+  security.doas.extraRules = [{
+    groups = [ "wheel" ];
+    noPass = true;
+  }];
 
   services.xserver.windowManager.session = lib.singleton {
     name = "exwm";
