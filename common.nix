@@ -20,7 +20,13 @@
     };
   };
 
-  security.doas.enable = true;
+  security.doas = {
+    enable = true;
+    extraRules = [{
+      groups = [ "wheel" ];
+      persist = true;
+    }];
+  };
   security.sudo.enable = false;
 
   # Use pulseaudio for sound.
