@@ -26,6 +26,7 @@
   # Use pulseaudio for sound.
   sound.enable = true;
   hardware.pulseaudio.enable = true;
+  hardware.pulseaudio.support32Bit = true;
 
   # Enable networking. Use connman instead of networkmanager because it has
   # working iwd support. Saves battery and more reliable.
@@ -34,10 +35,6 @@
   # Allow other machines to ssh in.
   services.openssh.enable = true;
   # Remember ssh passwords for a few hours.
-  # programs.ssh = {
-  #   startAgent = false;
-  #   agentTimeout = "2h";
-  # };
 
   # Allow easy discovery of network devices (like printers).
   services = {
@@ -50,10 +47,11 @@
   environment.homeBinInPath = true;
 
   programs = {
-    # Our two lovely shell choices, fish and zsh.
+    # Use fish for my shell.
     fish.enable = true;
     dconf.enable = true;
     java.enable = true;
+    # GPG agent handles locked files and SSH keys.
     gnupg.agent = {
       enable = true;
       enableSSHSupport = true;
@@ -79,7 +77,6 @@
 
   environment.systemPackages = with pkgs; [
     # nixos necessities
-    niv
     nix-prefetch-git
 
     # system tools
@@ -93,7 +90,7 @@
     # ranger
     xfce.gvfs
     gnupg
-    ncdu
+    ncdu # disk usage analyzer
     parted
     tree
     killall
@@ -108,6 +105,6 @@
     starship # shell prompt
     playerctl
     calc
-    bitwarden-cli
+    bitwarden-cli # password manager
   ];
 }

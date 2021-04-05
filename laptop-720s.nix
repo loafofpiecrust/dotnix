@@ -9,6 +9,7 @@
     ./dev.nix
     ./email.nix
     ./music.nix
+    ./erasure.nix
   ];
 
   # Should correspond with a system name in flake.nix
@@ -25,6 +26,7 @@
     initrd.availableKernelModules =
       [ "xhci_pci" "nvme" "usb_storage" "sd_mod" "bbswitch" ];
     initrd.kernelModules = [ "i915" ];
+    blacklistedKernelModules = ["nouveau" "nvidia"];
 
     kernelModules = [ "kvm-intel" "acpi_call" ];
     extraModulePackages = with config.boot.kernelPackages; [ acpi_call ];
@@ -47,17 +49,35 @@
   nix.maxJobs = lib.mkDefault 8;
 
   # Setup root, boot, home, and swap partitions.
-  fileSystems = {
+  fileSystems = let btrfsOpts = ["compress=zstd" "noatime"]; in {
     "/" = {
-      device = "/dev/disk/by-uuid/f0d28303-e417-46f9-b9da-e5be36d82283";
-      fsType = "ext4";
-      options = [ "noatime" "commit=600" ];
+      device = "/dev/disk/by-partlabel/LINUX";
+      fsType = "btrfs";
+      options = ["subvol=root"] ++ btrfsOpts;
     };
 
     "/home" = {
-      device = "/dev/disk/by-uuid/0f5d6393-db5c-4411-a1b5-719beb051c6a";
-      fsType = "ext4";
-      options = [ "relatime" "commit=600" ];
+      device = "/dev/disk/by-partlabel/LINUX";
+      fsType = "btrfs";
+      options = ["subvol=home"] ++ btrfsOpts;
+    };
+
+    "/nix" = {
+      device = "/dev/disk/by-partlabel/LINUX";
+      fsType = "btrfs";
+      options = ["subvol=nix"] ++ btrfsOpts;
+    };
+
+    "/persist" = {
+      device = "/dev/disk/by-partlabel/LINUX";
+      fsType = "btrfs";
+      options = ["subvol=persist"] ++ btrfsOpts;
+    };
+
+    "/var/log" = {
+      device = "/dev/disk/by-partlabel/LINUX";
+      fsType = "btrfs";
+      options = ["subvol=log"] ++ btrfsOpts;
     };
 
     "/boot" = {
@@ -67,10 +87,12 @@
   };
 
   swapDevices =
-    [{ device = "/dev/disk/by-uuid/8be2e964-add4-457e-86fa-5e6624062f34"; }];
+    [{ device = "/dev/disk/by-partlabel/LINUX_SWAP"; }];
 
   # FIXME: Open just the ports needed for chromecast.
-  networking.firewall.enable = false;
+  networking.firewall.enable = true;
+  networking.useDHCP = false;
+  networking.interfaces.wlan0.useDHCP = true;
 
   # printing and scanning
   hardware.sane.enable = true;
@@ -78,19 +100,19 @@
 
   users.users.snead = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "docker" "adbusers" "scanner" "lp" ];
+    extraGroups = [ "wheel" "docker" "adbusers" "scanner" "lp" "audio" ];
     shell = pkgs.fish;
     hashedPassword =
       "$6$PFZjyXdf7W2cu3$55Iw6UjpcdB29fb4RIPcaYFY5Ehtuc9MFZaJBa9wlRbgYxRrDAP0tlApOiIsQY7hoeO9XG7xxiIcsjGYc9QXu1";
   };
 
   # Sway is my backup WM when things go wrong with EXWM.
-  programs.sway.enable = true;
+  # programs.sway.enable = true;
   # Enables screen sharing on wayland.
   services.pipewire.enable = true;
   services.xserver = {
     displayManager.gdm.enable = true;
-    displayManager.defaultSession = "sway";
+    # displayManager.defaultSession = "sway";
     videoDrivers = [ "intel" ]; # TODO: Pick gpu drivers
 
     desktopManager = {
@@ -98,9 +120,9 @@
       xfce = {
         # Bits of xfce that I need: power-manager, session?, xfsettingsd, xfconf
         # Don't need: xfce4-volumed-pulse, nmapplet
-        enable = false;
-        noDesktop = true;
-        enableXfwm = false;
+        enable = true;
+        # noDesktop = true;
+        # enableXfwm = false;
         thunarPlugins = with pkgs; [
           xfce.thunar-archive-plugin
           xfce.thunar-volman
@@ -114,6 +136,7 @@
   services.xserver.xautolock = {
     enable = true;
     time = 20;
+    locker = "${pkgs.i3lock}/bin/i3lock";
   };
   # Don't require a password for doas, but lock the session.
   # This is basically the same as persisting my password without a session lock.
@@ -215,8 +238,8 @@
   # Undervolt to hopefully fix thermal throttling and fan issues.
   services.undervolt = {
     enable = true;
-    coreOffset = -110;
-    gpuOffset = -110;
+    coreOffset = -120;
+    gpuOffset = -120;
   };
   services.throttled.enable = true;
 
@@ -226,11 +249,15 @@
 
   # Use newer intel graphics drivers.
   hardware.cpu.intel.updateMicrocode = true;
+  # nixpkgs.config.packageOverrides = pkgs: {
+    # vaapiIntel = pkgs.vaapiIntel.override { enableHydridCodec = true; };
+  # };
   hardware.opengl = {
     enable = true;
+    driSupport = true;
     extraPackages = with pkgs; [
       # linuxPackages.nvidia_x11.out
-      vaapiIntel
+      # vaapiIntel
       vaapiVdpau
       libvdpau-va-gl
       intel-media-driver

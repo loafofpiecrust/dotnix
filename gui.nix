@@ -11,16 +11,18 @@
     gnome3.gtk
     polkit_gnome
     picom # compositor
-    polybar
+    # polybar
     dunst # notifications
-    rofi # MENUS!
-    rofi-menugen
+    # rofi # MENUS!
+    # rofi-menugen
     feh # wallpapers
     wpgtk
     # caffeine-ng # prevent screen from sleeping sometimes
     gsettings-desktop-schemas
     farge # color picker
     scrot
+    xorg.xmodmap
+    stalonetray
 
     # gtk themes
     arc-theme

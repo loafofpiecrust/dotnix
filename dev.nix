@@ -19,7 +19,8 @@
 
     # languages
     rustup
-    # go
+    go
+    unstable.sbcl
     unstable.nodejs
     yarn
     kotlin
@@ -80,6 +81,7 @@
           pdf-tools
           org-pdftools
           plantuml-mode
+          exwm
         ]);
     })
   ];
