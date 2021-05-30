@@ -27,6 +27,7 @@
   sound.enable = true;
   hardware.pulseaudio.enable = true;
   hardware.pulseaudio.support32Bit = true;
+  hardware.pulseaudio.package = pkgs.pulseaudioFull;
 
   # Enable networking. Use connman instead of networkmanager because it has
   # working iwd support. Saves battery and more reliable.
@@ -41,6 +42,7 @@
     avahi.enable = true;
     avahi.nssmdns = true;
     printing.enable = true;
+    printing.drivers = with pkgs; [ hplipWithPlugin gutenprint ];
   };
 
   # Add ~/bin to PATH for all users.

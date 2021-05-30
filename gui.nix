@@ -31,7 +31,7 @@
 
     # apps I want everywhere
     # chromium
-    unstable.firefox # primary browser
+    firefox # primary browser
     tridactyl-native
 
     # system tools
@@ -65,6 +65,7 @@
     jetbrains-mono
     source-code-pro
     mononoki
+    cascadia-code
 
     # Add user fonts to ~/.local/share/fonts
   ];

@@ -26,7 +26,7 @@
     initrd.availableKernelModules =
       [ "xhci_pci" "nvme" "usb_storage" "sd_mod" "bbswitch" ];
     initrd.kernelModules = [ "i915" ];
-    blacklistedKernelModules = ["nouveau" "nvidia"];
+    blacklistedKernelModules = [ "nouveau" "nvidia" ];
 
     kernelModules = [ "kvm-intel" "acpi_call" ];
     extraModulePackages = with config.boot.kernelPackages; [ acpi_call ];
@@ -49,35 +49,36 @@
   nix.maxJobs = lib.mkDefault 8;
 
   # Setup root, boot, home, and swap partitions.
-  fileSystems = let btrfsOpts = ["compress=zstd" "noatime"]; in {
+  fileSystems = let btrfsOpts = [ "compress=zstd" "noatime" ];
+  in {
     "/" = {
       device = "/dev/disk/by-partlabel/LINUX";
       fsType = "btrfs";
-      options = ["subvol=root"] ++ btrfsOpts;
+      options = [ "subvol=root" ] ++ btrfsOpts;
     };
 
     "/home" = {
       device = "/dev/disk/by-partlabel/LINUX";
       fsType = "btrfs";
-      options = ["subvol=home"] ++ btrfsOpts;
+      options = [ "subvol=home" ] ++ btrfsOpts;
     };
 
     "/nix" = {
       device = "/dev/disk/by-partlabel/LINUX";
       fsType = "btrfs";
-      options = ["subvol=nix"] ++ btrfsOpts;
+      options = [ "subvol=nix" ] ++ btrfsOpts;
     };
 
     "/persist" = {
       device = "/dev/disk/by-partlabel/LINUX";
       fsType = "btrfs";
-      options = ["subvol=persist"] ++ btrfsOpts;
+      options = [ "subvol=persist" ] ++ btrfsOpts;
     };
 
     "/var/log" = {
       device = "/dev/disk/by-partlabel/LINUX";
       fsType = "btrfs";
-      options = ["subvol=log"] ++ btrfsOpts;
+      options = [ "subvol=log" ] ++ btrfsOpts;
     };
 
     "/boot" = {
@@ -86,8 +87,7 @@
     };
   };
 
-  swapDevices =
-    [{ device = "/dev/disk/by-partlabel/LINUX_SWAP"; }];
+  swapDevices = [{ device = "/dev/disk/by-partlabel/LINUX_SWAP"; }];
 
   # FIXME: Open just the ports needed for chromecast.
   networking.firewall.enable = true;
@@ -107,7 +107,7 @@
   };
 
   # Sway is my backup WM when things go wrong with EXWM.
-  # programs.sway.enable = true;
+  programs.sway.enable = true;
   # Enables screen sharing on wayland.
   services.pipewire.enable = true;
   services.xserver = {
@@ -136,7 +136,8 @@
   services.xserver.xautolock = {
     enable = true;
     time = 20;
-    locker = "${pkgs.i3lock}/bin/i3lock";
+    locker = ''
+      ${pkgs.i3lock}/bin/i3lock -i "$(readlink /home/snead/.config/wpg/.current)"'';
   };
   # Don't require a password for doas, but lock the session.
   # This is basically the same as persisting my password without a session lock.
@@ -210,7 +211,7 @@
     discord
     slack
     teams
-    unstable.zoom-us
+    zoom-us
 
     # music
     unstable.spotify
@@ -230,34 +231,35 @@
   # };
 
   # Use newer Intel Iris driver. This fixes screen tearing for me!
-  environment.variables = { MESA_LOADER_DRIVER_OVERRIDE = "iris"; };
-  hardware.opengl.package = (pkgs.mesa.override {
-    galliumDrivers = [ "nouveau" "virgl" "swrast" "iris" ];
-  }).drivers;
+  # hardware.opengl.package = (pkgs.mesa.override {
+  #   galliumDrivers = [ "nouveau" "virgl" "swrast" "iris" ];
+  # }).drivers;
 
   # Undervolt to hopefully fix thermal throttling and fan issues.
   services.undervolt = {
     enable = true;
-    coreOffset = -120;
-    gpuOffset = -120;
+    coreOffset = -100;
+    gpuOffset = -100;
   };
-  services.throttled.enable = true;
+  # services.throttled.enable = true;
 
-  # Make the screen color warmer at night, based on the time at my location.
-  services.redshift = { enable = true; };
   location.provider = "geoclue2";
+  # Make the screen color warmer at night, based on the time at my location.
+  services.redshift.enable = true;
+  # Also set the timezone based on my location, if available.
+  services.localtime.enable = true;
 
   # Use newer intel graphics drivers.
   hardware.cpu.intel.updateMicrocode = true;
   # nixpkgs.config.packageOverrides = pkgs: {
-    # vaapiIntel = pkgs.vaapiIntel.override { enableHydridCodec = true; };
+  # vaapiIntel = pkgs.vaapiIntel.override { enableHydridCodec = true; };
   # };
   hardware.opengl = {
     enable = true;
     driSupport = true;
     extraPackages = with pkgs; [
       # linuxPackages.nvidia_x11.out
-      # vaapiIntel
+      vaapiIntel
       vaapiVdpau
       libvdpau-va-gl
       intel-media-driver
