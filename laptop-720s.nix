@@ -89,12 +89,19 @@
 
   swapDevices = [{ device = "/dev/disk/by-partlabel/LINUX_SWAP"; }];
 
-  # FIXME: Open just the ports needed for chromecast.
-  networking.firewall.enable = true;
+  networking.firewall = {
+    enable = true;
+    # Open the ports needed for Chromecast.
+    allowedTCPPorts = [ 8008 8009 ];
+    # allowedUDPPorts = [{
+    #   from = 32768;
+    #   to = 61000;
+    # }];
+  };
   networking.useDHCP = false;
   networking.interfaces.wlan0.useDHCP = true;
 
-  # printing and scanning
+  # Scanning
   hardware.sane.enable = true;
   hardware.sane.extraBackends = [ pkgs.hplipWithPlugin ];
 
@@ -148,7 +155,6 @@
 
   services.xserver.windowManager.session = lib.singleton {
     name = "exwm";
-    # TODO Try having these IM exports just in Emacs.
     start = ''
       export MOZ_ENABLE_WAYLAND=0
       export SDL_VIDEODRIVER=x11
@@ -158,28 +164,28 @@
     '';
   };
 
-  # Automatic power saving.
-  powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
+  # Common power management for laptops.
   services.tlp.enable = true;
+  # Optimizes I/O on battery power.
   powerManagement.powertop.enable = true;
-  networking.networkmanager.wifi.powersave = true;
-  services.upower = { enable = true; };
+  # Enables screen dimming and session locking.
+  services.upower.enable = true;
 
   # Only log out when the lid is closed with power.
   services.logind.lidSwitchExternalPower = "ignore";
   services.logind.killUserProcesses = true;
 
+  # Replace docker with podman since it's daemon-less.
   virtualisation.podman = {
     enable = true;
     dockerCompat = true;
   };
-  # virtualisation.docker.enable = true;
 
   # Let's try out bluetooth.
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
 
-  # Trim SSD for drive health.
+  # Trim SSD to keep the drive healthy.
   services.fstrim.enable = true;
 
   # Install some applications!

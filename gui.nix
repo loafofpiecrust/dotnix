@@ -96,6 +96,9 @@
       });
       polybar = super.polybar.override { pulseSupport = true; };
       waybar = super.waybar.override { pulseSupport = true; };
+      chromium = super.chromium.override {
+        commandLineArgs = "--load-media-router-component-extension=1";
+      };
     })
   ];
 
@@ -134,14 +137,13 @@
   services.xserver = {
     enable = true;
     layout = "us";
-    # FIXME seemingly doesn't work.
     enableCtrlAltBackspace = true;
     autoRepeatDelay = 250;
     autoRepeatInterval = 30; # ms between key repeats
     # I don't use caps lock enough, swap it with escape!
     xkbOptions = "caps:swapescape, compose:ralt, terminate:ctrl_alt_bksp";
 
-    # Only applies in X sessions, not wayland AFAICT.
+    # Only applies in X sessions, not wayland.
     libinput = {
       enable = true;
       scrollMethod = "twofinger";
