@@ -146,10 +146,12 @@
     # Only applies in X sessions, not wayland.
     libinput = {
       enable = true;
-      scrollMethod = "twofinger";
-      naturalScrolling = true;
-      tapping = false;
-      clickMethod = "clickfinger";
+      touchpad = {
+        scrollMethod = "twofinger";
+        naturalScrolling = true;
+        tapping = false;
+        clickMethod = "clickfinger";
+      };
     };
   };
 

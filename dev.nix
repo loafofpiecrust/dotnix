@@ -4,7 +4,8 @@
     git
     gitAndTools.gitFull
     git-lfs
-    gcc
+    # gcc
+    libgccjit # required for emacs native-comp
     gnumake
     cmake
     automake
@@ -14,18 +15,19 @@
     neovim # backup editor of choice, after emacs ;)
 
     # publishing
-    unstable.tectonic # lean latex builds
+    tectonic # lean latex builds
     pandoc
 
     # languages
     rustup
     go
-    unstable.sbcl
-    unstable.nodejs
+    sbcl
+    nodejs
     yarn
     kotlin
     python3
     terraform # infrastructure as code
+    terranix
     jq # transforms json documents
 
     # ocaml for compilers class
@@ -53,7 +55,7 @@
     black
     nodePackages.typescript-language-server
     nodePackages.prettier
-    unstable.rust-analyzer
+    rust-analyzer
 
     # dev apps
     umlet # diagrams!
@@ -67,11 +69,9 @@
 
   nixpkgs.overlays = [
     (self: super: {
+      # emacs = pkgs.unstable.emacs;
       emacsCustom = let
-        myEmacs = pkgs.emacsGcc.override {
-          nativeComp = true;
-          withXwidgets = true;
-        };
+        myEmacs = pkgs.emacsGcc.override { withXwidgets = true; };
         emacsWithPackages = (pkgs.emacsPackagesGen myEmacs).emacsWithPackages;
       in emacsWithPackages (epkgs:
         with epkgs; [

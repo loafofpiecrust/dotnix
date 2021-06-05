@@ -24,10 +24,13 @@
   security.sudo.enable = false;
 
   # Use pulseaudio for sound.
-  sound.enable = true;
-  hardware.pulseaudio.enable = true;
-  hardware.pulseaudio.support32Bit = true;
-  hardware.pulseaudio.package = pkgs.pulseaudioFull;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+  };
+  security.rtkit.enable = true;
 
   # Enable networking. Use connman instead of networkmanager because it has
   # working iwd support. Saves battery and more reliable.
@@ -90,7 +93,7 @@
     zip
     unzip
     # ranger
-    xfce.gvfs
+    # xfce.gvfs
     gnupg
     ncdu # disk usage analyzer
     parted

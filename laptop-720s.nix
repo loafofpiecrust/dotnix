@@ -33,11 +33,16 @@
 
     # boot niceties
     cleanTmpDir = true;
-    consoleLogLevel = 3;
+    consoleLogLevel = 0;
 
     # kernel options
-    kernelParams =
-      [ "pcie_aspm.policy=powersave" "i915.enable_fbc=1" "i915.enable_psr=2" ];
+    kernelParams = [
+      "pcie_aspm.policy=powersave"
+      "i915.enable_fbc=1"
+      "i915.enable_psr=2"
+      "quiet"
+      "udev.log_priority=3"
+    ];
     kernel.sysctl = {
       "kernel.nmi_watchdog" = 0;
       "vm.swappiness" = 1;
@@ -99,7 +104,15 @@
     # }];
   };
   networking.useDHCP = false;
+  # networking.useNetworkd = true;
+  networking = {
+    useNetworkd = true;
+    dhcpcd.enable = false;
+  };
+  systemd.network.enable = true;
   networking.interfaces.wlan0.useDHCP = true;
+  systemd.services.systemd-udev-settle.enable = false;
+  # systemd.services.NetworkManager-wait-online.enable = false;
 
   # Scanning
   hardware.sane.enable = true;
@@ -115,8 +128,6 @@
 
   # Sway is my backup WM when things go wrong with EXWM.
   programs.sway.enable = true;
-  # Enables screen sharing on wayland.
-  services.pipewire.enable = true;
   services.xserver = {
     displayManager.gdm.enable = true;
     # displayManager.defaultSession = "sway";
@@ -225,6 +236,8 @@
 
     # misc
     ledger
+    rclone # sync files with pcloud/dropbox
+    qgis
   ];
 
   # Enable NVIDIA GPU
@@ -272,4 +285,6 @@
     ];
     # extraPackages32 = [ pkgs.linuxPackages.nvidia_x11.lib32 ];
   };
+
+  hardware.logitech.wireless.enable = true;
 }
