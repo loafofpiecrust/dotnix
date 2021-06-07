@@ -4,10 +4,10 @@
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     emacs-overlay.url = "github:nix-community/emacs-overlay";
   };
-  outputs = inputs: {
-    nixosConfigurations.loafofpiecrust = inputs.nixpkgs.lib.nixosSystem {
+  outputs = { self, nixpkgs, nixpkgs-unstable, emacs-overlay }: {
+    nixosConfigurations.loafofpiecrust = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      inherit (inputs.nixpkgs) lib;
+      inherit (nixpkgs) lib;
       modules = [
         ({ pkgs, lib, ... }: {
           # system.configurationRevision =
@@ -15,10 +15,10 @@
           nixpkgs.overlays = [
             # Import my local package definitions.
             (import ./pkgs)
-            (import inputs.emacs-overlay)
+            (import emacs-overlay)
             # Provide nixpkgs-unstable for just a few packages.
             (self: super: {
-              unstable = import inputs.nixpkgs-unstable {
+              unstable = import nixpkgs-unstable {
                 # required to inherit from top-level nixpkgs.
                 system = self.system;
                 config.allowUnfree = self.config.allowUnfree;
@@ -26,10 +26,8 @@
             })
           ];
         })
-
         ./laptop-720s.nix
       ];
-
     };
   };
 }

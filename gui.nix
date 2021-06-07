@@ -8,7 +8,7 @@
     ffmpeg
 
     # desktop environment
-    gnome3.gtk
+    # gnome3.gtk
     polkit_gnome
     picom # compositor
     # polybar
@@ -19,7 +19,7 @@
     wpgtk
     # caffeine-ng # prevent screen from sleeping sometimes
     gsettings-desktop-schemas
-    farge # color picker
+    # farge # color picker
     scrot
     xorg.xmodmap
     stalonetray
@@ -31,7 +31,7 @@
 
     # apps I want everywhere
     # chromium
-    firefox # primary browser
+    unstable.firefox # primary browser
     tridactyl-native
 
     # system tools

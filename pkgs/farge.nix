@@ -21,10 +21,12 @@ stdenv.mkDerivation rec {
     mkdir -p $out/bin
   '';
   postInstall = ''
-    wrapProgram "$out/bin/farge" --prefix PATH : "${lib.makeBinPath buildInputs}"
+    wrapProgram "$out/bin/farge" --prefix PATH : "${
+      lib.makeBinPath buildInputs
+    }"
   '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Click on a pixel on your screen and show its color value";
     license = licenses.mit;
     platforms = platforms.unix;

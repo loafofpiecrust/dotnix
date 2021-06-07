@@ -10,6 +10,7 @@
     ./email.nix
     ./music.nix
     ./erasure.nix
+    ./cloud.nix
   ];
 
   # Should correspond with a system name in flake.nix
@@ -24,7 +25,7 @@
     loader.efi.canTouchEfiVariables = true;
 
     initrd.availableKernelModules =
-      [ "xhci_pci" "nvme" "usb_storage" "sd_mod" "bbswitch" ];
+      [ "xhci_pci" "nvme" "usb_storage" "sd_mod" ];
     initrd.kernelModules = [ "i915" ];
     blacklistedKernelModules = [ "nouveau" "nvidia" ];
 
@@ -128,8 +129,22 @@
 
   # Sway is my backup WM when things go wrong with EXWM.
   programs.sway.enable = true;
+  # services.greetd = {
+  #   enable = true;
+  #   restart = false;
+  #   settings = {
+  #     default_session = {
+  #       command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd sway";
+  #     };
+  #     initial_session = {
+  #       command = "sway";
+  #       user = "snead";
+  #     };
+  #   };
+  # };
   services.xserver = {
-    displayManager.gdm.enable = true;
+    displayManager.lightdm.enable = true;
+    # displayManager.gdm.enable = true;
     # displayManager.defaultSession = "sway";
     videoDrivers = [ "intel" ]; # TODO: Pick gpu drivers
 
@@ -181,6 +196,7 @@
   powerManagement.powertop.enable = true;
   # Enables screen dimming and session locking.
   services.upower.enable = true;
+  programs.light.enable = true;
 
   # Only log out when the lid is closed with power.
   services.logind.lidSwitchExternalPower = "ignore";
@@ -237,7 +253,7 @@
     # misc
     ledger
     rclone # sync files with pcloud/dropbox
-    qgis
+    # qgis
   ];
 
   # Enable NVIDIA GPU
@@ -257,16 +273,25 @@
   # Undervolt to hopefully fix thermal throttling and fan issues.
   services.undervolt = {
     enable = true;
-    coreOffset = -100;
-    gpuOffset = -100;
+    coreOffset = -120;
+    gpuOffset = -120;
   };
-  # services.throttled.enable = true;
+  services.throttled.enable = true;
 
-  location.provider = "geoclue2";
+  # Disable automatic location updates because geoclue makes the boot process
+  # wait for internet, stalling it for 5-10 seconds!
+  location = let
+    boston = {
+      latitude = 42.3601;
+      longitude = -71.0589;
+    };
+  in boston;
+  # I can just manually set the timezone when I move.
+  # I don't really need the local timezone on my laptop when I travel.
+  time.timeZone = "America/New_York";
+
   # Make the screen color warmer at night, based on the time at my location.
   services.redshift.enable = true;
-  # Also set the timezone based on my location, if available.
-  services.localtime.enable = true;
 
   # Use newer intel graphics drivers.
   hardware.cpu.intel.updateMicrocode = true;

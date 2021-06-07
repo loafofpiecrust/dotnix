@@ -37,7 +37,7 @@
     ocamlPackages.ocp-indent # backup formatter
     ocamlPackages.ocaml-lsp
     ocamlPackages.merlin
-    ocamlPackages.utop # REPL
+    # ocamlPackages.utop # REPL
 
     # Spellcheck
     (aspellWithDicts (dicts: with dicts; [ en en-computers en-science ]))
@@ -58,7 +58,7 @@
     rust-analyzer
 
     # dev apps
-    umlet # diagrams!
+    # umlet # diagrams!
     plantuml # plain-text diagrams!
 
     # editing!
@@ -77,11 +77,10 @@
         with epkgs; [
           # A few packages have native dependencies, so I need to add them here.
           vterm
-          undo-tree
+          # undo-tree
           pdf-tools
-          org-pdftools
-          plantuml-mode
-          exwm
+          # org-pdftools
+          # plantuml-mode
         ]);
     })
   ];
