@@ -23,15 +23,16 @@
     scrot
     xorg.xmodmap
     stalonetray
+    gcolor3
 
     # gtk themes
-    arc-theme
-    paper-icon-theme
+    # arc-theme
+    # paper-icon-theme
     bibata-cursors
 
     # apps I want everywhere
     # chromium
-    unstable.firefox # primary browser
+    # unstable.firefox # primary browser
     tridactyl-native
 
     # system tools
@@ -48,11 +49,15 @@
     noto-fonts-cjk
     noto-fonts-emoji
     noto-fonts-extra
-    charis-sil # IPA font
     google-fonts
     ubuntu_font_family
     migu
     dejavu_fonts
+
+    # Multilingual and IPA fonts
+    charis-sil
+    doulos-sil
+    andika
 
     # symbols
     material-design-icons
@@ -73,8 +78,8 @@
   fonts.fontconfig = {
     defaultFonts = {
       monospace = [
-        "SF Mono" # Main preference, changes often.
-        "Hasklig" # Provides almost all of the IPA symbols.
+        "Fira Code" # Main preference, changes often.
+        "Source Code Pro" # Provides almost all of the IPA symbols.
         "Noto Sans Mono CJK SC"
         "Noto Emoji"
         "Material Design Icons"
@@ -96,9 +101,10 @@
       });
       polybar = super.polybar.override { pulseSupport = true; };
       waybar = super.waybar.override { pulseSupport = true; };
-      chromium = super.chromium.override {
-        commandLineArgs = "--load-media-router-component-extension=1";
-      };
+      chromium = super.ungoogled-chromium;
+      # chromium = super.chromium.override {
+      #   commandLineArgs = "--load-media-router-component-extension=1";
+      # };
     })
   ];
 

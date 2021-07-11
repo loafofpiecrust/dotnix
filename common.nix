@@ -20,7 +20,7 @@
     };
   };
 
-  security.doas = { enable = true; };
+  security.doas.enable = true;
   security.sudo.enable = false;
 
   # Use pulseaudio for sound.
@@ -29,15 +29,24 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
+    config.pipewire = {
+      "context.properties" = {
+        "default.clock.quantum" = 2048;
+        "default.clock.min-quantum" = 1024;
+        "default.clock.max-quantum" = 4096;
+      };
+    };
   };
   security.rtkit.enable = true;
 
   # Enable networking. Use connman instead of networkmanager because it has
   # working iwd support. Saves battery and more reliable.
   networking.wireless.iwd.enable = true;
+  services.resolved.enable = true;
+  networking.nameservers = ["8.8.8.8"];
 
   # Allow other machines to ssh in.
-  services.openssh.enable = true;
+  # services.openssh.enable = true;
   # Remember ssh passwords for a few hours.
 
   # Allow easy discovery of network devices (like printers).
@@ -68,9 +77,11 @@
   # Clean up derivations older than a week and any garbage lying around.
   nix.gc = {
     automatic = true;
-    dates = "daily";
+    dates = "weekly";
     options = "--delete-older-than 7d";
   };
+
+  programs.fuse.userAllowOther = true;
 
   # Limit journal size
   services.journald.extraConfig = ''
@@ -80,13 +91,18 @@
   # Hmm... Not sure why I explicitly set this.
   virtualisation.libvirtd.enable = false;
 
+  nixpkgs.overlays = [
+    (self: super: { ripgrep = super.ripgrep.override { withPCRE2 = true; }; })
+  ];
+
   environment.systemPackages = with pkgs; [
     # nixos necessities
     nix-prefetch-git
+    cachix
 
     # system tools
     binutils
-    (ripgrep.override { withPCRE2 = true; })
+    ripgrep
     fd
     htop
     gksu
@@ -111,5 +127,6 @@
     playerctl
     calc
     bitwarden-cli # password manager
+    rbw
   ];
 }

@@ -11,7 +11,6 @@
     automake
     autoconf
     libtool
-    direnv
     neovim # backup editor of choice, after emacs ;)
 
     # publishing
@@ -20,7 +19,6 @@
 
     # languages
     rustup
-    go
     sbcl
     nodejs
     yarn
@@ -69,19 +67,20 @@
 
   nixpkgs.overlays = [
     (self: super: {
-      # emacs = pkgs.unstable.emacs;
-      emacsCustom = let
-        myEmacs = pkgs.emacsGcc.override { withXwidgets = true; };
-        emacsWithPackages = (pkgs.emacsPackagesGen myEmacs).emacsWithPackages;
-      in emacsWithPackages (epkgs:
-        with epkgs; [
-          # A few packages have native dependencies, so I need to add them here.
-          vterm
-          # undo-tree
-          pdf-tools
-          # org-pdftools
-          # plantuml-mode
-        ]);
+      emacsCustom = self.emacsGcc.override { withXwidgets = true; };
+      # emacs = let
+      #   myEmacs = pkgs.emacsGcc.override { withXwidgets = true; };
+      #   emacsWithPackages =
+      #     (pkgs.unstable.emacsPackagesGen myEmacs).emacsWithPackages;
+      # in emacsWithPackages (epkgs:
+      #   with epkgs; [
+      #     # A few packages have native dependencies, so I need to add them here.
+      #     vterm
+      #     # undo-tree
+      #     pdf-tools
+      #     # org-pdftools
+      #     # plantuml-mode
+      #   ]);
     })
   ];
 
@@ -97,5 +96,5 @@
   programs.adb.enable = true;
 
   # Persistent environment in shell execution!
-  services.lorri.enable = true;
+  # services.lorri.enable = true;
 }

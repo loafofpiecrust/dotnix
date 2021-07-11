@@ -11,6 +11,7 @@
     ./music.nix
     ./erasure.nix
     ./cloud.nix
+    ./cachix.nix
   ];
 
   # Should correspond with a system name in flake.nix
@@ -49,7 +50,7 @@
       "vm.swappiness" = 1;
     };
 
-    tmpOnTmpfs = true;
+    tmpOnTmpfs = false;
   };
 
   nix.maxJobs = lib.mkDefault 8;
@@ -119,12 +120,22 @@
   hardware.sane.enable = true;
   hardware.sane.extraBackends = [ pkgs.hplipWithPlugin ];
 
-  users.users.snead = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" "docker" "adbusers" "scanner" "lp" "audio" ];
-    shell = pkgs.fish;
-    hashedPassword =
-      "$6$PFZjyXdf7W2cu3$55Iw6UjpcdB29fb4RIPcaYFY5Ehtuc9MFZaJBa9wlRbgYxRrDAP0tlApOiIsQY7hoeO9XG7xxiIcsjGYc9QXu1";
+  users.users = {
+    snead = {
+      isNormalUser = true;
+      extraGroups = [ "wheel" "docker" "adbusers" "scanner" "lp" "audio" ];
+      shell = pkgs.fish;
+      hashedPassword =
+        "$6$PFZjyXdf7W2cu3$55Iw6UjpcdB29fb4RIPcaYFY5Ehtuc9MFZaJBa9wlRbgYxRrDAP0tlApOiIsQY7hoeO9XG7xxiIcsjGYc9QXu1";
+    };
+
+    work = {
+      isNormalUser = true;
+      extraGroups = [ "wheel" "docker" "adbusers" "scanner" "lp" "audio" ];
+      shell = pkgs.fish;
+      hashedPassword =
+        "$6$tsPlzan2qXEAIir$Jyj78Sq6tuRqBY/R5raqee0oNjx5iuJTB1m0s4RaAuMukbmojE0q6FjnBth8x/tTpCsFDS7DlWXYRcn65R15q.";
+    };
   };
 
   # Sway is my backup WM when things go wrong with EXWM.
@@ -146,7 +157,7 @@
     displayManager.lightdm.enable = true;
     # displayManager.gdm.enable = true;
     # displayManager.defaultSession = "sway";
-    videoDrivers = [ "intel" ]; # TODO: Pick gpu drivers
+    videoDrivers = [ "intel" "modesetting" "fbdev" ]; # TODO: Pick gpu drivers
 
     desktopManager = {
       xterm.enable = false;
@@ -162,7 +173,6 @@
         ];
       };
     };
-
   };
 
   # Lock the screen after some idle time, forcing me to login again.
@@ -203,9 +213,9 @@
   services.logind.killUserProcesses = true;
 
   # Replace docker with podman since it's daemon-less.
-  virtualisation.podman = {
+  virtualisation.docker = {
     enable = true;
-    dockerCompat = true;
+    autoPrune.enable = true;
   };
 
   # Let's try out bluetooth.
@@ -224,13 +234,10 @@
 
     # apps
     gnome3.gnome-settings-daemon
-    calibre # ebook manager
     mate.atril # pdf viewer
     #xfce.parole # video player
     font-manager
-    deluge
     gimp
-    krita
     vlc
     inkscape
     # audacity
@@ -241,18 +248,14 @@
     #xfce.xfce4-taskmanager
 
     # communication
-    discord
-    slack
     teams
-    zoom-us
 
     # music
     unstable.spotify
     libreoffice
 
     # misc
-    ledger
-    rclone # sync files with pcloud/dropbox
+    ppp # Needed for NUwave network setup
     # qgis
   ];
 
@@ -273,10 +276,10 @@
   # Undervolt to hopefully fix thermal throttling and fan issues.
   services.undervolt = {
     enable = true;
-    coreOffset = -120;
-    gpuOffset = -120;
+    coreOffset = -110;
+    gpuOffset = -110;
   };
-  services.throttled.enable = true;
+  # services.throttled.enable = true;
 
   # Disable automatic location updates because geoclue makes the boot process
   # wait for internet, stalling it for 5-10 seconds!
@@ -303,10 +306,10 @@
     driSupport = true;
     extraPackages = with pkgs; [
       # linuxPackages.nvidia_x11.out
+      intel-media-driver
       vaapiIntel
       vaapiVdpau
       libvdpau-va-gl
-      intel-media-driver
     ];
     # extraPackages32 = [ pkgs.linuxPackages.nvidia_x11.lib32 ];
   };
