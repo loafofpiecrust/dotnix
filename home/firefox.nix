@@ -8,19 +8,20 @@
       bitwarden
       ublock-origin
       tridactyl
-      adsum-notabs
+      #adsum-notabs
     ];
     profiles.default = {
+      id = 0;
+      isDefault = true;
       settings = {
         "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
         "svg.context-properties.content.enabled" = true;
-        # "layout.css.devPixelsPerPx" = 1.1;
         # Block trackers!
         "browser.contentblocking.category" = "strict";
         # Use a better password manager instead.
         "signin.rememberSignOns" = false;
         # Set default search engine.
-        "browser.urlbar.placeholderName" = "Startpage";
+        "browser.urlbar.placeholderName" = "DuckDuckGo";
         # MPRIS integration for media control
         "media.hardwaremediakeys.enabled" = true;
         "browser.shell.checkDefaultBrowser" = false;

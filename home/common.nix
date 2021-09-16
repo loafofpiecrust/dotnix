@@ -4,10 +4,10 @@
   home.stateVersion = "21.05";
   home.sessionPath = [ "~/.config/emacs/bin" "~/.cargo/bin" "~/.npm/bin" ];
 
-  home.file.".config/doom".source = ./doom.d;
-  #home.file.".config/emacs".source = ./emacs.d;
+  xdg.configFile."doom".source = ./doom;
+  xdg.configFile."fontconfig/fonts.conf".source = ./gui/fonts.conf;
+  home.file.".sbclrc".source = ./lisp/.sbclrc;
   home.file.".aspell.en.pws".source = ./spell/.aspell.en.pws;
-  home.file.".config/fontconfig/fonts.conf".source = ./gui/fonts.conf;
   home.file."bin/get-password.sh" = {
     executable = true;
     text = let rbw = "${pkgs.rbw}/bin/rbw";
@@ -37,7 +37,13 @@
 
   programs.rbw = {
     enable = true;
-    settings.email = "taylor@snead.xyz";
+    package = pkgs.unstable.rbw;
+    settings = {
+      email = "taylor@snead.xyz";
+      # Keep the vault open for 6 hours.
+      lock_timeout = 60 * 60 * 6;
+      pinentry = "gnome3";
+    };
   };
 
   xdg = {
@@ -77,8 +83,8 @@
       name = "Arc";
     };
     iconTheme = {
-      package = pkgs.paper-icon-theme;
-      name = "Paper";
+      package = pkgs.numix-icon-theme;
+      name = "Numix";
     };
   };
 
@@ -113,11 +119,14 @@
     };
   };
 
-
+  programs.emacs = {
+    enable = true;
+    package = pkgs.emacsCustom;
+  };
 
   programs.doom-emacs = {
     enable = false;
-    doomPrivateDir = ./doom.d;
+    doomPrivateDir = ./doom;
     emacsPackage = pkgs.emacsCustom;
     # Add some packages from unpublished git repositories.
     emacsPackagesOverlay = self: super:

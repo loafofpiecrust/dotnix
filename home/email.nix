@@ -4,7 +4,13 @@
   programs.mbsync.enable = true;
   programs.mu.enable = true;
   programs.msmtp.enable = true;
-  services.imapnotify.enable = true;
+  services.imapnotify.enable = false;
+  services.mbsync = {
+  enable = true;
+  postExec = ''
+    ${pkgs.mu}/bin/mu index
+  '';
+  };
 
   accounts.email = let
     mbsync = {

@@ -23,7 +23,7 @@
   security.doas.enable = true;
   security.sudo.enable = false;
 
-  # Use pulseaudio for sound.
+  # Use pipewire for sound, emulating ALSA and PulseAudio servers.
   services.pipewire = {
     enable = true;
     alsa.enable = true;
@@ -31,9 +31,9 @@
     pulse.enable = true;
     config.pipewire = {
       "context.properties" = {
-        "default.clock.quantum" = 2048;
-        "default.clock.min-quantum" = 1024;
-        "default.clock.max-quantum" = 4096;
+        #"default.clock.quantum" = 2048;
+        #"default.clock.min-quantum" = 1024;
+        #"default.clock.max-quantum" = 4096;
       };
     };
   };
@@ -42,8 +42,10 @@
   # Enable networking. Use connman instead of networkmanager because it has
   # working iwd support. Saves battery and more reliable.
   networking.wireless.iwd.enable = true;
-  services.resolved.enable = true;
-  networking.nameservers = ["8.8.8.8"];
+  #services.resolved.enable = true;
+  networking.nameservers = [ "8.8.8.8" ];
+  #services.connman.enable = true;
+  #services.connman.wifi.backend = "iwd";
 
   # Allow other machines to ssh in.
   # services.openssh.enable = true;

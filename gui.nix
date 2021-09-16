@@ -78,7 +78,7 @@
   fonts.fontconfig = {
     defaultFonts = {
       monospace = [
-        "Fira Code" # Main preference, changes often.
+        #"Fira Code" # Main preference, changes often.
         "Source Code Pro" # Provides almost all of the IPA symbols.
         "Noto Sans Mono CJK SC"
         "Noto Emoji"
@@ -110,7 +110,7 @@
 
   # Configure sway if I happen to want it in my setup.
   programs.sway = {
-    extraOptions = [ "--my-next-gpu-wont-be-nvidia" ];
+    #extraOptions = [ "--my-next-gpu-wont-be-nvidia" ];
     extraPackages = with pkgs; [
       swaylock
       swayidle
@@ -122,6 +122,7 @@
       grim
       wl-clipboard
       # wf-recorder
+      # firefox-wayland
     ];
     extraSessionCommands = let
       schema = pkgs.gsettings-desktop-schemas;
@@ -132,6 +133,7 @@
       export QT_QPA_PLATFORM=wayland
       export MOZ_ENABLE_WAYLAND=1
       export MOZ_DBUS_REMOTE=1
+      export GDK_BACKEND=wayland
     '';
     wrapperFeatures = {
       base = true;
@@ -173,7 +175,10 @@
   };
 
   # Give Firefox precise touchpad scrolling and wayland support.
-  environment.variables = { MOZ_USE_XINPUT2 = "1"; };
+  environment.variables = {
+    MOZ_USE_XINPUT2 = "1";
+    MOZ_ENABLE_WAYLAND = "1";
+  };
 
   # Enable better XDG integration.
   xdg.portal.enable = true;

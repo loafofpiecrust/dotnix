@@ -7,30 +7,43 @@
     ./gui.nix
     ./vpn.nix
     ./dev.nix
-    ./music.nix
+    #    ./music.nix
     ./erasure.nix
     ./cloud.nix
     ./cachix.nix
   ];
 
   # Should correspond with a system name in flake.nix
-  networking.hostName = "loafofpiecrust";
+  networking.hostName = "portable-spudger";
+
+  # Enable fingerprint reader.
+  services.fprintd.enable = true;
+  services.fprintd.package = pkgs.unstable.fprintd;
+  security.pam.services.lightdm.fprintAuth = true;
+  security.pam.services.lightdm-autologin.fprintAuth = true;
+
+  hardware.enableRedistributableFirmware = true;
 
   # Setup basic boot options and kernel modules.
   boot = {
-    # Use the systemd-boot EFI boot loader.
-    loader.systemd-boot.enable = true;
-    # editor defeats the purpose of all security...
-    loader.systemd-boot.editor = false;
+    plymouth.enable = true;
+    #kernelPackages = pkgs.framework-kernel.linuxPackages_latest;
+    kernelPackages = pkgs.linuxPackages_5_14;
+    loader.systemd-boot = {
+      # Use the systemd-boot EFI boot loader.
+      enable = true;
+      # editor defeats the purpose of all security...
+      editor = false;
+      consoleMode = "max";
+    };
     loader.efi.canTouchEfiVariables = true;
 
     initrd.availableKernelModules =
-      [ "xhci_pci" "nvme" "usb_storage" "sd_mod" ];
-    initrd.kernelModules = [ "i915" ];
-    blacklistedKernelModules = [ "nouveau" "nvidia" ];
+      [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" "btusb" ];
+    blacklistedKernelModules = [ ];
+    extraModprobeConfig = "options snd_hda_intel power_save=1";
 
-    kernelModules = [ "kvm-intel" "acpi_call" ];
-    extraModulePackages = with config.boot.kernelPackages; [ acpi_call ];
+    kernelModules = [ "kvm-intel" ];
 
     # boot niceties
     cleanTmpDir = true;
@@ -40,60 +53,40 @@
     kernelParams = [
       "pcie_aspm.policy=powersave"
       "i915.enable_fbc=1"
-      "i915.enable_psr=2"
+      #"i915.enable_psr=0"
       "quiet"
-      "udev.log_priority=3"
+      #"udev.log_priority=3"
+      #"mem_sleep_default=deep"
     ];
-    kernel.sysctl = {
-      "kernel.nmi_watchdog" = 0;
-      "vm.swappiness" = 1;
-    };
+    kernel.sysctl = { "kernel.nmi_watchdog" = 0; };
 
     tmpOnTmpfs = false;
   };
 
-  nix.maxJobs = lib.mkDefault 8;
+  # high-resolution display
+  hardware.video.hidpi.enable = lib.mkDefault true;
 
   # Setup root, boot, home, and swap partitions.
-  fileSystems = let btrfsOpts = [ "compress=zstd" "noatime" ];
+  fileSystems = let
+    subvolume = name: {
+      device = "/dev/disk/by-partlabel/linux";
+      fsType = "btrfs";
+      options = [ "subvol=${name}" "compress=zstd" "noatime" ];
+    };
   in {
-    "/" = {
-      device = "/dev/disk/by-partlabel/LINUX";
-      fsType = "btrfs";
-      options = [ "subvol=root" ] ++ btrfsOpts;
-    };
-
-    "/home" = {
-      device = "/dev/disk/by-partlabel/LINUX";
-      fsType = "btrfs";
-      options = [ "subvol=home" ] ++ btrfsOpts;
-    };
-
-    "/nix" = {
-      device = "/dev/disk/by-partlabel/LINUX";
-      fsType = "btrfs";
-      options = [ "subvol=nix" ] ++ btrfsOpts;
-    };
-
-    "/persist" = {
-      device = "/dev/disk/by-partlabel/LINUX";
-      fsType = "btrfs";
-      options = [ "subvol=persist" ] ++ btrfsOpts;
-    };
-
-    "/var/log" = {
-      device = "/dev/disk/by-partlabel/LINUX";
-      fsType = "btrfs";
-      options = [ "subvol=log" ] ++ btrfsOpts;
-    };
+    "/" = subvolume "root";
+    "/home" = subvolume "home";
+    "/nix" = subvolume "nix";
+    "/persist" = subvolume "persist";
+    "/var/log" = (subvolume "log") // { neededForBoot = true; };
 
     "/boot" = {
-      device = "/dev/disk/by-uuid/F3E8-3D3D";
+      device = "/dev/disk/by-uuid/AF05-9D01";
       fsType = "vfat";
     };
   };
 
-  swapDevices = [{ device = "/dev/disk/by-partlabel/LINUX_SWAP"; }];
+  swapDevices = [{ device = "/dev/disk/by-partlabel/swap"; }];
 
   networking.firewall = {
     enable = true;
@@ -104,16 +97,18 @@
     #   to = 61000;
     # }];
   };
-  networking.useDHCP = false;
-  # networking.useNetworkd = true;
+
+  # Use better DNS resolution service, networkd.
   networking = {
     useNetworkd = true;
     dhcpcd.enable = false;
   };
-  systemd.network.enable = true;
+
+  # Use DHCP only on specific network interfaces.
+  networking.useDHCP = false;
   networking.interfaces.wlan0.useDHCP = true;
+  # Disable this service because it consumes a lot of power.
   systemd.services.systemd-udev-settle.enable = false;
-  # systemd.services.NetworkManager-wait-online.enable = false;
 
   # Scanning
   hardware.sane.enable = true;
@@ -122,7 +117,8 @@
   users.users = {
     snead = {
       isNormalUser = true;
-      extraGroups = [ "wheel" "docker" "adbusers" "scanner" "lp" "audio" ];
+      extraGroups =
+        [ "wheel" "docker" "adbusers" "scanner" "lp" "audio" "video" ];
       shell = pkgs.fish;
       hashedPassword =
         "$6$PFZjyXdf7W2cu3$55Iw6UjpcdB29fb4RIPcaYFY5Ehtuc9MFZaJBa9wlRbgYxRrDAP0tlApOiIsQY7hoeO9XG7xxiIcsjGYc9QXu1";
@@ -130,7 +126,8 @@
 
     work = {
       isNormalUser = true;
-      extraGroups = [ "wheel" "docker" "adbusers" "scanner" "lp" "audio" ];
+      extraGroups =
+        [ "wheel" "docker" "adbusers" "scanner" "lp" "audio" "video" ];
       shell = pkgs.fish;
       hashedPassword =
         "$6$tsPlzan2qXEAIir$Jyj78Sq6tuRqBY/R5raqee0oNjx5iuJTB1m0s4RaAuMukbmojE0q6FjnBth8x/tTpCsFDS7DlWXYRcn65R15q.";
@@ -153,9 +150,10 @@
   #   };
   # };
   services.xserver = {
+    dpi = 200;
+    # Use LightDM instead of GDM because the latter is super fucking slow.
     displayManager.lightdm.enable = true;
-    # displayManager.gdm.enable = true;
-    # displayManager.defaultSession = "sway";
+    displayManager.defaultSession = "sway";
     videoDrivers = [ "intel" "modesetting" "fbdev" ]; # TODO: Pick gpu drivers
 
     desktopManager = {
@@ -176,7 +174,7 @@
 
   # Lock the screen after some idle time, forcing me to login again.
   services.xserver.xautolock = {
-    enable = true;
+    enable = false;
     time = 20;
     locker = ''
       ${pkgs.i3lock}/bin/i3lock -i "$(readlink /home/snead/.config/wpg/.current)"'';
@@ -199,30 +197,42 @@
     '';
   };
 
+  # Allow OTA firmware updates.
+  services.fwupd.enable = true;
+
   # Common power management for laptops.
-  services.tlp.enable = true;
-  # Optimizes I/O on battery power.
+  services.power-profiles-daemon.enable = true;
+  services.tlp.enable = false;
+  services.thermald.enable = true;
+  # Optimizes I/O on battery power. Maybe don't need this anymore?
+  powerManagement.enable = true;
   powerManagement.powertop.enable = true;
   # Enables screen dimming and session locking.
   services.upower.enable = true;
+  services.upower.noPollBatteries = true;
+  # Backlight management
   programs.light.enable = true;
 
   # Only log out when the lid is closed with power.
-  services.logind.lidSwitchExternalPower = "ignore";
-  services.logind.killUserProcesses = true;
+  services.logind = {
+    killUserProcesses = true;
+    lidSwitchExternalPower = "ignore";
+    lidSwitch = "suspend-then-hibernate";
+    extraConfig = ''
+      HandlePowerKey=hibernate
+    '';
+  };
 
-  # Replace docker with podman since it's daemon-less.
+  # Replace docker with podman since it's daemon-less?
   virtualisation.docker = {
-    enable = true;
+    enable = false;
     autoPrune.enable = true;
   };
 
   # Let's try out bluetooth.
-  hardware.bluetooth.enable = true;
-  services.blueman.enable = true;
-
-  # Trim SSD to keep the drive healthy.
-  services.fstrim.enable = true;
+  hardware.bluetooth.enable = false;
+  # GUI control center for bluetooth
+  services.blueman.enable = false;
 
   # Install some applications!
   environment.systemPackages = with pkgs; [
@@ -233,6 +243,7 @@
 
     # apps
     gnome3.gnome-settings-daemon
+    gnome.gvfs
     mate.atril # pdf viewer
     #xfce.parole # video player
     font-manager
@@ -256,62 +267,25 @@
     # misc
     ppp # Needed for NUwave network setup
     # qgis
+    power-profiles-daemon
   ];
-
-  # Enable NVIDIA GPU
-  # hardware.bumblebee.enable = true;
-  # hardware.nvidia.prime.offload.enable = true;
-  # hardware.nvidia.prime = {
-  #   offload.enable = true;
-  #   intelBusId = "PCI:0:2:0";
-  #   nvidiaBusId = "PCI:60:0:0";
-  # };
-
-  # Use newer Intel Iris driver. This fixes screen tearing for me!
-  # hardware.opengl.package = (pkgs.mesa.override {
-  #   galliumDrivers = [ "nouveau" "virgl" "swrast" "iris" ];
-  # }).drivers;
-
-  # Undervolt to hopefully fix thermal throttling and fan issues.
-  services.undervolt = {
-    enable = true;
-    coreOffset = -110;
-    gpuOffset = -110;
-  };
-  # services.throttled.enable = true;
 
   # Disable automatic location updates because geoclue makes the boot process
   # wait for internet, stalling it for 5-10 seconds!
-  location = let
-    boston = {
-      latitude = 42.3601;
-      longitude = -71.0589;
-    };
-  in boston;
+  location = {
+    # Oakland
+    latitude = 37.820248;
+    longitude = -122.284792;
+  };
   # I can just manually set the timezone when I move.
   # I don't really need the local timezone on my laptop when I travel.
-  time.timeZone = "America/New_York";
+  time.timeZone = "America/Los_Angeles";
 
   # Make the screen color warmer at night, based on the time at my location.
-  services.redshift.enable = true;
+  services.redshift.enable = false;
 
-  # Use newer intel graphics drivers.
-  hardware.cpu.intel.updateMicrocode = true;
-  # nixpkgs.config.packageOverrides = pkgs: {
-  # vaapiIntel = pkgs.vaapiIntel.override { enableHydridCodec = true; };
-  # };
   hardware.opengl = {
     enable = true;
     driSupport = true;
-    extraPackages = with pkgs; [
-      # linuxPackages.nvidia_x11.out
-      intel-media-driver
-      vaapiIntel
-      vaapiVdpau
-      libvdpau-va-gl
-    ];
-    # extraPackages32 = [ pkgs.linuxPackages.nvidia_x11.lib32 ];
   };
-
-  hardware.logitech.wireless.enable = true;
 }
