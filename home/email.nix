@@ -6,11 +6,13 @@
   programs.msmtp.enable = true;
   services.imapnotify.enable = false;
   services.mbsync = {
-  enable = true;
-  postExec = ''
-    ${pkgs.mu}/bin/mu index
-  '';
+    enable = true;
+    postExec = ''
+      ${pkgs.mu}/bin/mu index
+    '';
   };
+
+  home.packages = [ pkgs.davmail ];
 
   accounts.email = let
     mbsync = {
@@ -40,13 +42,13 @@
       userName = address;
       passwordCommand = "get-password.sh mailbox.org ${address}";
       imap.host = "imap.mailbox.org";
-      imapnotify = {
-        enable = true;
-        boxes = [ "Inbox" ];
-        #onPost = ''
-        #  ${pkgs.isync}/bin/mbsync personal
-        #'';
-      };
+      # imapnotify = {
+      #   enable = true;
+      #   boxes = [ "Inbox" ];
+      #   #onPost = ''
+      #   #  ${pkgs.isync}/bin/mbsync personal
+      #   #'';
+      # };
       smtp = {
         host = "smtp.mailbox.org";
         port = 587;

@@ -124,6 +124,12 @@
     package = pkgs.emacsCustom;
   };
 
+  services.emacs = {
+    enable = true;
+    client.enable = true;
+    # socketActivation.enable = true;
+  };
+
   programs.doom-emacs = {
     enable = false;
     doomPrivateDir = ./doom;

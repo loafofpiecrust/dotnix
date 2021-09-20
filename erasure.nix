@@ -1,17 +1,19 @@
 { config, lib, pkgs, modulesPath, ... }:
 let
-  persistInEtc = [ "machine-id" "adjtime" "NIXOS" "nixos" ];
   withoutNulls = l: builtins.filter (e: e != null) l;
+  check = condition: value: if condition then value else null;
   persistOther = withoutNulls [
-    "/var/lib/iwd"
-    "/var/lib/upower"
-    #"/var/lib/docker"
-    #"/var/lib/bluetooth"
-    "/var/lib/fprint"
+    (check config.networking.wireless.iwd.enable "/var/lib/iwd")
+    (check config.services.upower.enable "/var/lib/upower")
+    (check config.virtualisation.docker.enable "/var/lib/docker")
+    (check config.hardware.bluetooth.enable "/var/lib/bluetooth")
+    (check config.services.fprintd.enable "/var/lib/fprint")
   ];
+  persistInEtc = [ "machine-id" "adjtime" "NIXOS" "nixos" ];
 in {
-  # Save these files between boots by putting them on /persist
-  # systemd.tmpfiles.rules = map (x: "L ${x} - - - - /persist${x}") persistOther;
+  # Bind mount persisted folders onto the root partition at boot.
+  # Several services don't like their state folders to be symlinks, so bind
+  # mounts work better.
   systemd.mounts = (map (path: {
     what = "/persist${path}";
     where = path;
@@ -19,29 +21,32 @@ in {
     options = "bind";
   }) persistOther);
 
+  # Let NixOS handle the persistent /etc files.
   environment.etc = lib.mkMerge
     (map (name: { "${name}".source = "/persist/etc/${name}"; }) persistInEtc);
 
+  # Make sure any existing state is copied over to /persist before clobbering
+  # the root subvolume.
   system.activationScripts.etc.deps = [ "cp-etc" ];
   system.activationScripts.cp-etc = let
     etcLinks = (map (name: ''
-      [ "/etc/${name}" -ef "/persist/etc/${name}" ] || cp -Trf {,/persist}/etc/${name}
+      [ -e "/persist/etc/${name}" ] || cp -Trf {,/persist}/etc/${name}
     '') persistInEtc);
     otherLinks = (map (path: ''
-      [ "${path}" -ef "/persist${path}" ] || cp -Trf ${path} /persist${path}
+      [ -e "/persist${path}" ] || cp -Trf ${path} /persist${path}
     '') persistOther);
   in ''
     mkdir -p /persist/etc
     mkdir -p /persist/var/lib
   '' + (builtins.concatStringsSep "\n" (etcLinks ++ otherLinks));
 
-  # Note `lib.mkBefore` is used instead of `lib.mkAfter` here.
+  # Erase all state files that weren't explicitly saved.
   boot.initrd.postDeviceCommands = pkgs.lib.mkBefore ''
     mkdir -p /mnt
 
     # We first mount the btrfs root to /mnt
     # so we can manipulate btrfs subvolumes.
-    mount -o subvol=/ /dev/nvme0n1p1 /mnt
+    mount -o subvol=/ ${config.fileSystems."/".device} /mnt
 
     # While we're tempted to just delete /root and create
     # a new snapshot from /root-blank, /root is already

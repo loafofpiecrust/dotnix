@@ -9,6 +9,7 @@
 
     # desktop environment
     # gnome3.gtk
+    notify-send-sh
     polkit_gnome
     picom # compositor
     # polybar
@@ -91,7 +92,7 @@
 
   nixpkgs.overlays = [
     (self: super: {
-      # Rounded corners in any X11 window manager.
+      # Patch picom to support rounded corners in any X11 window manager.
       picom = super.picom.overrideAttrs (old: {
         src = builtins.fetchurl {
           url =
@@ -99,12 +100,43 @@
           sha256 = "07g8b62s0mxx4599lb46nkzfxjwp2cv2g0f2n1qrxb7cc80yj1nb";
         };
       });
+      # Patch rofi to support wayland.
+      rofi-wayland = super.rofi.overrideAttrs (old: {
+        src = builtins.fetchurl {
+          url =
+            "https://github.com/lbonn/rofi/archive/a97ba40bc7aca7e375c500d574cac930a0b3473d.tar.gz";
+          sha256 = "13v4l5hw14i5nh26lh4hr6jckpba6pyyvx5nydn2h1vkgs0lz4v4";
+        };
+      });
+      # Patch libnotify to support replacing existing notifications.
+      # libnotify = super.libnotify.overrideAttrs (old: {
+      #   src = builtins.fetchGit {
+      #     url = "https://gitlab.gnome.org/matthias.sweertvaegher/libnotify.git";
+      #     ref = "replace";
+      #     rev = "190576778ceec9d30f516bcad83846de5c1a6306";
+      #   };
+      # });
+      # Build notify-send.sh, a libnotify alternative supporting more options.
+      notify-send-sh = self.stdenv.mkDerivation {
+        pname = "notify-send.sh";
+        version = "1.2";
+        src = builtins.fetchGit {
+          url = "https://github.com/vlevit/notify-send.sh";
+          ref = "master";
+          rev = "684a754daafdbc3d4fdf815989104208d2bdac6c";
+        };
+        propagatedBuildInputs = with self; [ bash glib ];
+        installPhase = ''
+          mkdir -p $out/bin
+          cp *.sh $out/bin/
+        '';
+      };
+      # Support pulseaudio in bar programs.
+      # TODO Maybe remove this now that I use pipewire? Alsa should be fine.
       polybar = super.polybar.override { pulseSupport = true; };
       waybar = super.waybar.override { pulseSupport = true; };
+      # Remove google tracking from chromium.
       chromium = super.ungoogled-chromium;
-      # chromium = super.chromium.override {
-      #   commandLineArgs = "--load-media-router-component-extension=1";
-      # };
     })
   ];
 

@@ -17,37 +17,83 @@
   #     "https://www.startpage.com/av/proxy-image?piurl=https%3A%2F%2Fcdn.vox-cdn.com%2Fthumbor%2FYXtm49VNZeW4Q3ZUtFaQg0H1dHM%3D%2F0x0%3A1280x720%2F1400x1400%2Ffilters%3Afocal%28538x258%3A742x462%29%3Aformat%28jpeg%29%2Fcdn.vox-cdn.com%2Fuploads%2Fchorus_image%2Fimage%2F47718349%2Fadventuretimestakes.0.jpg&sp=1631325138Tbe957154b1f3959536c2626b332a4fc220a2ec82a2110804c11c8b46bbcd3979";
 
   # };
-  programs.mako = { enable = true; };
+  programs.mako = {
+    enable = true;
+    font = "monospace 11";
+    extraConfig = ''
+      [category=overlay]
+      default-timeout=1000
+      ignore-timeout=1
+      history=0
+      anchor=center
+      layer=overlay
+
+      [anchor=center]
+      max-visible=1
+    '';
+  };
+
+  # Enables power status notifications when using Sway.
+  services.poweralertd.enable = true;
+  systemd.user.services.poweralertd = {
+    Install.WantedBy = lib.mkForce [ "sway-session.target" ];
+    # TODO I might not need to change Unit.PartOf
+    Unit.PartOf = lib.mkForce [ "sway-session.target" ];
+  };
+
   wayland.windowManager.sway = {
     enable = true;
     config.output = {
-      # TODO Make this machine independent, currently this is for my framework laptop.
-      # Maybe
-      "eDP-1" = {
+      # Framework Laptop screen
+      "Unknown 0x095F 0x00000000" = {
         mode = "2256x1504@60Hz";
         scale = "1.3";
       };
     };
     config.gaps = {
-      outer = 5;
-      inner = 15;
+      outer = 0;
+      inner = 10;
     };
     config.modifier = "Mod4";
     config.terminal = "${pkgs.alacritty}/bin/alacritty";
-    config.keybindings =
-      let mod = config.wayland.windowManager.sway.config.modifier;
-      in lib.mkOptionDefault {
-        "XF86MonBrightnessUp" = "exec brightnessctl s +5%";
-        "XF86MonBrightnessDown" = "exec brightnessctl s 5%-";
-        "Ctrl+Alt+Backspace" = "exit";
-        "${mod}+w" = "kill";
-        "${mod}+s" = "floating toggle";
-        "${mod}+a" = "focus parent";
-        "${mod}+bracketright" = "workspace next";
-        "${mod}+bracketleft" = "workspace prev";
-        "${mod}+shift+bracketright" = "move container to workspace next";
-        "${mod}+shift+bracketleft" = "move container to workspace prev";
-      };
+    config.keybindings = let
+      mod = config.wayland.windowManager.sway.config.modifier;
+      brightness = "${pkgs.brightnessctl}/bin/brightnessctl";
+      light = "${pkgs.light}/bin/light";
+      pamixer = "${pkgs.pamixer}/bin/pamixer";
+      playerctl = "${pkgs.playerctl}/bin/playerctl";
+      setLight = arg:
+        pkgs.writeShellScript "set-light" ''
+          ${light} ${arg}
+          LIGHT=$(${light} -G)
+          LIGHT=$(printf "%.0f" $LIGHT)
+          ${pkgs.notify-send-sh}/bin/notify-send.sh "Brightness" -c overlay -h int:value:$LIGHT -R /tmp/overlay-notification
+        '';
+      setVolume = arg:
+        pkgs.writeShellScript "set-volume" ''
+          ${pamixer} ${arg}
+          VOLUME=$(${pamixer} --get-volume)
+          ${pkgs.notify-send-sh}/bin/notify-send.sh "Volume" -c overlay -h int:value:$VOLUME -R /tmp/overlay-notification
+        '';
+    in lib.mkOptionDefault {
+      "XF86MonBrightnessUp" = "exec ${setLight "-A 5"}";
+      "XF86MonBrightnessDown" = "exec ${setLight "-U 5"}";
+      "Ctrl+Alt+Backspace" = "exit";
+      "${mod}+w" = "kill";
+      "${mod}+p" = "exec ${pkgs.wofi}/bin/wofi";
+      "${mod}+s" = "floating toggle";
+      "${mod}+a" = "focus parent";
+      "${mod}+c" = "exec ${playerctl} play-pause";
+      "${mod}+b" = "exec ${config.programs.firefox.package}/bin/firefox";
+      "${mod}+e" = "exec ${config.programs.emacs.package}/bin/emacsclient -c";
+      "${mod}+bracketright" = "workspace next";
+      "${mod}+bracketleft" = "workspace prev";
+      "${mod}+shift+bracketright" = "move container to workspace next";
+      "${mod}+shift+bracketleft" = "move container to workspace prev";
+      "XF86AudioRaiseVolume" = "exec ${setVolume "-i 5"}";
+      "XF86AudioLowerVolume" = "exec ${setVolume "-d 5"}";
+      "XF86AudioMute" = "exec ${pamixer} -m";
+    };
     config.input."type:touchpad" = {
       natural_scroll = "enabled";
       middle_emulation = "enabled";
@@ -56,11 +102,16 @@
     };
     config.input."type:keyboard" = { xkb_options = "caps:swapescape"; };
     config.startup = [
-      { command = "wpg -m"; }
+      { command = "${pkgs.wpgtk}/bin/wpg -m"; }
       { command = "systemctl --user start rclone-pcloud"; }
       {
         command =
           "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1 &";
+      }
+      # Use clipman as a clipboard manager.
+      {
+        command =
+          "${pkgs.wl-clipboard}/bin/wl-paste -t text --watch ${pkgs.clipman}/bin/clipman store";
       }
     ];
     config.bars = [{ command = "${pkgs.waybar}/bin/waybar"; }];
@@ -74,6 +125,7 @@
       }
       include "$HOME/.cache/wal/colors-sway"
       output * bg $wallpaper fill
+      for_window [app_id="firefox"] inhibit_idle fullscreen
     '';
   };
 
@@ -87,7 +139,7 @@
       modules-right =
         [ "tray" "idle_inhibitor" "pulseaudio" "battery" "clock" ];
       modules.tray = {
-        icon-size = 32;
+        icon-size = 24;
         spacing = 8;
       };
     }];

@@ -5,6 +5,11 @@
     # Contains Linux kernel 5.12, which I need for the framework laptop.
     nixpkgs-kernel.url =
       "github:nixos/nixpkgs/9f952205d0c2074c993ecfbfdf62b5eebe0cc6f4";
+    nixpkgs-wayland = {
+      url = "github:colemickens/nixpkgs-wayland";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.master.follows = "nixpkgs-unstable";
+    };
     nixos-hardware.url = "github:nixos/nixos-hardware/master";
     nur.url = "github:nix-community/nur";
     home-manager = {
@@ -37,14 +42,27 @@
     };
   };
   outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-kernel, darwin
-    , nixos-hardware, emacs-overlay, home-manager, nur, nix-doom-emacs, ... }:
+    , nixos-hardware, emacs-overlay, home-manager, nur, nix-doom-emacs
+    , nixpkgs-wayland, ... }:
     let
       mkUser = path: _: { imports = [ nix-doom-emacs.hmModule path ]; };
       sharedModule = {
+        nix = {
+          # add binary caches
+          binaryCachePublicKeys = [
+            "nixpkgs-wayland.cachix.org-1:3lwxaILxMRkVhehr5StQprHdEo4IrE8sRho9R9HOLYA="
+            # ...
+          ];
+          binaryCaches = [
+            "https://nixpkgs-wayland.cachix.org"
+            # ...
+          ];
+        };
         nixpkgs.overlays = [
           # Import my local package definitions.
           (import ./pkgs)
           (import emacs-overlay)
+          # nixpkgs-wayland.overlay
           # Provide nixpkgs-unstable for just a few packages.
           (self: super: {
             unstable = import nixpkgs-unstable {

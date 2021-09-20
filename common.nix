@@ -127,6 +127,7 @@
     fortune
     starship # shell prompt
     playerctl
+    pulseaudio
     calc
     bitwarden-cli # password manager
     rbw

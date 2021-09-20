@@ -66,6 +66,10 @@
   # high-resolution display
   hardware.video.hidpi.enable = lib.mkDefault true;
 
+  # Do a monthly scrub of the btrfs volume.
+  services.btrfs.autoScrub.enable = true;
+  services.btrfs.autoScrub.fileSystems = [ "/" ];
+
   # Setup root, boot, home, and swap partitions.
   fileSystems = let
     subvolume = name: {
@@ -136,23 +140,21 @@
 
   # Sway is my backup WM when things go wrong with EXWM.
   programs.sway.enable = true;
-  # services.greetd = {
-  #   enable = true;
-  #   restart = false;
-  #   settings = {
-  #     default_session = {
-  #       command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd sway";
-  #     };
-  #     initial_session = {
-  #       command = "sway";
-  #       user = "snead";
-  #     };
-  #   };
-  # };
+  services.greetd = {
+    enable = true;
+    settings = {
+      default_session = {
+        command = "${
+            lib.makeBinPath [ pkgs.greetd.tuigreet ]
+          }/tuigreet --time --cmd sway";
+        user = "greeter";
+      };
+    };
+  };
   services.xserver = {
     dpi = 200;
     # Use LightDM instead of GDM because the latter is super fucking slow.
-    displayManager.lightdm.enable = true;
+    # displayManager.lightdm.enable = true;
     displayManager.defaultSession = "sway";
     videoDrivers = [ "intel" "modesetting" "fbdev" ]; # TODO: Pick gpu drivers
 
@@ -222,6 +224,9 @@
       HandlePowerKey=hibernate
     '';
   };
+  systemd.sleep.extraConfig = ''
+    HibernateDelaySec=1h
+  '';
 
   # Replace docker with podman since it's daemon-less?
   virtualisation.docker = {
@@ -280,9 +285,6 @@
   # I can just manually set the timezone when I move.
   # I don't really need the local timezone on my laptop when I travel.
   time.timeZone = "America/Los_Angeles";
-
-  # Make the screen color warmer at night, based on the time at my location.
-  services.redshift.enable = false;
 
   hardware.opengl = {
     enable = true;
