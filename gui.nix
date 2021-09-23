@@ -173,7 +173,7 @@
 
   # Provide default settings for any X11 sessions.
   services.xserver = {
-    enable = true;
+    enable = lib.mkDefault true;
     layout = "us";
     enableCtrlAltBackspace = true;
     autoRepeatDelay = 250;

@@ -21,12 +21,14 @@
   services.fprintd.package = pkgs.unstable.fprintd;
   security.pam.services.lightdm.fprintAuth = true;
   security.pam.services.lightdm-autologin.fprintAuth = true;
+  # Disable fingerprint for login, because it's unreliable.
+  security.pam.services.greetd.fprintAuth = false;
 
   hardware.enableRedistributableFirmware = true;
 
   # Setup basic boot options and kernel modules.
   boot = {
-    plymouth.enable = true;
+    plymouth.enable = false;
     #kernelPackages = pkgs.framework-kernel.linuxPackages_latest;
     kernelPackages = pkgs.linuxPackages_5_14;
     loader.systemd-boot = {
@@ -53,7 +55,7 @@
     kernelParams = [
       "pcie_aspm.policy=powersave"
       "i915.enable_fbc=1"
-      #"i915.enable_psr=0"
+      "i915.enable_psr=1"
       "quiet"
       #"udev.log_priority=3"
       #"mem_sleep_default=deep"
@@ -75,7 +77,7 @@
     subvolume = name: {
       device = "/dev/disk/by-partlabel/linux";
       fsType = "btrfs";
-      options = [ "subvol=${name}" "compress=zstd" "noatime" ];
+      options = [ "subvol=${name}" "compress=zstd" "relatime" ];
     };
   in {
     "/" = subvolume "root";
@@ -142,19 +144,22 @@
   programs.sway.enable = true;
   services.greetd = {
     enable = true;
+    package = pkgs.unstable.greetd.greetd;
     settings = {
       default_session = {
         command = "${
-            lib.makeBinPath [ pkgs.greetd.tuigreet ]
-          }/tuigreet --time --cmd sway";
+            lib.makeBinPath [ pkgs.unstable.greetd.tuigreet ]
+          }/tuigreet --width 100 --time --asterisks --cmd sway";
         user = "greeter";
       };
     };
   };
+
   services.xserver = {
+    enable = false;
     dpi = 200;
     # Use LightDM instead of GDM because the latter is super fucking slow.
-    # displayManager.lightdm.enable = true;
+    # displayManager.lightdm.enable = lib.mkForce false;
     displayManager.defaultSession = "sway";
     videoDrivers = [ "intel" "modesetting" "fbdev" ]; # TODO: Pick gpu drivers
 
@@ -271,7 +276,6 @@
 
     # misc
     ppp # Needed for NUwave network setup
-    # qgis
     power-profiles-daemon
   ];
 
