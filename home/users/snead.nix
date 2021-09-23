@@ -1,14 +1,15 @@
 { config, lib, pkgs, ... }: {
   imports = [ ../common.nix ../email.nix ../firefox.nix ../fish.nix ];
   home.packages = with pkgs; [
-    zoom-us
-    discord
-    ledger
-    krita
-    calibre # ebook manager
-    deluge
+    unstable.zoom-us
+    unstable.discord
+    unstable.krita
+    unstable.deluge
+    unstable.zotero
+    unstable.slack
+    unstable.calibre # ebook manager
     rclone
-    zotero
+    # ledger
   ];
 
   # home.file.".face".source = pkgs.requireFile {

@@ -79,7 +79,7 @@
   fonts.fontconfig = {
     defaultFonts = {
       monospace = [
-        #"Fira Code" # Main preference, changes often.
+        "JetBrains Mono" # Main preference, changes often.
         "Source Code Pro" # Provides almost all of the IPA symbols.
         "Noto Sans Mono CJK SC"
         "Noto Emoji"
@@ -142,12 +142,10 @@
 
   # Configure sway if I happen to want it in my setup.
   programs.sway = {
-    #extraOptions = [ "--my-next-gpu-wont-be-nvidia" ];
     extraPackages = with pkgs; [
       swaylock
       swayidle
       xwayland
-      waybar
       mako
       kanshi
       qt5.qtwayland
