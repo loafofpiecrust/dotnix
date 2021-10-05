@@ -1,6 +1,4 @@
-{ config, lib, pkgs, ... }:
-
-{
+{ config, lib, pkgs, ... }: {
   programs.fish = {
     enable = true;
     interactiveShellInit = "${pkgs.fortune}/bin/fortune";

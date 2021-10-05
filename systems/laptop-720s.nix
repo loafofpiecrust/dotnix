@@ -1,16 +1,14 @@
 # Config for Lenovo Ideapad 720s 14-IKB
 # Import this file into the main configuration.nix and call it a day.
-{ config, lib, pkgs, modulesPath, ... }: {
+{ config, lib, pkgs, modulesPath, inputs, ... }: {
   imports = [
     "${modulesPath}/installer/scan/not-detected.nix"
-    ./common.nix
-    ./gui.nix
-    ./vpn.nix
-    ./dev.nix
-    ./music.nix
-    ./erasure.nix
-    ./cloud.nix
-    ./cachix.nix
+    inputs.nixos-hardware.nixosModules.common-pc-ssd
+    inputs.nixos-hardware.nixosModules.common-cpu-intel
+    ../laptop.nix
+    ../vpn.nix
+    ../dev.nix
+    ../erasure.nix
   ];
 
   # Should correspond with a system name in flake.nix
@@ -117,8 +115,10 @@
 
   # Scanning
   hardware.sane.enable = true;
-  hardware.sane.extraBackends = [ pkgs.hplipWithPlugin ];
+  hardware.sane.extraBackends = [ pkgs.unstable.hplipWithPlugin ];
 
+  home-manager.users.snead = ../home/users/snead.nix;
+  home-manager.users.work = ../home/users/work.nix;
   users.users = {
     snead = {
       isNormalUser = true;

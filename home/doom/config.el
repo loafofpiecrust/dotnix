@@ -11,10 +11,8 @@
 (setq custom-theme-directory (expand-file-name "~/.config/doom/themes"))
 
 ;; Make shell commands run faster using bash...
-(setq shell-file-name "/run/current-system/sw/bin/bash")
+;; (setq shell-file-name "/run/current-system/sw/bin/bash")
 ;; ...But let me use fish for interactive sessions.
-;;(after! vterm
-  ;;(setq vterm-shell "/run/current-system/sw/bin/fish"))
 
 ;;(menu-bar-mode t)
 

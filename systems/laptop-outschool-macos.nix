@@ -1,6 +1,7 @@
 { config, pkgs, ... }:
 
 {
+  imports = [ ../darwin.nix ];
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
   environment.systemPackages = with pkgs; [
@@ -86,4 +87,6 @@
   # Used for backwards compatibility, please read the changelog before changing.
   # $ darwin-rebuild changelog
   system.stateVersion = 4;
+
+  home-manager.users."taylor@outschool.com" = ../home/users/outschool.nix;
 }

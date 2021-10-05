@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, inputs, ... }:
 
 {
   environment.systemPackages = with pkgs; [
@@ -11,19 +11,19 @@
     # gnome3.gtk
     notify-send-sh
     polkit_gnome
-    picom # compositor
+    #picom # compositor
     # polybar
-    dunst # notifications
+    #dunst # notifications
     # rofi # MENUS!
     # rofi-menugen
     feh # wallpapers
-    wpgtk
+    #wpgtk
     # caffeine-ng # prevent screen from sleeping sometimes
     gsettings-desktop-schemas
     # farge # color picker
     scrot
     xorg.xmodmap
-    stalonetray
+    #stalonetray
     gcolor3
 
     # gtk themes
@@ -62,7 +62,7 @@
 
     # symbols
     material-design-icons
-    symbola
+    unstable.symbola
     emacs-all-the-icons-fonts
 
     # programming fonts
@@ -138,6 +138,7 @@
       # Remove google tracking from chromium.
       chromium = super.ungoogled-chromium;
     })
+    # inputs.nixpkgs-wayland.overlay
   ];
 
   # Configure sway if I happen to want it in my setup.
@@ -217,4 +218,16 @@
     xdg-desktop-portal-gtk
   ];
   xdg.portal.gtkUsePortal = true;
+
+  # GUI control center for bluetooth, if enabled.
+  services.blueman.enable = config.hardware.bluetooth.enable;
+
+  # Enable full OpenGL support.
+  hardware.opengl = {
+    enable = true;
+    driSupport = true;
+  };
+
+  # Support pinentry-gnome3 on non-Gnome DEs.
+  services.dbus.packages = [ pkgs.gcr ];
 }

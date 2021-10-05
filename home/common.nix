@@ -1,6 +1,8 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, inputs, ... }:
 
 {
+  imports = [ ./emacs.nix ];
+
   home.stateVersion = "21.05";
   home.sessionPath = [ "~/.config/emacs/bin" "~/.cargo/bin" "~/.npm/bin" ];
 
@@ -10,15 +12,25 @@
   home.file.".aspell.en.pws".source = ./spell/.aspell.en.pws;
   home.file."bin/get-password.sh" = {
     executable = true;
-    text = let rbw = "${pkgs.rbw}/bin/rbw";
+    text = let rbw = "${config.programs.rbw.package}/bin/rbw";
     in ''
       #!/bin/sh
-      ${rbw} login
-      ${rbw} unlock
+      ${rbw} unlocked || ${rbw} login
+      ${rbw} unlocked || ${rbw} unlock
       ${rbw} get "$1" "$2"
     '';
   };
 
+  home.packages = [ pkgs.unstable.spotify ];
+
+  # GPG agent handles locked files and SSH keys.
+  services.gpg-agent = {
+    enable = true;
+    enableSshSupport = true;
+    pinentryFlavor = "gnome3";
+  };
+
+  # Enable project-local environments based on flakes.
   programs.direnv = {
     enable = true;
     nix-direnv = {
@@ -27,6 +39,7 @@
     };
   };
 
+  # Make my shell fancy.
   programs.starship = {
     enable = true;
     settings = {
@@ -35,6 +48,7 @@
     };
   };
 
+  # Manage my passwords with Bitwarden + rbw.
   programs.rbw = {
     enable = true;
     package = pkgs.unstable.rbw;
@@ -117,63 +131,5 @@
       core.askPass = "";
       github.user = "loafofpiecrust";
     };
-  };
-
-  programs.emacs = {
-    enable = true;
-    package = pkgs.emacsCustom;
-  };
-
-  services.emacs = {
-    enable = true;
-    client.enable = true;
-    # socketActivation.enable = true;
-  };
-
-  programs.doom-emacs = {
-    enable = false;
-    doomPrivateDir = ./doom;
-    emacsPackage = pkgs.emacsCustom;
-    # Add some packages from unpublished git repositories.
-    emacsPackagesOverlay = self: super:
-      let
-        mkGitPkg = { host, user, name, rev ? null }:
-          self.trivialBuild {
-            pname = name;
-            version = if rev == null then "1.0.0" else rev;
-            src = builtins.fetchGit {
-              url = "https://${host}.com/${user}/${name}.git";
-              rev = rev;
-            };
-          };
-      in {
-        org-cv = mkGitPkg {
-          host = "gitlab";
-          user = "loafofpiecrust";
-          name = "org-cv";
-          rev = "explicit-dates";
-        };
-        app-launcher = mkGitPkg {
-          host = "github";
-          user = "SebastienWae";
-          name = "app-launcher";
-          rev = "71fb5a501a646703c81783395ff46cdd043e173a";
-        };
-        exwm-outer-gaps = mkGitPkg {
-          host = "github";
-          user = "lucasgruss";
-          name = "exwm-outer-gaps";
-        };
-        bitwarden = mkGitPkg {
-          host = "github";
-          user = "seanfarley";
-          name = "emacs-bitwarden";
-        };
-        dired-show-readme = mkGitPkg {
-          host = "gitlab";
-          user = "kisaragi-hiu";
-          name = "dired-show-readme";
-        };
-      };
   };
 }

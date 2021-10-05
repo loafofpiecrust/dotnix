@@ -4,7 +4,7 @@
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     # Contains Linux kernel 5.12, which I need for the framework laptop.
     nixpkgs-kernel.url =
-      "github:nixos/nixpkgs/9f952205d0c2074c993ecfbfdf62b5eebe0cc6f4";
+      "github:nixos/nixpkgs/141439f6f11537ee349a58aaf97a5a5fc072365c";
     nixpkgs-wayland = {
       url = "github:colemickens/nixpkgs-wayland";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -41,89 +41,34 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-  outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-kernel, darwin
-    , nixos-hardware, emacs-overlay, home-manager, nur, nix-doom-emacs
-    , nixpkgs-wayland, ... }:
+
+  outputs = { self, nixpkgs, darwin, ... }@inputs:
     let
-      mkUser = path: _: { imports = [ nix-doom-emacs.hmModule path ]; };
-      sharedModule = {
-        nix = {
-          # add binary caches
-          binaryCachePublicKeys = [
-            "nixpkgs-wayland.cachix.org-1:3lwxaILxMRkVhehr5StQprHdEo4IrE8sRho9R9HOLYA="
-            # ...
-          ];
-          binaryCaches = [
-            "https://nixpkgs-wayland.cachix.org"
-            # ...
-          ];
+      specialArgs = { inherit inputs; };
+      mkLinux = host: path: {
+        "${host}" = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          inherit (nixpkgs) lib;
+          inherit specialArgs;
+          modules = [ path { networking.hostName = host; } path ];
         };
-        nixpkgs.overlays = [
-          # Import my local package definitions.
-          (import ./pkgs)
-          (import emacs-overlay)
-          # nixpkgs-wayland.overlay
-          # Provide nixpkgs-unstable for just a few packages.
-          (self: super: {
-            unstable = import nixpkgs-unstable {
-              # required to inherit from top-level nixpkgs.
-              system = super.system;
-              config.allowUnfree = super.config.allowUnfree;
-            };
-            framework-kernel = import nixpkgs-kernel { system = super.system; };
-          })
-          nur.overlay
-        ];
-        home-manager.useGlobalPkgs = true;
-        home-manager.useUserPackages = true;
+      };
+      mkDarwin = host: path: {
+        "${host}" = darwin.lib.darwinSystem {
+          inherit specialArgs;
+          modules = [ path { networking.hostName = host; } ];
+        };
       };
     in {
       # When you first setup a new machine, the hostname won't match yet.
       # $ darwin-rebuild switch --flake .#darwinConfigurations.careerbot13.system
       # After that:
       # $ darwin-rebuild switch --flake .
-      darwinConfigurations."careerbot13" = darwin.lib.darwinSystem {
-        modules = [
-          ./laptop-outschool-macos.nix
-          home-manager.darwinModules.home-manager
-          sharedModule
-          {
-            # TODO Only type the host name once.
-            networking.hostName = "careerbot13";
-            home-manager.users."taylor@outschool.com" =
-              mkUser ./home/users/outschool.nix;
-          }
-        ];
-      };
+      darwinConfigurations =
+        (mkDarwin "careerbot13" ./systems/laptop-outschool-macos.nix);
 
-      nixosConfigurations."loafofpiecrust" = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        inherit (nixpkgs) lib;
-        modules = [
-          ./laptop-720s.nix
-          home-manager.nixosModules.home-manager
-          sharedModule
-          {
-            home-manager.users.snead = mkUser ./home/users/snead.nix;
-            home-manager.users.work = mkUser ./home/users/work.nix;
-          }
-        ];
-      };
-
-      nixosConfigurations."portable-spudger" = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        inherit (nixpkgs) lib;
-        modules = [
-          ./laptop-framework.nix
-          home-manager.nixosModules.home-manager
-          sharedModule
-          nixos-hardware.nixosModules.common-pc
-          nixos-hardware.nixosModules.common-pc-laptop
-          nixos-hardware.nixosModules.common-pc-laptop-acpi_call
-          nixos-hardware.nixosModules.common-pc-ssd
-          nixos-hardware.nixosModules.common-cpu-intel
-          { home-manager.users.snead = mkUser ./home/users/snead.nix; }
-        ];
-      };
+      nixosConfigurations =
+        (mkLinux "portable-spudger" ./systems/framework-laptop.nix)
+        // (mkLinux "loafofpiecrust" ./systems/laptop-720s.nix);
     };
 }
