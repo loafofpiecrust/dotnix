@@ -50,13 +50,36 @@
           system = "x86_64-linux";
           inherit (nixpkgs) lib;
           inherit specialArgs;
-          modules = [ path { networking.hostName = host; } path ];
+          modules = [
+            path
+            {
+              networking.hostName = host;
+              nix.registry = {
+                nixpkgs.flake = nixpkgs;
+                nixos-hardware.flake = inputs.nixos-hardware;
+                nixpkgs-unstable.flake = inputs.nixpkgs-unstable;
+                nur.flake = inputs.nur;
+              };
+            }
+            path
+          ];
         };
       };
       mkDarwin = host: path: {
         "${host}" = darwin.lib.darwinSystem {
           inherit specialArgs;
-          modules = [ path { networking.hostName = host; } ];
+          modules = [
+            path
+            {
+              networking.hostName = host;
+              nix.registry = {
+                nixpkgs.flake = nixpkgs;
+                nixos-hardware.flake = inputs.nixos-hardware;
+                nixpkgs-unstable.flake = inputs.nixpkgs-unstable;
+                nur.flake = inputs.nur;
+              };
+            }
+          ];
         };
       };
     in {
