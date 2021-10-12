@@ -13,9 +13,9 @@
     profiles.default = {
       settings = {
         # Make scrolling a bit slower.
-        "mousewheel.default.delta_multiplier_x" = 70;
-        "mousewheel.default.delta_multiplier_y" = 70;
-        "mousewheel.default.delta_multiplier_z" = 70;
+        "mousewheel.default.delta_multiplier_x" = 100;
+        "mousewheel.default.delta_multiplier_y" = 100;
+        "mousewheel.default.delta_multiplier_z" = 100;
         # Disable scroll momentum when I let go of the touchpad.
         "apz.gtk.kinetic_scroll.enabled" = false;
         "layout.css.devPixelsPerPx" = "-1.0";

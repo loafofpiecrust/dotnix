@@ -70,7 +70,7 @@
       middle_emulation = "enabled";
       scroll_method = "two_finger";
       click_method = "clickfinger";
-      scroll_factor = "0.5";
+      scroll_factor = "0.25";
     };
     config.input."type:keyboard" = {
       xkb_options = "caps:swapescape";
