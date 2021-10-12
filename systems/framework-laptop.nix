@@ -79,7 +79,7 @@
   networking.interfaces.enp0s20f0u1.useDHCP = true;
 
   users.mutableUsers = false;
-  users.defaultUserShell = pkgs.fish;
+  users.defaultUserShell = pkgs.zsh;
   users.users = {
     snead = {
       isNormalUser = true;
