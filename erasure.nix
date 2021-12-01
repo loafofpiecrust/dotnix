@@ -33,7 +33,7 @@ in {
       [ -e "/persist/etc/${name}" ] || cp -Trf {,/persist}/etc/${name}
     '') persistInEtc);
     otherLinks = (map (path: ''
-      [ -e "/persist${path}" ] || cp -Trf ${path} /persist${path}
+      [ -e "/persist${path}" ] || cp -Trf {,/persist}${path}
     '') persistOther);
   in ''
     mkdir -p /persist/etc

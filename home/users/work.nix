@@ -8,7 +8,7 @@
     Service = {
       Type = "simple";
       ExecStart = ''
-        get-password.sh neuidm.neu.edu t.snead | doas ${pkgs.openconnect}/bin/openconnect --protocol=gp --user=t.snead --passwd-on-stdin vpn.northeastern.edu
+        get-password neuidm.neu.edu t.snead | doas ${pkgs.openconnect}/bin/openconnect --protocol=gp --user=t.snead --passwd-on-stdin vpn.northeastern.edu
       '';
     };
   };

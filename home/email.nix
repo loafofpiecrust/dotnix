@@ -6,7 +6,7 @@
   programs.msmtp.enable = true;
   services.imapnotify.enable = false;
   services.mbsync = {
-    enable = true;
+    enable = false;
     postExec = ''
       ${pkgs.mu}/bin/mu index
     '';
@@ -40,7 +40,7 @@
       inherit mbsync mu msmtp address realName;
       primary = true;
       userName = address;
-      passwordCommand = "get-password.sh mailbox.org ${address}";
+      passwordCommand = "get-password mailbox.org ${address}";
       imap.host = "imap.mailbox.org";
       # imapnotify = {
       #   enable = true;
@@ -85,7 +85,7 @@
       inherit mbsync mu msmtp address realName;
       flavor = "gmail.com";
       userName = address;
-      passwordCommand = "get-password.sh google.com ${address}";
+      passwordCommand = "get-password google.com ${address}";
       imap.host = "imap.gmail.com";
       smtp = {
         host = "smtp.gmail.com";

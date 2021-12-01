@@ -27,10 +27,10 @@
   # Setup basic boot options and kernel modules.
   boot = {
     plymouth.enable = false;
-    kernelPackages = pkgs.unstable.linuxPackages_5_14;
+    kernelPackages = pkgs.linuxPackages_5_14;
     initrd.availableKernelModules =
       [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" "btusb" ];
-    blacklistedKernelModules = [ ];
+    blacklistedKernelModules = [ "zfs" ];
     extraModprobeConfig = "options snd_hda_intel power_save=1";
     kernelModules = [ "kvm-intel" ];
 
@@ -41,7 +41,7 @@
       "i915.enable_psr=1"
       "quiet"
       #"udev.log_priority=3"
-      #"mem_sleep_default=deep"
+      # "mem_sleep_default=deep"
     ];
     kernel.sysctl = { "kernel.nmi_watchdog" = 0; };
   };
@@ -54,9 +54,10 @@
   services.btrfs.autoScrub.fileSystems = [ "/" ];
 
   # Setup root, boot, home, and swap partitions.
+  boot.initrd.luks.devices."enc".device = "/dev/disk/by-partlabel/linux";
   fileSystems = let
     subvolume = name: {
-      device = "/dev/disk/by-partlabel/linux";
+      device = "/dev/mapper/enc";
       fsType = "btrfs";
       options = [ "subvol=${name}" "compress=zstd" "relatime" ];
     };
@@ -68,7 +69,7 @@
     "/var/log" = (subvolume "log") // { neededForBoot = true; };
 
     "/boot" = {
-      device = "/dev/disk/by-uuid/AF05-9D01";
+      device = "/dev/disk/by-partlabel/boot";
       fsType = "vfat";
     };
   };
@@ -97,13 +98,13 @@
         "$6$PFZjyXdf7W2cu3$55Iw6UjpcdB29fb4RIPcaYFY5Ehtuc9MFZaJBa9wlRbgYxRrDAP0tlApOiIsQY7hoeO9XG7xxiIcsjGYc9QXu1";
     };
 
-    work = {
-      isNormalUser = true;
-      extraGroups =
-        [ "wheel" "docker" "adbusers" "scanner" "lp" "audio" "video" ];
-      hashedPassword =
-        "$6$tsPlzan2qXEAIir$Jyj78Sq6tuRqBY/R5raqee0oNjx5iuJTB1m0s4RaAuMukbmojE0q6FjnBth8x/tTpCsFDS7DlWXYRcn65R15q.";
-    };
+    #work = {
+    #  isNormalUser = true;
+    #  extraGroups =
+    #    [ "wheel" "docker" "adbusers" "scanner" "lp" "audio" "video" ];
+    #  hashedPassword =
+    #    "$6$tsPlzan2qXEAIir$Jyj78Sq6tuRqBY/R5raqee0oNjx5iuJTB1m0s4RaAuMukbmojE0q6FjnBth8x/tTpCsFDS7DlWXYRcn65R15q.";
+    #};
   };
   users.users.root.hashedPassword =
     "$6$PFZjyXdf7W2cu3$55Iw6UjpcdB29fb4RIPcaYFY5Ehtuc9MFZaJBa9wlRbgYxRrDAP0tlApOiIsQY7hoeO9XG7xxiIcsjGYc9QXu1";
@@ -178,13 +179,18 @@
     # apps
     # gnome3.gnome-settings-daemon
     gnome.gvfs
-    mate.atril # pdf viewer
     #xfce.parole # video player
     font-manager
     gimp
     vlc
     inkscape
     # audacity
+    unstable.mate.eom
+    unstable.mate.caja
+    unstable.mate.engrampa
+    unstable.mate.atril # pdf viewer
+    unstable.mate.mate-tweak
+    unstable.mate.mate-system-monitor
     xfce.xfce4-power-manager
     xfce.thunar
     xfce.xfce4-session
@@ -206,5 +212,5 @@
   # I don't really need the local timezone on my laptop when I travel.
   time.timeZone = "America/Los_Angeles";
 
-  virtualisation.libvirtd.enable = true;
+  virtualisation.libvirtd.enable = false;
 }

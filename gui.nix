@@ -88,6 +88,7 @@
       sansSerif = [ "Overpass" "Noto Sans" "FreeSans" "Material Design Icons" ];
       serif = [ "Merriweather" "Liberation Serif" ];
     };
+    hinting.enable = false;
   };
 
   nixpkgs.overlays = [

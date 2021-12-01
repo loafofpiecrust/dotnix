@@ -8,7 +8,9 @@
       # Framework Laptop screen
       "Unknown 0x095F 0x00000000" = {
         mode = "2256x1504@60Hz";
-        scale = "1.35";
+        # Use a scale that'll frequently give me whole numbers.
+        # 4 => 5; 8 => 10; 12 => 15; 16 => 20
+        scale = "1.25";
       };
     };
     config.gaps = {
@@ -23,9 +25,9 @@
       light = "${pkgs.light}/bin/light";
       pamixer = "${pkgs.pamixer}/bin/pamixer";
       playerctl = "${pkgs.playerctl}/bin/playerctl";
-      setLight = arg:
+      setLight =
         pkgs.writeShellScript "set-light" ''
-          ${light} ${arg}
+          ${light} $@
           LIGHT=$(${light} -G)
           LIGHT=$(printf "%.0f" $LIGHT)
           ${pkgs.notify-send-sh}/bin/notify-send.sh "Brightness" -c overlay -h int:value:$LIGHT -R /tmp/overlay-notification
@@ -45,8 +47,8 @@
           ${pkgs.notify-send-sh}/bin/notify-send.sh "Screenshot taken" "$IMG_FILENAME" -i "$IMG_FILENAME" -t 2000
         '';
     in lib.mkOptionDefault {
-      "XF86MonBrightnessUp" = "exec ${setLight "-A 5"}";
-      "XF86MonBrightnessDown" = "exec ${setLight "-U 5"}";
+      "XF86MonBrightnessUp" = "exec ${setLight} -A 5";
+      "XF86MonBrightnessDown" = "exec ${setLight} -U 5";
       "Ctrl+Alt+Backspace" = "exit";
       "Print" = "exec ${screenshot false}";
       "Shift+Print" = "exec ${screenshot true}";
@@ -131,7 +133,7 @@
     enable = true;
     font = "monospace 11";
     extraConfig = ''
-      default-timmeout=4000
+      default-timeout=4000
 
       [category=overlay]
       default-timeout=1000

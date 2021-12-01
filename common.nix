@@ -4,6 +4,9 @@
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
 
+  # FIXME Missing dependency of ZFS in NixOS 21.11
+  environment.systemPackages = [ pkgs.zlib ];
+
   nix.package = pkgs.nixUnstable;
   nix.extraOptions = ''
     experimental-features = nix-command flakes
@@ -29,6 +32,7 @@
         # required to inherit from top-level nixpkgs.
         system = super.system;
         config.allowUnfree = true;
+        overlays = [ (import inputs.emacs-overlay) ];
       };
     })
   ];

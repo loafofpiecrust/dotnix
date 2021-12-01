@@ -12,6 +12,8 @@
     ];
     profiles.default = {
       settings = {
+      	# Enable DRM
+	"media.eme.enabled" = true;
         # Make scrolling a bit slower.
         "mousewheel.default.delta_multiplier_x" = 100;
         "mousewheel.default.delta_multiplier_y" = 100;

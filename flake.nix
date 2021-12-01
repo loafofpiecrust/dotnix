@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-21.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-21.11";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     # Contains Linux kernel 5.12, which I need for the framework laptop.
     nixpkgs-kernel.url =
@@ -17,11 +17,7 @@
         "github:nix-community/home-manager/b0d769691cc379c9ab91d3acec5d14e75c02c02b";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    emacs-overlay = {
-      url =
-        "github:nix-community/emacs-overlay/34624e82c790aa8c225aa9b7e98048cac289f505";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    emacs-overlay = { url = "github:nix-community/emacs-overlay"; };
     nix-doom-emacs = {
       url =
         "github:vlaci/nix-doom-emacs/fee14d217b7a911aad507679dafbeaa8c1ebf5ff";

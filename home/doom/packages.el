@@ -1,7 +1,7 @@
 ;; -*- no-byte-compile: t; -*-
 ;;; $DOOMDIR/packages.el
 
-(package! benchmark-init)
+;;(package! benchmark-init)
 
 (package! tree-sitter
   :pin "ae26995c4b006f37b8e46a6125e0b60100b42974")
@@ -82,7 +82,7 @@
 (package! solaire-mode :disable t)
 
 (package! bitwarden
-  :recipe (:host github :repo "seanfarley/emacs-bitwarden"))
+  :recipe (:host github :repo "seanfarley/emacs-bitwarden" :branch "main"))
 
 (package! zoom :pin "a373e7eed59ad93315e5ae88c816ca70404d2d34")
 
@@ -156,7 +156,7 @@
 
 (package! sly-asdf)
 
-(package! daemons)
+;;(package! daemons)
 
 ;; To install a package directly from a remote git repo, you must specify a
 ;; `:recipe'. You'll find documentation on what `:recipe' accepts here:

@@ -83,7 +83,7 @@ It seems excessive, but apparently necessary for fluid LSP usage!"
   (set-fringe-mode 0)
   (add-hook! '(exwm-mode-hook pdf-view-mode-hook) #'+snead/remove-fringe)
   ;; (add-hook 'after-change-major-mode-hook #'+snead/set-fringe)
-  (add-hook! '(vterm-mode-hook) #'+snead/add-fringe))
+  (add-hook 'vterm-mode-hook #'+snead/add-fringe))
 
 ;; Disable line highlighting by default, relying on mode-specific faces and
 ;; highlighting the current line number.
@@ -144,7 +144,9 @@ It seems excessive, but apparently necessary for fluid LSP usage!"
 
 (after! prog-mode
   ;; Consider each segment of a camelCase one word,
-  (add-hook! 'prog-mode-hook '(auto-fill-mode subword-mode))
+  ;;(add-hook! 'prog-mode-hook '(auto-fill-mode subword-mode))
+  (add-hook 'prog-mode-hook #'auto-fill-mode)
+  (add-hook 'prog-mode-hook #'subword-mode)
   ;; Automatically wrap comments in code
   (setq-default comment-auto-fill-only-comments t))
 
@@ -510,7 +512,7 @@ Returns nil if not logged in."
   (require 'tree-sitter-langs)
   ;; TODO Fix JSX support.
   (push '(typescript-tsx-mode . typescript) tree-sitter-major-mode-language-alist)
-  (add-hook! 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
 
 ;; Make spell-fu compatible with tree-sitter.
 (after! (spell-fu tree-sitter)
@@ -743,7 +745,7 @@ are ineffectual otherwise."
             (`flag   (mu4e-action-retag-message msg "+\\Starred"))
             (`unflag (mu4e-action-retag-message msg "-\\Starred"))))))
 
-  (add-hook! 'mu4e-mark-execute-pre-hook #'+mu4e-gmail-fix-flags-h))
+  (add-hook 'mu4e-mark-execute-pre-hook #'+mu4e-gmail-fix-flags-h))
 
 ;; (use-package! org-mu4e
 ;;   :after mu4e)
@@ -1100,12 +1102,13 @@ are ineffectual otherwise."
 
 ;;;; Periodically clean buffers
 (use-package! midnight
+	      :disabled
   :hook (doom-first-buffer . midnight-mode)
   :config
   (setq clean-buffer-list-kill-regexps '("\\`\\*Man "
                                          "\\`\\*helpful "
                                          "\\`\\*Calc"
-                                         "\\`\\*xref"
+                                         ;;"\\`\\*xref"
                                          "\\`\\*lsp"
                                          "\\`\\*company"
                                          "\\`\\*straight-process\\*"
@@ -1486,7 +1489,7 @@ directory, the file name, and its state (modified, read-only or non-existent)."
   (doom-modeline-def-modeline 'ranger
     '(ace-window " " ranger vertical-pad)
     '())
-  (add-hook! '(ranger-mode-hook)
+  (add-hook 'ranger-mode-hook
     (defun doom-modeline-set-ranger-modeline ()
       (setq-local mode-line-format nil
                   header-line-format (doom-modeline 'ranger))))

@@ -13,17 +13,26 @@
         };
       }
       {
-        name = "fzf-tab";
+        name = "fzf-tab-completion";
+        file = "zsh/fzf-zsh-completion.sh";
         src = builtins.fetchGit {
-          url = "https://github.com/Aloxaf/fzf-tab";
+          url = "https://github.com/lincheney/fzf-tab-completion";
           ref = "master";
-          rev = "220bee396dd3c2024baa54015a928d5915e4f48f";
+          rev = "774a6ff865cc233a9f7dd503df6feffbab653e03";
         };
       }
+      # {
+      #   name = "fzf-tab";
+      #   src = builtins.fetchGit {
+      #     url = "https://github.com/Aloxaf/fzf-tab";
+      #     ref = "master";
+      #     rev = "220bee396dd3c2024baa54015a928d5915e4f48f";
+      #   };
+      # }
       {
         name = "fast-syntax-highlighting";
         src = builtins.fetchGit {
-          url = "https://github.com/zdharma/fast-syntax-highlighting";
+          url = "https://github.com/zdharma-continuum/fast-syntax-highlighting";
           ref = "master";
           rev = "817916dfa907d179f0d46d8de355e883cf67bd97";
         };
@@ -60,6 +69,12 @@
     initExtra = ''
       bindkey '^[[A' history-substring-search-up
       bindkey '^[[B' history-substring-search-down
+      bindkey '^I' fzf_completion
+      zstyle ':completion:*' matcher-list "" \
+        'm:{a-z\-}={A-Z\_}' \
+        'r:[^[:alpha:]]||[[:alpha:]]=** r:|=* m:{a-z\-}={A-Z\_}' \
+        'r:|?=** m:{a-z\-}={A-Z\_}'
+
       ${pkgs.fortune}/bin/fortune
     '';
     history.expireDuplicatesFirst = true;

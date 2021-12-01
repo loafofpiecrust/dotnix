@@ -47,7 +47,7 @@
     nixfmt
     html-tidy
     pipenv
-    python37Packages.python-language-server
+    # python37Packages.python-language-server
     black
     nodePackages.typescript-language-server
     nodePackages.prettier
@@ -64,7 +64,8 @@
 
   nixpkgs.overlays = [
     (self: super: {
-      emacsCustom = self.emacsPgtkGcc.override { withXwidgets = true; };
+      emacsCustom =
+        self.unstable.emacsPgtkGcc.override { withXwidgets = true; };
     })
   ];
 
