@@ -62,12 +62,7 @@
     pinentry_emacs
   ];
 
-  nixpkgs.overlays = [
-    (self: super: {
-      emacsCustom =
-        self.unstable.emacsPgtkGcc.override { withXwidgets = true; };
-    })
-  ];
+  nixpkgs.overlays = [ (self: super: { emacsCustom = self.emacsPgtkGcc; }) ];
 
   # Android debugging.
   programs.adb.enable = true;

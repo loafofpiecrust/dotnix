@@ -13,8 +13,7 @@
     nixos-hardware.url = "github:nixos/nixos-hardware/master";
     nur.url = "github:nix-community/nur";
     home-manager = {
-      url =
-        "github:nix-community/home-manager/b0d769691cc379c9ab91d3acec5d14e75c02c02b";
+      url = "github:nix-community/home-manager/release-21.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     emacs-overlay = { url = "github:nix-community/emacs-overlay"; };

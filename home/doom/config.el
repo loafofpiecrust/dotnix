@@ -668,8 +668,8 @@ Use `treemacs-select-window' command for old functionality."
                                        :right-fringe ,+snead/frame-fringe)
         evil-owl-idle-delay 0.5))
 
-(use-package! flycheck-inline
-  :hook (flycheck-mode . flycheck-inline-mode))
+;; (use-package! flycheck-inline
+;;   :hook (flycheck-mode . flycheck-inline-mode))
 
 (use-package! cherokee-input)
 
@@ -984,7 +984,7 @@ are ineffectual otherwise."
 (add-hook 'pdf-outline-buffer-mode-hook #'disable-line-numbers)
 
 (use-package! olivetti
-  :hook ((markdown-mode magit-status-mode forge-topic-mode) . olivetti-mode)
+  ;; :hook ((markdown-mode magit-status-mode forge-topic-mode) . olivetti-mode)
   :bind (:map doom-leader-map
          ("to" . olivetti-mode))
   :config
@@ -1306,7 +1306,7 @@ end of the workspace list."
 
 
 ;; LSP formatting is messed up for Javascript, so disable it.
-(setq +format-with-lsp nil)
+;; (setq +format-with-lsp nil)
 (setq +format-on-save-enabled-modes
       '(not emacs-lisp-mode
             sql-mode
@@ -1754,8 +1754,8 @@ Move it to the mode-line."
   '(doom-modeline-spc-face :inherit nil)
   '(header-line :inherit mode-line))
 
-(after! lsp-mode
-  (setq lsp-signature-function #'lsp-lv-message))
+;; (after! lsp-mode
+;;   (setq lsp-signature-function #'lsp-lv-message))
 
 (use-package! eldoc-box
   :hook ((prog-mode) . eldoc-box-hover-mode)

@@ -6,10 +6,15 @@ let
     (check config.networking.wireless.iwd.enable "/var/lib/iwd")
     (check config.services.upower.enable "/var/lib/upower")
     (check config.virtualisation.docker.enable "/var/lib/docker")
-    (check config.hardware.bluetooth.enable "/var/lib/bluetooth")
     (check config.services.fprintd.enable "/var/lib/fprint")
+    # (check config.hardware.bluetooth.enable "/var/lib/bluetooth")
   ];
-  persistInEtc = [ "machine-id" "adjtime" "NIXOS" "nixos" ];
+  persistInEtc = [
+    "machine-id"
+    "adjtime"
+    "NIXOS"
+    "nixos" # "bluetooth"
+  ];
 in {
   # Bind mount persisted folders onto the root partition at boot.
   # Several services don't like their state folders to be symlinks, so bind
@@ -30,10 +35,10 @@ in {
   system.activationScripts.etc.deps = [ "cp-etc" ];
   system.activationScripts.cp-etc = let
     etcLinks = (map (name: ''
-      [ -e "/persist/etc/${name}" ] || cp -Trf {,/persist}/etc/${name}
+      [ -e "/persist/etc/${name}" ] || cp -Trf {,/persist}/etc/${name} || true
     '') persistInEtc);
     otherLinks = (map (path: ''
-      [ -e "/persist${path}" ] || cp -Trf {,/persist}${path}
+      [ -e "/persist${path}" ] || cp -Trf {,/persist}${path} || true
     '') persistOther);
   in ''
     mkdir -p /persist/etc

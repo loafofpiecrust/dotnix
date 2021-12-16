@@ -75,6 +75,12 @@
         'r:[^[:alpha:]]||[[:alpha:]]=** r:|=* m:{a-z\-}={A-Z\_}' \
         'r:|?=** m:{a-z\-}={A-Z\_}'
 
+      # Bind shortcut for running arbitrary programs from nixpkgs!
+      # This uses the same repository as my system, so downloads are minimal.
+      function , {
+        nix run nixpkgs#$1
+      }
+
       ${pkgs.fortune}/bin/fortune
     '';
     history.expireDuplicatesFirst = true;

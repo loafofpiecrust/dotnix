@@ -18,20 +18,19 @@
       inner = 10;
     };
     config.modifier = "Mod4";
-    config.terminal = "${pkgs.alacritty}/bin/alacritty";
+    config.terminal = "${pkgs.foot}/bin/foot";
     config.keybindings = let
       mod = config.wayland.windowManager.sway.config.modifier;
       brightness = "${pkgs.brightnessctl}/bin/brightnessctl";
       light = "${pkgs.light}/bin/light";
       pamixer = "${pkgs.pamixer}/bin/pamixer";
       playerctl = "${pkgs.playerctl}/bin/playerctl";
-      setLight =
-        pkgs.writeShellScript "set-light" ''
-          ${light} $@
-          LIGHT=$(${light} -G)
-          LIGHT=$(printf "%.0f" $LIGHT)
-          ${pkgs.notify-send-sh}/bin/notify-send.sh "Brightness" -c overlay -h int:value:$LIGHT -R /tmp/overlay-notification
-        '';
+      setLight = pkgs.writeShellScript "set-light" ''
+        ${light} $@
+        LIGHT=$(${light} -G)
+        LIGHT=$(printf "%.0f" $LIGHT)
+        ${pkgs.notify-send-sh}/bin/notify-send.sh "Brightness" -c overlay -h int:value:$LIGHT -R /tmp/overlay-notification
+      '';
       setVolume = arg:
         pkgs.writeShellScript "set-volume" ''
           ${pamixer} ${arg}

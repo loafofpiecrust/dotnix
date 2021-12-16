@@ -70,14 +70,12 @@
   environment.systemPackages = with pkgs; [
     power-profiles-daemon
     powertop
-    # brightnessctl
     ppp # Needed for NUwave network setup
   ];
 
   # Only log out when the lid is closed with power.
   services.logind = {
     killUserProcesses = true;
-    lidSwitchExternalPower = "ignore";
     lidSwitch = "suspend-then-hibernate";
     extraConfig = ''
       HandlePowerKey=hibernate

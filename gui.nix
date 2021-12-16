@@ -3,7 +3,6 @@
 {
   environment.systemPackages = with pkgs; [
     gnome3.file-roller # provides all archive formats
-    alacritty
     pavucontrol
     ffmpeg
 
@@ -32,8 +31,6 @@
     bibata-cursors
 
     # apps I want everywhere
-    # chromium
-    # unstable.firefox # primary browser
     tridactyl-native
 
     # system tools
@@ -154,7 +151,6 @@
       grim
       wl-clipboard
       # wf-recorder
-      # firefox-wayland
     ];
     extraSessionCommands = let
       schema = pkgs.gsettings-desktop-schemas;

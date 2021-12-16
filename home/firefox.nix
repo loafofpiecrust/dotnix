@@ -4,6 +4,7 @@
   home.packages = with pkgs; [ tridactyl-native ];
   programs.firefox = {
     enable = true;
+    package = pkgs.firefox-beta-bin;
     extensions = with pkgs.nur.repos.rycee.firefox-addons; [
       bitwarden
       ublock-origin
@@ -12,8 +13,8 @@
     ];
     profiles.default = {
       settings = {
-      	# Enable DRM
-	"media.eme.enabled" = true;
+        # Enable DRM
+        "media.eme.enabled" = true;
         # Make scrolling a bit slower.
         "mousewheel.default.delta_multiplier_x" = 100;
         "mousewheel.default.delta_multiplier_y" = 100;

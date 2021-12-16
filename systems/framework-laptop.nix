@@ -30,7 +30,7 @@
     kernelPackages = pkgs.linuxPackages_5_14;
     initrd.availableKernelModules =
       [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" "btusb" ];
-    blacklistedKernelModules = [ "zfs" ];
+    blacklistedKernelModules = [ ];
     extraModprobeConfig = "options snd_hda_intel power_save=1";
     kernelModules = [ "kvm-intel" ];
 
@@ -172,7 +172,7 @@
   };
 
   # Let's try out bluetooth?
-  hardware.bluetooth.enable = false;
+  hardware.bluetooth.enable = true;
 
   # Install some applications!
   environment.systemPackages = with pkgs; [
@@ -198,7 +198,7 @@
     xfce.xfce4-taskmanager
 
     libreoffice
-    virt-manager
+    # virt-manager
   ];
 
   # Disable automatic location updates because geoclue makes the boot process

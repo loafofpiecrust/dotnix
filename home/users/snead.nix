@@ -33,6 +33,16 @@
     };
   };
 
+  programs.foot = {
+    enable = true;
+    settings = {
+      main.dpi-aware = false;
+      main.font = "monospace:size=11";
+      colors.alpha = 0.8;
+      main.pad = "8x8";
+    };
+  };
+
   programs.kitty = {
     enable = true;
     font.name = "monospace";
