@@ -16,7 +16,10 @@
       url = "github:nix-community/home-manager/release-21.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    emacs-overlay = { url = "github:nix-community/emacs-overlay"; };
+    emacs-overlay = {
+      url =
+        "github:nix-community/emacs-overlay/34624e82c790aa8c225aa9b7e98048cac289f505";
+    };
     nix-doom-emacs = {
       url =
         "github:vlaci/nix-doom-emacs/fee14d217b7a911aad507679dafbeaa8c1ebf5ff";
@@ -37,56 +40,52 @@
     };
   };
 
-  outputs = { self, nixpkgs, darwin, ... }@inputs:
+  outputs =
+    { self, nixpkgs, darwin, emacs-overlay, nixpkgs-unstable, nur, ... }@inputs:
     let
       specialArgs = { inherit inputs; };
-      mkLinux = host: path: {
-        "${host}" = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          inherit (nixpkgs) lib;
-          inherit specialArgs;
-          modules = [
-            path
-            {
-              networking.hostName = host;
-              nix.registry = {
-                nixpkgs.flake = nixpkgs;
-                nixos-hardware.flake = inputs.nixos-hardware;
-                nixpkgs-unstable.flake = inputs.nixpkgs-unstable;
-                nur.flake = inputs.nur;
-              };
-            }
-            path
-          ];
+      sharedModule = host: {
+        nix.registry = {
+          nixpkgs.flake = nixpkgs;
+          nixos-hardware.flake = inputs.nixos-hardware;
+          nixpkgs-unstable.flake = inputs.nixpkgs-unstable;
+          nur.flake = inputs.nur;
+        };
+        nixpkgs.overlays = [
+          # Import my local package definitions.
+          (import ./pkgs)
+          (import emacs-overlay)
+          # Provide nixpkgs-unstable for just a few packages.
+          (self: super: {
+            unstable = import nixpkgs-unstable {
+              # required to inherit from top-level nixpkgs.
+              system = super.system;
+              config = super.config;
+            };
+          })
+          nur.overlay
+        ];
+        networking.hostName = host;
+      };
+      mkSystem = fn: system: host: path: {
+        "${host}" = fn {
+          inherit system specialArgs;
+          # inherit (nixpkgs) lib;
+          modules = [ (sharedModule host) path ];
         };
       };
-      mkDarwin = host: path: {
-        "${host}" = darwin.lib.darwinSystem {
-          inherit specialArgs;
-          modules = [
-            path
-            {
-              networking.hostName = host;
-              nix.registry = {
-                nixpkgs.flake = nixpkgs;
-                nixos-hardware.flake = inputs.nixos-hardware;
-                nixpkgs-unstable.flake = inputs.nixpkgs-unstable;
-                nur.flake = inputs.nur;
-              };
-            }
-          ];
-        };
-      };
+      mkLinux = mkSystem nixpkgs.lib.nixosSystem;
+      mkDarwin = mkSystem darwin.lib.darwinSystem;
     in {
       # When you first setup a new machine, the hostname won't match yet.
       # $ darwin-rebuild switch --flake .#darwinConfigurations.careerbot13.system
       # After that:
       # $ darwin-rebuild switch --flake .
-      darwinConfigurations =
-        (mkDarwin "careerbot13" ./systems/laptop-outschool-macos.nix);
+      darwinConfigurations = (mkDarwin "x86_64-darwin" "careerbot13"
+        ./systems/laptop-outschool-macos.nix);
 
-      nixosConfigurations =
-        (mkLinux "portable-spudger" ./systems/framework-laptop.nix)
-        // (mkLinux "loafofpiecrust" ./systems/laptop-720s.nix);
+      nixosConfigurations = (mkLinux "x86_64-linux" "portable-spudger"
+        ./systems/framework-laptop.nix)
+        // (mkLinux "x86_64-linux" "loafofpiecrust" ./systems/laptop-720s.nix);
     };
 }

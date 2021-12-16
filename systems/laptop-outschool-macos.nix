@@ -1,53 +1,87 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
-  imports = [ ../darwin.nix ];
+  imports = [ inputs.home-manager.darwinModules.home-manager ];
+  home-manager.useGlobalPkgs = true;
+  home-manager.useUserPackages = true;
+  home-manager.users."taylor@outschool.com" = ../home/users/outschool.nix;
+
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
   environment.systemPackages = with pkgs; [
     _1password
     vim
-    nur.repos.toonn.apps.firefox
+    #nur.repos.toonn.apps.firefox
     ripgrep
     fd
     dune_2
     heroku
     jq
     nodejs-14_x
-    yarn
+    # yarn
     awscli
     aws-vault
-    postgresql
+    # postgresql
     nixfmt
     shfmt
     cmake
     libtool
+    gnupg
+    # unstable.podman
+    # unstable.podman-compose
+    docker
+    docker-compose
+    pandoc
+    # (writeShellScriptBin "docker" "podman $@")
+    # (writeShellScriptBin "docker-compose" "podman-compose $@")
+    nodePackages.typescript-language-server
+    unstable.sqls
+    unstable.sqlint
+    aspell
+    tectonic
+    # (coreutils.override { withPrefix = true; })
   ];
+  nixpkgs.config.allowUnsupportedSystem = true;
   nixpkgs.config.allowUnfree = true;
-  nixpkgs.overlays = [ (self: super: { emacsCustom = self.emacsGcc; }) ];
-  nix.useSandbox = true;
+  nixpkgs.overlays = [
+    (self: super: {
+      emacsCustom = self.emacsGcc;
+      # coreutils = super.coreutils.override { withPrefix = true; };
+    })
+  ];
+  nix.useSandbox = false;
+  nix.maxJobs = 8;
+
+  # Enable zsh completion on system packages.
+  environment.pathsToLink = [ "/share/zsh" ];
+
+  programs.gnupg.agent = {
+    enable = true;
+    enableSSHSupport = true;
+  };
 
   # Details of the yabai configuration: https://cmacr.ae/post/2020-05-13-yabai-module-in-nix-darwin-now-generally-available/
-  services.yabai = {
-    enable = true;
-    package = pkgs.yabai;
-    enableScriptingAddition = true;
-    config = {
-      layout = "bsp";
-      window_gap = 8;
-      bottom_padding = 8;
-      left_padding = 8;
-      right_padding = 8;
-      split_ratio = "0.50";
-      mouse_modifier = "fn";
-    };
-    # Emacs requires an extra rule to be tiled.
-    # TODO Firefox popup windows need the opposite rule.
-    extraConfig = ''
-      yabai -m rule --add app=Emacs manage=on
-      yabai -m config --space 1 layout float
-    '';
-  };
+  # services.yabai = {
+  #   enable = false;
+  #   package = pkgs.unstable.yabai;
+  #   enableScriptingAddition = true;
+  #   config = {
+  #     layout = "bsp";
+  #     window_gap = 8;
+  #     bottom_padding = 8;
+  #     left_padding = 8;
+  #     right_padding = 8;
+  #     split_ratio = "0.50";
+  #     mouse_modifier = "fn";
+  #   };
+  #   # Emacs requires an extra rule to be tiled.
+  #   # TODO Firefox popup windows need the opposite rule.
+  #   extraConfig = ''
+  #     yabai -m rule --add app=Emacs manage=on
+  #     yabai -m config --space 1 layout float
+  #     yabai -m rule --add app=zoom.us space=^1
+  #   '';
+  # };
 
   time.timeZone = "America/Los_Angeles";
 
@@ -77,8 +111,12 @@
 
   # Auto upgrade nix package and the daemon service.
   # services.nix-daemon.enable = true;
-  nix.package = pkgs.nixUnstable;
-  nix.extraOptions = "experimental-features = nix-command flakes";
+  nix.package = pkgs.nix_2_4;
+  nix.extraOptions = ''
+    experimental-features = nix-command flakes
+  '';
+  nix.gc.automatic = true;
+  nix.gc.user = "taylor@outschool.com";
 
   # Create /etc/bashrc that loads the nix-darwin environment.
   programs.zsh.enable = true; # default shell on catalina
@@ -87,6 +125,4 @@
   # Used for backwards compatibility, please read the changelog before changing.
   # $ darwin-rebuild changelog
   system.stateVersion = 4;
-
-  home-manager.users."taylor@outschool.com" = ../home/users/outschool.nix;
 }

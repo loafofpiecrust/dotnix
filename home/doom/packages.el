@@ -72,8 +72,8 @@
   :disable t
   :recipe (:host github :repo "zellerin/mount-mode"))
 
-(package! org-cv
-  :recipe (:host gitlab :repo "loafofpiecrust/org-cv" :branch "explicit-dates"))
+;;(package! org-cv
+  ;;:recipe (:host gitlab :repo "loafofpiecrust/org-cv" :branch "explicit-dates"))
 
 ;; I don't use fcitx at all.
 (package! fcitx :disable t)

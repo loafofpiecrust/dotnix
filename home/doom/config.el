@@ -11,10 +11,12 @@
 (setq custom-theme-directory (expand-file-name "~/.config/doom/themes"))
 
 ;; Make shell commands run faster using bash...
-;; (setq shell-file-name "/run/current-system/sw/bin/bash")
+;;(setq shell-file-name "/run/current-system/sw/bin/bash")
 ;; ...But let me use fish for interactive sessions.
+;;(after! vterm
+  ;;(setq vterm-shell "/run/current-system/sw/bin/fish"))
 
-;;(menu-bar-mode t)
+(menu-bar-mode t)
 
 (use-package! memoize)
 
@@ -29,7 +31,7 @@
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
 ;; Symbol test: _ -> => , . `' "" O0l1*#
-(setq doom-font (font-spec :family "JetBrains Mono" :size 15 :weight 'medium)
+(setq doom-font (font-spec :family "Fira Code" :size 13 :weight 'medium)
       doom-variable-pitch-font (font-spec :family "Overpass" :size 18 :weight 'semi-bold)
       ;; doom-unicode-font (font-spec :family "Symbola monospacified for Source Code Pro" :size 15)
       ;; These fonts were fucking up display of math symbols! Remove them!
@@ -144,7 +146,6 @@ It seems excessive, but apparently necessary for fluid LSP usage!"
 
 (after! prog-mode
   ;; Consider each segment of a camelCase one word,
-  ;;(add-hook! 'prog-mode-hook '(auto-fill-mode subword-mode))
   (add-hook 'prog-mode-hook #'auto-fill-mode)
   (add-hook 'prog-mode-hook #'subword-mode)
   ;; Automatically wrap comments in code
@@ -304,6 +305,7 @@ It seems excessive, but apparently necessary for fluid LSP usage!"
 
 ;;;; Password Management!
 (use-package! bitwarden
+  :disabled
   ;; :commands (bitwarden-getpass
   ;;            bitwarden-edit
   ;;            bitwarden-generate-password
@@ -984,7 +986,7 @@ are ineffectual otherwise."
 (add-hook 'pdf-outline-buffer-mode-hook #'disable-line-numbers)
 
 (use-package! olivetti
-  ;; :hook ((markdown-mode magit-status-mode forge-topic-mode) . olivetti-mode)
+  :hook ((markdown-mode magit-status-mode forge-topic-mode) . olivetti-mode)
   :bind (:map doom-leader-map
          ("to" . olivetti-mode))
   :config
@@ -1102,13 +1104,12 @@ are ineffectual otherwise."
 
 ;;;; Periodically clean buffers
 (use-package! midnight
-	      :disabled
   :hook (doom-first-buffer . midnight-mode)
   :config
   (setq clean-buffer-list-kill-regexps '("\\`\\*Man "
                                          "\\`\\*helpful "
                                          "\\`\\*Calc"
-                                         ;;"\\`\\*xref"
+                                         "\\`\\*xref"
                                          "\\`\\*lsp"
                                          "\\`\\*company"
                                          "\\`\\*straight-process\\*"
@@ -1130,7 +1131,12 @@ are ineffectual otherwise."
       "C-/" 'comment-dwim)
 (map! :i "C-z" 'undo)
 
+(after! ox-latex
+  (add-to-list 'org-latex-minted-langs '(rust "rust"))
+  (setq org-latex-listings 'minted))
+
 (eval-after-load 'ox '(require 'ox-koma-letter))
+(eval-after-load 'ox '(require 'ox-beamer))
 (eval-after-load 'ox-koma-letter
   '(progn
      (add-to-list 'org-latex-classes
@@ -1306,7 +1312,7 @@ end of the workspace list."
 
 
 ;; LSP formatting is messed up for Javascript, so disable it.
-;; (setq +format-with-lsp nil)
+(setq +format-with-lsp nil)
 (setq +format-on-save-enabled-modes
       '(not emacs-lisp-mode
             sql-mode
@@ -1754,8 +1760,8 @@ Move it to the mode-line."
   '(doom-modeline-spc-face :inherit nil)
   '(header-line :inherit mode-line))
 
-;; (after! lsp-mode
-;;   (setq lsp-signature-function #'lsp-lv-message))
+(after! lsp-mode
+  (setq lsp-signature-function #'lsp-lv-message))
 
 (use-package! eldoc-box
   :hook ((prog-mode) . eldoc-box-hover-mode)
@@ -1796,3 +1802,14 @@ Position is calculated base on WIDTH and HEIGHT of childframe text window"
   :defer t
   :init
   (add-to-list 'sly-contribs 'sly-asdf 'append))
+
+(setq lsp-sqls-connections
+    '(((driver . "postgresql") (dataSourceName . "host=127.0.0.1 port=5432 database=customers sslmode=disable"))))
+(setq sql-connection-alist
+      '((pool-a
+         (sql-product 'postgres)
+         (sql-server "localhost")
+         ;; (sql-user "me")
+         ;; (sql-password "mypassword")
+         (sql-database "postgres")
+         (sql-port 5432))))

@@ -3,9 +3,33 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(safe-local-variable-values
+   '((eval cl-flet
+           ((enhance-imenu-lisp
+             (&rest keywords)
+             (dolist
+                 (keyword keywords)
+               (add-to-list 'lisp-imenu-generic-expression
+                            (list
+                             (purecopy
+                              (concat
+                               (capitalize keyword)
+                               (if
+                                   (string=
+                                    (substring-no-properties keyword -1)
+                                    "s")
+                                   "es" "s")))
+                             (purecopy
+                              (concat "^\\s-*("
+                                      (regexp-opt
+                                       (list
+                                        (concat "define-" keyword))
+                                       t)
+                                      "\\s-+\\(" lisp-mode-symbol-regexp "\\)"))
+                             2)))))
+           (enhance-imenu-lisp "bookmarklet-command" "class" "command" "ffi-method" "function" "mode" "parenscript" "user-class"))))
  '(warning-suppress-types
-   '((lsp-on-idle-hook)
-     (sh-mode-hook)
+   '((sh-mode-hook)
      (before-save-hook)
      (comp)
      (emacs)
