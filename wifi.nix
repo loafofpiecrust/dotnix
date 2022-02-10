@@ -8,13 +8,13 @@
     nameservers = [ "8.8.8.8" ];
 
     # Use better DNS resolution service, networkd + resolved.
-    useNetworkd = true;
-    dhcpcd.enable = false;
+    # useNetworkd = true;
+    # dhcpcd.enable = false;
 
     # Use DHCP only on specific network interfaces.
     useDHCP = false;
     firewall.enable = true;
   };
 
-  services.resolved.enable = true;
+  # services.resolved.enable = true;
 }

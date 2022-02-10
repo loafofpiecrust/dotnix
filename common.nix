@@ -4,10 +4,9 @@
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
 
-  # FIXME Missing dependency of ZFS in NixOS 21.11
-  environment.systemPackages = [ pkgs.zlib ];
+  environment.systemPackages = [ pkgs.zlib pkgs.unrar ];
 
-  nix.package = pkgs.nixUnstable;
+  nix.package = pkgs.unstable.nix;
   nix.extraOptions = ''
     experimental-features = nix-command flakes
   '';
@@ -18,7 +17,7 @@
     options = "--delete-older-than 7d";
   };
 
-  nixpkgs.config.allowUnfree = false;
+  nixpkgs.config.allowUnfree = true;
 
   nixpkgs.overlays = [
     (self: super: { ripgrep = super.ripgrep.override { withPCRE2 = true; }; })
@@ -36,4 +35,12 @@
       };
     })
   ];
+
+  # Ensure postgres can create a lockfile where it expects
+  system.activationScripts = {
+    postgresqlMkdir = {
+      text = "mkdir -p /run/postgresql && chmod o+w /run/postgresql";
+      deps = [ ];
+    };
+  };
 }

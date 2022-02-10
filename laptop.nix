@@ -14,8 +14,6 @@
       enable = true;
       # Editor defeats the purpose of bootloader security.
       editor = false;
-      # Make the font as large as possible.
-      consoleMode = "max";
     };
     loader.efi.canTouchEfiVariables = true;
 

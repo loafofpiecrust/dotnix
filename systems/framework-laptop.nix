@@ -10,7 +10,7 @@
 
   # Enable fingerprint reader?
   services.fprintd.enable = false;
-  services.fprintd.package = pkgs.unstable.fprintd;
+  # services.fprintd.package = pkgs.unstable.fprintd;
   # Disable fingerprint for login, because it's unreliable.
   security.pam.services.greetd.fprintAuth = false;
 
@@ -27,7 +27,7 @@
   # Setup basic boot options and kernel modules.
   boot = {
     plymouth.enable = false;
-    kernelPackages = pkgs.linuxPackages_5_14;
+    kernelPackages = pkgs.linuxKernel.packages.linux_5_15;
     initrd.availableKernelModules =
       [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" "btusb" ];
     blacklistedKernelModules = [ ];
@@ -40,10 +40,12 @@
       "i915.enable_fbc=1"
       "i915.enable_psr=1"
       "quiet"
-      #"udev.log_priority=3"
-      # "mem_sleep_default=deep"
+      "mem_sleep_default=s3"
     ];
     kernel.sysctl = { "kernel.nmi_watchdog" = 0; };
+
+    # Make the font as large as possible.
+    loader.systemd-boot.consoleMode = "max";
   };
 
   # high-resolution display
@@ -77,7 +79,9 @@
   swapDevices = [{ device = "/dev/disk/by-partlabel/swap"; }];
 
   networking.interfaces.wlan0.useDHCP = true;
-  networking.interfaces.enp0s20f0u1.useDHCP = true;
+  # This device is for wired tethering with my phone, but now halts my boot for
+  # over a minute while it looks for my phone.
+  # networking.interfaces.enp0s20f0u1.useDHCP = true;
 
   users.mutableUsers = false;
   users.defaultUserShell = pkgs.zsh;
@@ -171,7 +175,7 @@
     autoPrune.enable = true;
   };
 
-  # Let's try out bluetooth?
+  # Let's try out bluetooth!
   hardware.bluetooth.enable = true;
 
   # Install some applications!
@@ -179,12 +183,12 @@
     # apps
     # gnome3.gnome-settings-daemon
     gnome.gvfs
-    #xfce.parole # video player
+    xfce.parole # video player
     font-manager
     gimp
     vlc
     inkscape
-    # audacity
+    # audacity # Audacity has telemetry now...
     unstable.mate.eom
     unstable.mate.caja
     unstable.mate.engrampa

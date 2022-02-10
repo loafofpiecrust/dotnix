@@ -73,8 +73,8 @@
 
   systemd.user.services.rclone-pcloud = {
     Unit = {
-      After = [ "network-online.target" ];
-      Wants = [ "network-online.target" ];
+      After = [ "multi-user.target" ];
+      Wants = [ "multi-user.target" ];
       Description = "Pcloud storage mounted as drive";
     };
     Install.WantedBy = [ "multi-user.target" ];
@@ -89,7 +89,7 @@
         '';
       in "${script}";
       Restart = "always";
-      RestartSec = "60";
+      RestartSec = "240";
     };
   };
 

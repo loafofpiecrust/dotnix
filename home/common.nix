@@ -23,7 +23,7 @@
     desktop = "$HOME/desktop";
   };
 
-  xdg.configFile."doom".source = config.lib.file.mkOutOfStoreSymlink ./doom;
+  # xdg.configFile."doom".source = config.lib.file.mkOutOfStoreSymlink ./doom;
   #xdg.configFile."emacs".source = ./doom-emacs;
   xdg.configFile."fontconfig/fonts.conf".source = ./gui/fonts.conf;
   home.file.".sbclrc".source = ./lisp/.sbclrc;
