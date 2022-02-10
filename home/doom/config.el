@@ -1316,7 +1316,6 @@ end of the workspace list."
 (setq +format-with-lsp nil)
 (setq +format-on-save-enabled-modes
       '(not emacs-lisp-mode
-            sql-mode
             tex-mode
             latex-mode
             ;; There are several different formats I use web-mode for that
@@ -1814,3 +1813,7 @@ Position is calculated base on WIDTH and HEIGHT of childframe text window"
          ;; (sql-password "mypassword")
          (sql-database "customers")
          (sql-port 5432))))
+(set-formatter! 'psql "pg_format" :modes '(sql-mode))
+
+(after! format-all
+  (advice-add 'format-all-buffer--with :around #'envrc-propagate-environment))

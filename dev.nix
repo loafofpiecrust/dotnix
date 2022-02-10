@@ -52,6 +52,8 @@
     nodePackages.typescript-language-server
     nodePackages.prettier
     rust-analyzer
+    unstable.pgformatter
+    python39Packages.sqlparse
 
     # dev apps
     # umlet # diagrams!
