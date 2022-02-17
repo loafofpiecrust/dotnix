@@ -17,7 +17,7 @@
     dune_2
     heroku
     jq
-    nodejs-14_x
+    # nodejs-14_x
     # yarn
     awscli
     aws-vault
@@ -37,7 +37,8 @@
     nodePackages.typescript-language-server
     unstable.sqls
     unstable.sqlint
-    aspell
+    swiftformat
+    (aspellWithDicts (dicts: with dicts; [ en en-computers en-science ]))
     tectonic
     # (coreutils.override { withPrefix = true; })
   ];
@@ -83,7 +84,7 @@
   #   '';
   # };
 
-  time.timeZone = "America/Los_Angeles";
+  # time.timeZone = "America/Los_Angeles";
 
   system.keyboard.remapCapsLockToEscape = true;
   system.defaults = {
@@ -111,7 +112,8 @@
 
   # Auto upgrade nix package and the daemon service.
   # services.nix-daemon.enable = true;
-  nix.package = pkgs.nix_2_4;
+  nix.package = pkgs.unstable.nixUnstable;
+  nix.useDaemon = true;
   nix.extraOptions = ''
     experimental-features = nix-command flakes
   '';

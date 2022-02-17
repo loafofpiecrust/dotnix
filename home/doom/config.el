@@ -31,7 +31,7 @@
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
 ;; Symbol test: _ -> => , . `' "" O0l1*#
-(setq doom-font (font-spec :family "Fira Code" :size 13 :weight 'medium)
+(setq doom-font (font-spec :family "Fira Code" :size 14 :weight 'medium)
       doom-variable-pitch-font (font-spec :family "Overpass" :size 18 :weight 'semi-bold)
       ;; doom-unicode-font (font-spec :family "Symbola monospacified for Source Code Pro" :size 15)
       ;; These fonts were fucking up display of math symbols! Remove them!
@@ -41,7 +41,7 @@
 (setq doom-scratch-initial-major-mode 'org-mode)
 
 ;; Give each line some room to breathe.
-(setq-default line-spacing 2)
+(setq-default line-spacing 3)
 
 (defun +snead/increase-mem ()
   "Allow Emacs to use up to 1 GB of memory.
@@ -290,7 +290,7 @@ It seems excessive, but apparently necessary for fluid LSP usage!"
                 org-list-demote-modify-bullet '(("+" . "-") ("-" . "+") ("*" . "+")))
   ;; Adjust LaTeX display and export with tectonic.
   (setq-default org-latex-compiler "xelatex"
-                org-latex-pdf-process '("tectonic %f")
+                org-latex-pdf-process '("tectonic -Z shell-escape %f")
                 org-latex-prefer-user-labels t
                 org-log-done t
                 org-highlight-latex-and-related '(native script entities)))
@@ -1133,7 +1133,8 @@ are ineffectual otherwise."
 
 (after! ox-latex
   (add-to-list 'org-latex-minted-langs '(rust "rust"))
-  (setq org-latex-listings 'minted))
+  (setq org-latex-listings 'minted)
+  (add-to-list 'org-latex-default-packages-alist '("" "minted" nil)))
 
 (eval-after-load 'ox '(require 'ox-koma-letter))
 (eval-after-load 'ox '(require 'ox-beamer))
@@ -1811,5 +1812,5 @@ Position is calculated base on WIDTH and HEIGHT of childframe text window"
          (sql-server "localhost")
          ;; (sql-user "me")
          ;; (sql-password "mypassword")
-         (sql-database "postgres")
+         (sql-database "customers")
          (sql-port 5432))))

@@ -45,7 +45,7 @@
       {
         name = "fast-syntax-highlighting";
         src = builtins.fetchGit {
-          url = "https://github.com/zdharma/fast-syntax-highlighting";
+          url = "https://github.com/zdharma-continuum/fast-syntax-highlighting";
           ref = "master";
           rev = "817916dfa907d179f0d46d8de355e883cf67bd97";
         };
@@ -59,6 +59,15 @@
           rev = "4abed97b6e67eb5590b39bcd59080aa23192f25d";
         };
       }
+      # {
+      #   name = "zsh-notify";
+      #   file = "notify.plugin.zsh";
+      #   src = builtins.fetchGit {
+      #     url = "https://github.com/marzocchi/zsh-notify";
+      #     ref = "master";
+      #     rev = "eb389765cb1bd3358e88ac31939ef2edfd539825";
+      #   };
+      # }
     ];
     initExtra = ''
       bindkey '^[[A' history-substring-search-up
