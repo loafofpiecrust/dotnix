@@ -31,12 +31,12 @@
     initrd.availableKernelModules =
       [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" "btusb" ];
     blacklistedKernelModules = [ ];
-    extraModprobeConfig = "options snd_hda_intel power_save=1";
+    # extraModprobeConfig = "options snd_hda_intel power_save=1";
     kernelModules = [ "kvm-intel" ];
 
     # kernel options
     kernelParams = [
-      "pcie_aspm.policy=powersave"
+      # "pcie_aspm.policy=powersave"
       "i915.enable_fbc=1"
       "i915.enable_psr=1"
       "quiet"

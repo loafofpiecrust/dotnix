@@ -1313,7 +1313,11 @@ end of the workspace list."
 
 
 ;; LSP formatting is messed up for Javascript, so disable it.
+<<<<<<< HEAD
 (setq +format-with-lsp nil)
+=======
+;;(setq +format-with-lsp nil)
+>>>>>>> 39432b3 (Remove unnecessary kernel options for framework laptop)
 (setq +format-on-save-enabled-modes
       '(not emacs-lisp-mode
             tex-mode
@@ -1813,7 +1817,8 @@ Position is calculated base on WIDTH and HEIGHT of childframe text window"
          ;; (sql-password "mypassword")
          (sql-database "customers")
          (sql-port 5432))))
-(set-formatter! 'psql "pg_format" :modes '(sql-mode))
+
+(set-formatter! 'sqlfluff "sqlfluff fix -f --disable_progress_bar -n -" :modes '(sql-mode))
 
 (after! format-all
   (advice-add 'format-all-buffer--with :around #'envrc-propagate-environment))
