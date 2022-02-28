@@ -16,10 +16,7 @@
       url = "github:nix-community/home-manager/release-21.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    emacs-overlay = {
-      url =
-        "github:nix-community/emacs-overlay/34624e82c790aa8c225aa9b7e98048cac289f505";
-    };
+    emacs-overlay = { url = "github:nix-community/emacs-overlay"; };
     nix-doom-emacs = {
       url =
         "github:vlaci/nix-doom-emacs/fee14d217b7a911aad507679dafbeaa8c1ebf5ff";

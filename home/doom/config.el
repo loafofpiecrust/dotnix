@@ -16,7 +16,7 @@
 ;;(after! vterm
   ;;(setq vterm-shell "/run/current-system/sw/bin/fish"))
 
-(menu-bar-mode t)
+(menu-bar-mode (if (eq system-type 'darwin) t -1))
 
 (use-package! memoize)
 
@@ -31,7 +31,9 @@
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
 ;; Symbol test: _ -> => , . `' "" O0l1*#
-(setq doom-font (font-spec :family "Fira Code" :size 14 :weight 'medium)
+(setq doom-font (if (eq system-type 'darwin)
+                    (font-spec :family "Fira Code" :size 14 :weight 'medium)
+                    (font-spec :family "monospace" :size 15 :weight 'medium))
       doom-variable-pitch-font (font-spec :family "Overpass" :size 18 :weight 'semi-bold)
       ;; doom-unicode-font (font-spec :family "Symbola monospacified for Source Code Pro" :size 15)
       ;; These fonts were fucking up display of math symbols! Remove them!
@@ -1313,11 +1315,7 @@ end of the workspace list."
 
 
 ;; LSP formatting is messed up for Javascript, so disable it.
-<<<<<<< HEAD
-(setq +format-with-lsp nil)
-=======
 ;;(setq +format-with-lsp nil)
->>>>>>> 39432b3 (Remove unnecessary kernel options for framework laptop)
 (setq +format-on-save-enabled-modes
       '(not emacs-lisp-mode
             tex-mode
