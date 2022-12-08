@@ -19,6 +19,5 @@
       '';
     };
   };
-  programs.direnv.enableFishIntegration = true;
   programs.starship.enableFishIntegration = true;
 }

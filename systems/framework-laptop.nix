@@ -8,6 +8,8 @@
     ../erasure.nix
   ];
 
+  system.stateVersion = "22.05";
+
   # Enable fingerprint reader?
   services.fprintd.enable = false;
   # services.fprintd.package = pkgs.unstable.fprintd;
@@ -38,15 +40,21 @@
     kernelParams = [
       # "pcie_aspm.policy=powersave"
       "i915.enable_fbc=1"
-      "i915.enable_psr=1"
+      #"i915.enable_psr=1"
       "quiet"
-      "mem_sleep_default=s3"
+      #"mem_sleep_default=s3"
+      "nvme.noacpi=1"
     ];
     kernel.sysctl = { "kernel.nmi_watchdog" = 0; };
 
     # Make the font as large as possible.
     loader.systemd-boot.consoleMode = "max";
   };
+
+  hardware.opengl.extraPackages = with pkgs; [
+    intel-media-driver
+    intel-gpu-tools
+  ];
 
   # high-resolution display
   hardware.video.hidpi.enable = lib.mkDefault true;

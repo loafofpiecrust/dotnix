@@ -45,16 +45,18 @@
   services.gpg-agent = {
     enable = true;
     enableSshSupport = true;
-    pinentryFlavor = "gnome3";
+    defaultCacheTtl = 60 * 60;
+    defaultCacheTtlSsh = 60 * 60;
+    # pinentryFlavor = "gnome3";
+    extraConfig = ''
+      display :0
+    '';
   };
 
   # Enable project-local environments based on flakes.
   programs.direnv = {
     enable = true;
-    nix-direnv = {
-      enable = true;
-      enableFlakes = true;
-    };
+    nix-direnv.enable = true;
   };
 
   # Make my shell fancy.
@@ -126,10 +128,11 @@
     platformTheme = "gtk";
   };
 
-  xsession.pointerCursor = {
+  home.pointerCursor = {
     package = pkgs.bibata-cursors;
     name = "Bibata_Oil";
     size = 24;
+    x11.enable = true;
   };
 
   programs.git = {
