@@ -3,11 +3,6 @@
 
 ;;(package! benchmark-init)
 
-(package! tree-sitter
-  :pin "ae26995c4b006f37b8e46a6125e0b60100b42974")
-
-(package! tree-sitter-langs
-  :pin "5d362ce98dcf656d7a55fcad6ae21c0a2caca861")
 
 (package! theme-changer :pin "61945695a30d678e6a5d47cbe7c8aff59a8c30ea")
 (package! ewal)
@@ -26,6 +21,7 @@
 (package! poly-markdown)
 (package! poly-org)
 (package! literate-calc-mode)
+(package! exec-path-from-shell)
 ;; Toggle rendered latex preview when point is over it.
 ;;(package! org-fragtog :disable t)
 ;; (package! outshine)

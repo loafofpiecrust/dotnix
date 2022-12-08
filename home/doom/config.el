@@ -226,7 +226,7 @@ It seems excessive, but apparently necessary for fluid LSP usage!"
                         ;;(cadr bl))))
         ;;unicode-fonts-block-font-mapping)
   ;; Designate private use to font awesome, mostly.
-  (setq my/private-use-fonts '("Font Awesome 5 Free"
+  (setq my/private-use-fonts '("Material Icons"
                                "github-octicons"
                                "file-icons"
                                "all-the-icons"
@@ -510,13 +510,8 @@ Returns nil if not logged in."
   (map! :map org-mode-map
         :nv "gr" (general-simulate-key "C-c C-c")))
 
-(use-package! tree-sitter
-  :hook ((rustic-mode python-mode json-mode js-mode js2-mode typescript-mode go-mode sh-mode tuareg-mode) . tree-sitter-mode)
-  :config
-  (require 'tree-sitter-langs)
-  ;; TODO Fix JSX support.
-  (push '(typescript-tsx-mode . typescript) tree-sitter-major-mode-language-alist)
-  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+(after! tree-sitter
+  (push '(typescript-tsx-mode . typescript) tree-sitter-major-mode-language-alist))
 
 ;; Make spell-fu compatible with tree-sitter.
 (after! (spell-fu tree-sitter)
@@ -1820,3 +1815,13 @@ Position is calculated base on WIDTH and HEIGHT of childframe text window"
 
 (after! format-all
   (advice-add 'format-all-buffer--with :around #'envrc-propagate-environment))
+
+(after! emojify
+ (setq emojify-display-style 'unicode))
+
+(use-package! exec-path-from-shell
+  :config
+  (defun +snead/fix-ssh-env ()
+    (exec-path-from-shell-copy-env "SSH_AGENT_PID")
+    (exec-path-from-shell-copy-env "SSH_AUTH_SOCK"))
+  (add-hook! 'magit-status-mode-hook '+snead/fix-ssh-env))

@@ -71,6 +71,7 @@
 
   #xresources.properties = { "Xft.dpi" = 192; };
 
+  gtk.gtk3.bookmarks = [ "file:///home/snead/cloud" ];
   systemd.user.services.rclone-pcloud = {
     Unit = {
       After = [ "multi-user.target" ];

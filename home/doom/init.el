@@ -22,19 +22,19 @@
 
 ;; (setq comp-deferred-compilation t)
 
-(when noninteractive
-  (appendq! doom-env-blacklist '("^XDG_SESSION_"
-                                 "^DESKTOP_SESSION"
-                                 "^GDMSESSION"
-                                 "^WAYLAND_"
-                                 "^QT_QPA"
-                                 "^SDL_"
-                                 "^MOZ_"
-                                 "_IM_"
-                                 "^EMACS_"
-                                 "^SWAYSOCK"
-                                 "^BITWARDEN"
-                                 "^SSH_")))
+;; (when noninteractive
+;;   (appendq! doom-env-blacklist '("^XDG_SESSION_"
+;;                                  "^DESKTOP_SESSION"
+;;                                  "^GDMSESSION"
+;;                                  "^WAYLAND_"
+;;                                  "^QT_QPA"
+;;                                  "^SDL_"
+;;                                  "^MOZ_"
+;;                                  "_IM_"
+;;                                  "^EMACS_"
+;;                                  "^SWAYSOCK"
+;;                                  "^BITWARDEN"
+;;                                  "^SSH_")))
 
 (doom! :input
        chinese
@@ -75,7 +75,7 @@
        window-select     ; visually switch windows
        workspaces        ; tab emulation, persistence & separate workspaces
        ;;zen               ; distraction-free coding or writing
-       (emoji +github)
+       (emoji +github +unicode)
 
        :editor
        (evil +everywhere); come to the dark side, we have cookies
@@ -120,6 +120,7 @@
        ;;gist              ; interacting with github gists
        lookup              ; navigate your code and its documentation
        lsp
+       tree-sitter
        ;;macos             ; MacOS-specific commands
        (magit +forge)             ; a git porcelain for Emacs
        make              ; run make tasks from Emacs

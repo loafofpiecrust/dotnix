@@ -47,7 +47,14 @@
         "beacon.enabled" = false;
         "browser.compactmode.show" = true;
         "browser.uidensity" = 1;
+        # GPU acceleration
+        "media.rdd-ffmpeg.enabled" = true;
+        "media.ffmpeg.vaapi.enabled" = true;
+        "media.navigator.mediadatadecoder_vpx_enabled" = true;
+        "media.ffvpx.enabled" = false;
+        "media.rdd-process.enabled" = false;
       };
+
       userChrome = ''
         /* Hide the thin line between the tabs and the main viewport. */
         #navigator-toolbox {
