@@ -6,7 +6,6 @@
 
   environment.systemPackages = [ pkgs.zlib pkgs.unrar ];
 
-  nix.package = pkgs.unstable.nix;
   nix.extraOptions = ''
     experimental-features = nix-command flakes
   '';
@@ -33,6 +32,10 @@
         config.allowUnfree = true;
         overlays = [ (import inputs.emacs-overlay) ];
       };
+      fwupd = super.fwupd.overrideAttrs (old: {
+        passthru.defaultDisabledPlugins = [];
+	passthru.filesInstalledToEtc = lib.remove "fwupd/remotes.d/lvfs-testing.conf" old.passthru.filesInstalledToEtc;
+      });
     })
   ];
 

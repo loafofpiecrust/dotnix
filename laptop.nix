@@ -51,6 +51,7 @@
 
   # Allow OTA firmware updates.
   services.fwupd.enable = true;
+  environment.etc."fwupd/remotes.d/lvfs-testing.conf" = { source = ./fwupd-lvfs-testing.conf;  };
 
   # Common power management for laptops.
   services.power-profiles-daemon.enable = true;
