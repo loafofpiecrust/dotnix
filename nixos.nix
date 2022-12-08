@@ -93,7 +93,6 @@
     ripgrep
     fd
     htop
-    gksu
     zip
     unzip
     # ranger

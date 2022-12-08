@@ -29,6 +29,7 @@
   # Setup basic boot options and kernel modules.
   boot = {
     plymouth.enable = false;
+    # TODO Upgrade to 5.18
     kernelPackages = pkgs.linuxKernel.packages.linux_5_15;
     initrd.availableKernelModules =
       [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" "btusb" ];
@@ -204,7 +205,6 @@
     unstable.mate.mate-tweak
     unstable.mate.mate-system-monitor
     xfce.xfce4-power-manager
-    xfce.thunar
     xfce.xfce4-session
     xfce.xfce4-settings
     xfce.xfce4-taskmanager

@@ -1,5 +1,5 @@
 { config, lib, pkgs, inputs, ... }: {
-  home.packages = with pkgs; [ wpgtk ];
+  home.packages = with pkgs; [ wpgtk pamixer ];
 
   wayland.windowManager.sway = {
     enable = true;
@@ -58,13 +58,14 @@
       "${mod}+c" = "exec ${playerctl} play-pause";
       "${mod}+b" = "exec ${config.programs.firefox.package}/bin/firefox";
       "${mod}+e" = "exec ${config.programs.emacs.package}/bin/emacsclient -c";
+      "${mod}+n" = "exec caja";
       "${mod}+bracketright" = "workspace next";
       "${mod}+bracketleft" = "workspace prev";
       "${mod}+shift+bracketright" = "move container to workspace next";
       "${mod}+shift+bracketleft" = "move container to workspace prev";
       "XF86AudioRaiseVolume" = "exec ${setVolume "-i 5"}";
       "XF86AudioLowerVolume" = "exec ${setVolume "-d 5"}";
-      "XF86AudioMute" = "exec ${pamixer} -m";
+      "XF86AudioMute" = "exec ${pamixer} -t";
     };
     config.input."type:touchpad" = {
       natural_scroll = "enabled";
@@ -113,19 +114,123 @@
       position = "top";
       layer = "top";
       height = 30;
-      modules-left = [ "sway/mode" "sway/workspaces" ];
-      modules-right =
-        [ "tray" "idle_inhibitor" "pulseaudio" "battery" "clock" ];
-      modules.tray = {
+      modules-left = [ # "custom/power"
+        "sway/workspaces"
+      ];
+      modules-right = [
+        # "custom/player"
+        "tray"
+        # "custom/wallpaper"
+        "idle_inhibitor"
+        # "custom/vpn"
+        "network"
+        "cpu"
+        "memory"
+        "pulseaudio"
+        "battery"
+        "clock"
+      ];
+      pulseaudio = {
+        scroll-step = 1;
+        smooth-scrolling-threshold = 2;
+        format = " {icon} {format_source}";
+        format-headphone = " {icon} {format_source}";
+        format-muted = " {icon} {format_source}";
+        format-source = "";
+        format-source-muted = "";
+        format-icons.default = [
+          "▒▒▒▒▒▒▒▒▒▒"
+          "█▒▒▒▒▒▒▒▒▒"
+          "██▒▒▒▒▒▒▒▒"
+          "███▒▒▒▒▒▒▒"
+          "████▒▒▒▒▒▒"
+          "█████▒▒▒▒▒"
+          "██████▒▒▒▒"
+          "███████▒▒▒"
+          "████████▒▒"
+          "█████████▒"
+          "██████████"
+        ];
+        on-click = "${pkgs.pamixer}/bin/pamixer -t";
+        on-click-right = "${pkgs.pavucontrol}/bin/pavucontrol";
+      };
+      "sway/mode".format = ''<span style="italic">{}</span>'';
+      idle_inhibitor = {
+        format = "{icon}";
+        format-icons = {
+          # "activated" = "";
+          # "deactivated" = "";
+        };
+        tooltip = false;
+      };
+      tray = {
         icon-size = 20;
         spacing = 8;
       };
+      clock = {
+        tooltip-format = ''
+          <big>{:%Y %B}</big>
+          <tt>{calendar}</tt>
+        '';
+        format = " {:%a %I:%M %p}";
+        format-alt = " {:%Y-%m-%d}";
+      };
+      cpu = {
+        format = "CPU {usage}%";
+        tooltip = false;
+      };
+      memory = { format = "MEM {}%"; };
+      backlight = {
+        format = "{icon} {percent}%";
+        # format-icons = [ "" "" ];
+      };
+      battery = {
+        states.warning = 30;
+        states.critical = 10;
+        format = "{icon}";
+        format-charging = "{icon}";
+        format-plugged = "{icon}";
+
+        format-icons = [
+          ""
+          ""
+          ""
+          ""
+          ""
+          ""
+          ""
+          ""
+          ""
+          ""
+          ""
+        ];
+      };
+
+      network = {
+        interface = "wlan0";
+        tooltip-format = ''
+          {essid}
+          {ipaddr}'';
+        format-wifi = " {bandwidthDownBits}";
+        # format-ethernet = "{ifname}: {ipaddr}/{cidr} ";
+        # format-linked = " No IP";
+        # format-disconnected = "";
+        tooltip = true;
+      };
+
+      "custom/vpn" = {
+        format = "{icon} {}";
+        format-icons = {
+          # connected = "🔐";
+          # none = "🔓";
+        };
+
+        escape = true;
+        interval = 5;
+        return-type = "json";
+      };
     }];
-    # style = ''
-    #   * {
-    #     font-family: Overpass;
-    #   }
-    # '';
+    style = ./waybar.css;
   };
 
   programs.mako = {

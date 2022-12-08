@@ -85,7 +85,7 @@
     mime.enable = true;
     mimeApps.enable = true;
     mimeApps.defaultApplications = let
-      images = [ "ristretto.desktop" ];
+      images = [ "eom.desktop" ];
       web = [ "firefox.desktop" ];
     in lib.mkMerge [
       (lib.genAttrs [

@@ -1,8 +1,6 @@
 { config, lib, pkgs, ... }: {
   environment.systemPackages = with pkgs; [
     # tools of the trade
-    gitAndTools.gitFull
-    git-lfs
     # gcc
     gnumake
     cmake

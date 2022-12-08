@@ -61,6 +61,7 @@
     material-design-icons
     unstable.symbola
     emacs-all-the-icons-fonts
+    font-awesome
 
     # programming fonts
     fira-code
