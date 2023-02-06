@@ -27,7 +27,8 @@
   #xdg.configFile."emacs".source = ./doom-emacs;
   xdg.configFile."fontconfig/fonts.conf".source = ./gui/fonts.conf;
   home.file.".sbclrc".source = ./lisp/.sbclrc;
-  home.file.".aspell.en.pws".source = ./spell/.aspell.en.pws;
+  home.file.".aspell.en.pws".source =
+    config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/spell/.aspell.en.pws";
   home.file."bin/get-password" = {
     executable = true;
     text = let rbw = "${config.programs.rbw.package}/bin/rbw";
@@ -71,7 +72,7 @@
   # Manage my passwords with Bitwarden + rbw.
   programs.rbw = {
     enable = true;
-    package = pkgs.unstable.rbw;
+    package = pkgs.rbw;
     settings = {
       email = "taylor@snead.xyz";
       # Keep the vault open for 6 hours.

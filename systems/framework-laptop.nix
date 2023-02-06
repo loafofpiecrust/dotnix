@@ -16,24 +16,13 @@
   # Disable fingerprint for login, because it's unreliable.
   security.pam.services.greetd.fprintAuth = false;
 
-  nixpkgs.overlays = [
-    (self: super: {
-      kernel = import inputs.nixpkgs-kernel {
-        # required to inherit from top-level nixpkgs.
-        system = super.system;
-        config.allowUnfree = true;
-      };
-    })
-  ];
-
   # Setup basic boot options and kernel modules.
   boot = {
     plymouth.enable = false;
-    # TODO Upgrade to 5.18
-    kernelPackages = pkgs.linuxKernel.packages.linux_5_15;
+    kernelPackages = pkgs.linuxKernel.packages.linux_6_1;
     initrd.availableKernelModules =
       [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" "btusb" ];
-    blacklistedKernelModules = [ ];
+    blacklistedKernelModules = [ "hid_sensor_hub" ];
     # extraModprobeConfig = "options snd_hda_intel power_save=1";
     kernelModules = [ "kvm-intel" ];
 
@@ -121,7 +110,7 @@
   };
   users.users.root.hashedPassword =
     "$6$PFZjyXdf7W2cu3$55Iw6UjpcdB29fb4RIPcaYFY5Ehtuc9MFZaJBa9wlRbgYxRrDAP0tlApOiIsQY7hoeO9XG7xxiIcsjGYc9QXu1";
-  home-manager.users.snead = ../home/users/snead.nix;
+  home-manager.users.snead = ../home/users/snead-framework.nix;
 
   # Sway is my primary WM since X doesn't do scaling well.
   programs.sway.enable = true;
@@ -129,11 +118,11 @@
   # Use greetd because it's the simplest Wayland DM with no issues!
   services.greetd = {
     enable = true;
-    package = pkgs.unstable.greetd.greetd;
+    package = pkgs.greetd.greetd;
     settings = {
       default_session = {
         command = "${
-            lib.makeBinPath [ pkgs.unstable.greetd.tuigreet ]
+            lib.makeBinPath [ pkgs.greetd.tuigreet ]
           }/tuigreet --width 100 --time --asterisks --cmd sway";
         user = "greeter";
       };
@@ -156,10 +145,6 @@
         enable = true;
         # noDesktop = true;
         # enableXfwm = false;
-        thunarPlugins = with pkgs; [
-          xfce.thunar-archive-plugin
-          xfce.thunar-volman
-        ];
       };
     };
   };
@@ -198,19 +183,22 @@
     vlc
     inkscape
     # audacity # Audacity has telemetry now...
-    unstable.mate.eom
-    unstable.mate.caja
-    unstable.mate.engrampa
-    unstable.mate.atril # pdf viewer
-    unstable.mate.mate-tweak
-    unstable.mate.mate-system-monitor
+    mate.eom
+    mate.caja
+    mate.engrampa
+    mate.atril # pdf viewer
+    mate.mate-tweak
+    mate.mate-system-monitor
     xfce.xfce4-power-manager
     xfce.xfce4-session
     xfce.xfce4-settings
     xfce.xfce4-taskmanager
 
+    pcmanfm
+
     libreoffice
     # virt-manager
+    nixos-generators
   ];
 
   # Disable automatic location updates because geoclue makes the boot process
@@ -225,4 +213,7 @@
   time.timeZone = "America/Los_Angeles";
 
   virtualisation.libvirtd.enable = false;
+
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
 }

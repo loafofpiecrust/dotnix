@@ -1,4 +1,5 @@
 { config, lib, pkgs, inputs, ... }: {
+  imports = [ ./cachix.nix ];
   # Pass flake inputs to home-manager modules.
   home-manager.extraSpecialArgs = { inherit inputs; };
   home-manager.useGlobalPkgs = true;
@@ -33,8 +34,10 @@
         overlays = [ (import inputs.emacs-overlay) ];
       };
       fwupd = super.fwupd.overrideAttrs (old: {
-        passthru.defaultDisabledPlugins = [];
-	passthru.filesInstalledToEtc = lib.remove "fwupd/remotes.d/lvfs-testing.conf" old.passthru.filesInstalledToEtc;
+        passthru.defaultDisabledPlugins = [ ];
+        passthru.filesInstalledToEtc =
+          lib.remove "fwupd/remotes.d/lvfs-testing.conf"
+          old.passthru.filesInstalledToEtc;
       });
     })
   ];

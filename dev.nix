@@ -1,7 +1,6 @@
 { config, lib, pkgs, ... }: {
   environment.systemPackages = with pkgs; [
     # tools of the trade
-    # gcc
     gnumake
     cmake
     automake
@@ -12,6 +11,7 @@
     # publishing
     tectonic # lean latex builds
     pandoc
+    python39Packages.pygments
 
     # languages
     rustup
@@ -20,18 +20,14 @@
     yarn
     kotlin
     python3
-    terraform # infrastructure as code
-    # terranix
     jq # transforms json documents
 
     # ocaml for compilers class
     ocaml
-    # opam # OCaml package manager
     ocamlformat # formatter
     ocamlPackages.ocp-indent # backup formatter
     ocamlPackages.ocaml-lsp
     ocamlPackages.merlin
-    # ocamlPackages.utop # REPL
 
     # Spellcheck
     (aspellWithDicts (dicts: with dicts; [ en en-computers en-science ]))
@@ -49,21 +45,21 @@
     black
     nodePackages.typescript-language-server
     nodePackages.prettier
+    nodePackages.vscode-langservers-extracted
     rust-analyzer
-    unstable.pgformatter
+    pgformatter
     python39Packages.sqlparse
 
-    # dev apps
-    # umlet # diagrams!
+    # development apps
     plantuml # plain-text diagrams!
 
     # editing!
     zstd # compression for emacs session files
     pinentry_emacs
+    sqlite
   ];
 
-  nixpkgs.overlays =
-    [ (self: super: { emacsCustom = super.emacsPgtkNativeComp; }) ];
+  nixpkgs.overlays = [ (self: super: { emacsCustom = super.emacsPgtk; }) ];
 
   # Android debugging.
   programs.adb.enable = true;

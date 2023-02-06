@@ -31,6 +31,7 @@
     pulse.enable = true;
     config.pipewire = {
       "context.properties" = {
+        "default.clock.rate" = 44100;
         #"default.clock.quantum" = 2048;
         #"default.clock.min-quantum" = 1024;
         #"default.clock.max-quantum" = 4096;

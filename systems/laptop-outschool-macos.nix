@@ -35,8 +35,8 @@
     # (writeShellScriptBin "docker" "podman $@")
     # (writeShellScriptBin "docker-compose" "podman-compose $@")
     nodePackages.typescript-language-server
-    unstable.sqls
-    unstable.sqlint
+    sqls
+    sqlint
     swiftformat
     (aspellWithDicts (dicts: with dicts; [ en en-computers en-science ]))
     tectonic
@@ -112,7 +112,6 @@
 
   # Auto upgrade nix package and the daemon service.
   # services.nix-daemon.enable = true;
-  nix.package = pkgs.unstable.nixUnstable;
   nix.useDaemon = true;
   nix.extraOptions = ''
     experimental-features = nix-command flakes

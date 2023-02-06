@@ -28,7 +28,13 @@
 
   # Open the ports needed for Chromecast.
   networking.firewall = {
-    allowedTCPPorts = [ 8008 8009 ];
+    allowedTCPPorts = [
+      8008
+      8009
+      # Calibre local network port
+      9090
+    ];
+    allowedUDPPorts = [ 9090 ];
     # allowedUDPPorts = [{
     #   from = 32768;
     #   to = 61000;
@@ -37,7 +43,7 @@
 
   # Scanning
   hardware.sane.enable = true;
-  hardware.sane.extraBackends = [ pkgs.unstable.hplipWithPlugin ];
+  hardware.sane.extraBackends = [ pkgs.hplipWithPlugin ];
 
   hardware.logitech.wireless.enable = true;
 
@@ -51,7 +57,9 @@
 
   # Allow OTA firmware updates.
   services.fwupd.enable = true;
-  environment.etc."fwupd/remotes.d/lvfs-testing.conf" = { source = ./fwupd-lvfs-testing.conf;  };
+  environment.etc."fwupd/remotes.d/lvfs-testing.conf" = {
+    source = ./fwupd-lvfs-testing.conf;
+  };
 
   # Common power management for laptops.
   services.power-profiles-daemon.enable = true;

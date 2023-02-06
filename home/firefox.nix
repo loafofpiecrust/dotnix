@@ -12,6 +12,8 @@
       #adsum-notabs
     ];
     profiles.default = {
+      isDefault = true;
+      search.default = "DuckDuckGo";
       settings = {
         # Enable DRM
         "media.eme.enabled" = true;
@@ -28,8 +30,6 @@
         "browser.contentblocking.category" = "strict";
         # Use a better password manager instead.
         "signon.rememberSignons" = false;
-        # Set default search engine.
-        "browser.urlbar.placeholderName" = "DuckDuckGo";
         # MPRIS integration for media control
         "media.hardwaremediakeys.enabled" = true;
         "browser.shell.checkDefaultBrowser" = false;

@@ -5,6 +5,7 @@
     gnome3.file-roller # provides all archive formats
     pavucontrol
     ffmpeg
+    xdg-utils
 
     # desktop environment
     # gnome3.gtk
@@ -59,7 +60,7 @@
 
     # symbols
     material-design-icons
-    unstable.symbola
+    symbola
     emacs-all-the-icons-fonts
     font-awesome
 
@@ -77,7 +78,7 @@
   fonts.fontconfig = {
     defaultFonts = {
       monospace = [
-        "JetBrains Mono" # Main preference, changes often.
+        # "JetBrains Mono" # Main preference, changes often.
         "Source Code Pro" # Provides almost all of the IPA symbols.
         "Noto Sans Mono CJK SC"
         "Noto Emoji"
@@ -153,11 +154,7 @@
       wl-clipboard
       # wf-recorder
     ];
-    extraSessionCommands = let
-      schema = pkgs.gsettings-desktop-schemas;
-      datadir = "${schema}/share/gsettings-schemas/${schema.name}";
-    in ''
-      export XDG_DATA_DIRS=${datadir}:$XDG_DATA_DIRS
+    extraSessionCommands = ''
       export SDL_VIDEODRIVER=wayland
       export QT_QPA_PLATFORM=wayland
       export MOZ_ENABLE_WAYLAND=1
@@ -168,6 +165,13 @@
       base = true;
       gtk = true;
     };
+  };
+
+  environment.sessionVariables = {
+    XDG_DATA_DIRS = with pkgs; [
+      "${gsettings-desktop-schemas}/share/gsettings-schemas/${gsettings-desktop-schemas.name}"
+      "${gtk3}/share/gsettings-schemas/${gtk3.name}"
+    ];
   };
 
   # Provide default settings for any X11 sessions.
@@ -211,11 +215,8 @@
 
   # Enable better XDG integration.
   xdg.portal.enable = true;
-  xdg.portal.extraPortals = with pkgs; [
-    xdg-desktop-portal-wlr
-    xdg-desktop-portal-gtk
-  ];
-  xdg.portal.gtkUsePortal = true;
+  xdg.portal.extraPortals = with pkgs; [ xdg-desktop-portal-gtk ];
+  xdg.portal.wlr.enable = true;
 
   # GUI control center for bluetooth, if enabled.
   services.blueman.enable = config.hardware.bluetooth.enable;

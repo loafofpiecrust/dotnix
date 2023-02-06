@@ -1,19 +1,16 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-22.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-22.11";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-    # Contains Linux kernel 5.12, which I need for the framework laptop.
-    nixpkgs-kernel.url =
-      "github:nixos/nixpkgs/141439f6f11537ee349a58aaf97a5a5fc072365c";
     nixpkgs-wayland = {
-      url = "github:colemickens/nixpkgs-wayland";
+      url = "github:nix-community/nixpkgs-wayland";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.master.follows = "nixpkgs-unstable";
     };
     nixos-hardware.url = "github:nixos/nixos-hardware/master";
     nur.url = "github:nix-community/nur";
     home-manager = {
-      url = "github:nix-community/home-manager/release-22.05";
+      url = "github:nix-community/home-manager/release-22.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     emacs-overlay = { url = "github:nix-community/emacs-overlay"; };
@@ -22,7 +19,7 @@
         "github:vlaci/nix-doom-emacs/fee14d217b7a911aad507679dafbeaa8c1ebf5ff";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.emacs-overlay.follows = "emacs-overlay";
-      inputs.straight.follows = "straight";
+      # inputs.straight.follows = "straight";
       inputs.doom-emacs.follows = "doom-emacs";
     };
     straight.url = "github:raxod502/straight.el";

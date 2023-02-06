@@ -11,13 +11,14 @@
     unstable.zoom-us
     unstable.discord
     unstable.krita
-    unstable.deluge
+    deluge
+    transmission-gtk
     unstable.zotero
     unstable.slack
-    unstable.calibre # ebook manager
+    calibre # ebook manager
     unstable.teams
     rclone
-    # ledger
+    ledger
   ];
 
   programs.alacritty = {
@@ -131,5 +132,5 @@
     latitude = 37.820248;
     longitude = -122.284792;
   };
-
+  xdg.configFile."gammastep/hooks".source = ../daynight;
 }
