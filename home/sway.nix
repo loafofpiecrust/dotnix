@@ -80,8 +80,10 @@
       repeat_rate = "20";
     };
     config.startup = [
-      { command = "${pkgs.wpgtk}/bin/wpg -m"; }
-      { command = "systemctl --user start rclone-pcloud"; }
+      {
+        command = "${pkgs.wpgtk}/bin/wpg -m";
+      }
+      # { command = "systemctl --user start rclone-pcloud"; }
       {
         command =
           "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1 &";
@@ -94,17 +96,31 @@
     ];
     config.bars =
       [{ command = "${config.programs.waybar.package}/bin/waybar"; }];
-    extraConfig = ''
+    extraConfig = let
+      gsettings = {
+        gtk-theme = config.gtk.theme.name;
+        icon-theme = config.gtk.iconTheme.name;
+        cursor-theme = config.home.pointerCursor.name;
+        font-name = "sans 13";
+        document-font-name = "serif 13";
+      };
+      gsettingsString = lib.concatStringsSep "\n" (lib.mapAttrsToList
+        (key: value:
+          "gsettings set org.gnome.desktop.interface ${key} '${value}'")
+        gsettings);
+    in ''
       set $gnome-schema org.gnome.desktop.interface
       exec_always {
-          gsettings set $gnome-schema gtk-theme '${config.gtk.theme.name}'
-          gsettings set $gnome-schema icon-theme '${config.gtk.iconTheme.name}'
-          gsettings set $gnome-schema cursor-theme '${config.xsession.pointerCursor.name}'
-          gsettings set $gnome-schema font-name 'Overpass'
+          ${gsettingsString}
+      }
+      seat seat xcursor_theme ${config.home.pointerCursor.name} ${
+        builtins.toString config.home.pointerCursor.size
       }
       include "$HOME/.cache/wal/colors-sway"
       output * bg $wallpaper fill
       for_window [app_id="firefox"] inhibit_idle fullscreen
+      for_window [app_id="firefox" title="^Picture-in-Picture$"] floating enable, sticky enable, move position center, resize set width 704 height 396
+      for_window [app_id="pavucontrol"] floating enable, move position center
     '';
   };
 
@@ -133,9 +149,9 @@
       pulseaudio = {
         scroll-step = 1;
         smooth-scrolling-threshold = 2;
-        format = " {icon} {format_source}";
-        format-headphone = " {icon} {format_source}";
-        format-muted = " {icon} {format_source}";
+        format = "SPKR {icon} {format_source}";
+        format-headphone = "HDPN {icon} {format_source}";
+        format-muted = "MUTE {icon} {format_source}";
         format-source = "";
         format-source-muted = "";
         format-icons.default = [
