@@ -9,11 +9,13 @@
       bitwarden
       ublock-origin
       tridactyl
+      darkreader
+      translate-web-pages
       #adsum-notabs
     ];
     profiles.default = {
       isDefault = true;
-      search.default = "DuckDuckGo";
+      # search.default = "DuckDuckGo";
       settings = {
         # Enable DRM
         "media.eme.enabled" = true;

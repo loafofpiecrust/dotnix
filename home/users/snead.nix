@@ -132,5 +132,25 @@
     latitude = 37.820248;
     longitude = -122.284792;
   };
-  xdg.configFile."gammastep/hooks".source = ../daynight;
+
+  # Change any desktop settings I want based on time of day!
+  xdg.configFile."gammastep/hooks/daynight-desktop" = {
+    executable = true;
+    text = let
+      emacsclient = "${config.programs.emacs.package}/bin/emacsclient";
+      gsettings = "${pkgs.glib}/bin/gsettings";
+    in ''
+      #!/bin/sh
+      if [ "$1" = period-changed ]; then
+        case $3 in
+          night)
+            ${emacsclient} --eval '(load-theme +snead/theme-night)'
+            ${gsettings} set org.gnome.desktop.interface color-scheme prefer-dark;;
+          daytime)
+            ${emacsclient} --eval '(load-theme +snead/theme-day)'
+            ${gsettings} set org.gnome.desktop.interface color-scheme prefer-light;;
+          esac
+      fi
+    '';
+  };
 }

@@ -1,4 +1,4 @@
-personal_ws-1.1 en 50
+personal_ws-1.1 en 51
 CERN
 Deserialize
 Extracurriculars
@@ -33,6 +33,7 @@ irrealis
 json
 jussive
 libre
+localhost
 microsd
 monomorphemic
 openssh
