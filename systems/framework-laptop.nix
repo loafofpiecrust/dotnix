@@ -189,6 +189,8 @@
     mate.atril # pdf viewer
     mate.mate-tweak
     mate.mate-system-monitor
+    mate.mate-settings-daemon
+    mate.mate-control-center
     xfce.xfce4-power-manager
     xfce.xfce4-session
     xfce.xfce4-settings
@@ -198,8 +200,12 @@
 
     libreoffice
     # virt-manager
-    nixos-generators
   ];
+  # Let mate-panel find applets
+  environment.sessionVariables."MATE_PANEL_APPLETS_DIR" =
+    "${config.system.path}/share/mate-panel/applets";
+  environment.sessionVariables."MATE_PANEL_EXTRA_MODULES" =
+    "${config.system.path}/lib/mate-panel/applets";
 
   # Disable automatic location updates because geoclue makes the boot process
   # wait for internet, stalling it for 5-10 seconds!
