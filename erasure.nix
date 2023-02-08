@@ -7,7 +7,7 @@ let
     (check config.services.upower.enable "/var/lib/upower")
     (check config.virtualisation.docker.enable "/var/lib/docker")
     (check config.services.fprintd.enable "/var/lib/fprint")
-    # (check config.hardware.bluetooth.enable "/var/lib/bluetooth")
+    (check config.hardware.bluetooth.enable "/var/lib/bluetooth")
   ];
   persistInEtc = [
     "machine-id"

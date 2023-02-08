@@ -3,6 +3,7 @@
     ./nixos.nix
     ./gui.nix
     ./wifi.nix
+    ./bluetooth.nix
     inputs.nixos-hardware.nixosModules.common-pc
     inputs.nixos-hardware.nixosModules.common-pc-laptop
     inputs.nixos-hardware.nixosModules.common-pc-laptop-acpi_call

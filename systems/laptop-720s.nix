@@ -219,7 +219,6 @@
 
   # Let's try out bluetooth.
   hardware.bluetooth.enable = true;
-  services.blueman.enable = true;
 
   # Trim SSD to keep the drive healthy.
   services.fstrim.enable = true;
