@@ -81,15 +81,15 @@
     ppp # Needed for NUwave network setup
   ];
 
-  # Only log out when the lid is closed with power.
   services.logind = {
     killUserProcesses = true;
     lidSwitch = "suspend-then-hibernate";
+    lidSwitchExternalPower = config.services.logind.lidSwitch;
     extraConfig = ''
-      HandlePowerKey=hibernate
+      HandlePowerKey=power-off
     '';
   };
   systemd.sleep.extraConfig = ''
-    HibernateDelaySec=2h
+    HibernateDelaySec=1h
   '';
 }
