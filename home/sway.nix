@@ -52,14 +52,13 @@
       "Print" = "exec ${screenshot false}";
       "Shift+Print" = "exec ${screenshot true}";
       "${mod}+w" = "kill";
-      "${mod}+p" = "exec ${pkgs.wofi}/bin/wofi";
       "${mod}+s" = "floating toggle";
       "${mod}+a" = "focus parent";
       "${mod}+c" = "exec ${playerctl} play-pause";
       "${mod}+b" = "exec ${config.programs.firefox.package}/bin/firefox";
       "${mod}+e" = "exec ${config.programs.emacs.package}/bin/emacsclient -c";
       "${mod}+n" = "exec caja";
-      "${mod}+d" = "exec ${pkgs.rofi-wayland}/bin/rofi -show drun";
+      "${mod}+p" = "exec ${pkgs.rofi-wayland}/bin/rofi -show drun";
       "${mod}+bracketright" = "workspace next";
       "${mod}+bracketleft" = "workspace prev";
       "${mod}+shift+bracketright" = "move container to workspace next";
