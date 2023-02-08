@@ -32,9 +32,10 @@
 ;; font string. You generally only need these two:
 ;; Symbol test: _ -> => , . `' "" O0l1*#
 (setq doom-font (if (eq system-type 'darwin)
-                    (font-spec :family "Fira Code" :size 14 :weight 'medium)
-                    (font-spec :family "monospace" :size 15 :weight 'medium))
-      doom-variable-pitch-font (font-spec :family "Overpass" :size 18 :weight 'semi-bold)
+                    (font-spec :family "Fira Code" :size 14)
+                    (font-spec :family "Fira Code" :size 15))
+      doom-variable-pitch-font (font-spec :family "Inter" :size 15)
+      doom-unicode-font doom-font
       ;; doom-unicode-font (font-spec :family "Symbola monospacified for Source Code Pro" :size 15)
       ;; These fonts were fucking up display of math symbols! Remove them!
       ;; doom-unicode-extra-fonts nil

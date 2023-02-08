@@ -112,7 +112,7 @@
   gtk = {
     enable = true;
     font.name = "sans";
-    font.size = 12;
+    font.size = 13;
     theme = {
       package = pkgs.arc-theme;
       name = "Arc";
@@ -131,8 +131,9 @@
 
   home.pointerCursor = {
     package = pkgs.bibata-cursors;
-    name = "Bibata_Oil";
+    name = "Bibata-Modern-Classic";
     size = 24;
+    gtk.enable = true;
     x11.enable = true;
   };
 

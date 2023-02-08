@@ -6,7 +6,7 @@
   programs.emacs = {
     enable = true;
     package = pkgs.emacsCustom;
-    extraPackages = epkgs: with epkgs; [ emojify magit forge ];
+    extraPackages = epkgs: with epkgs; [ emojify magit forge all-the-icons ];
   };
 
   services.emacs = {

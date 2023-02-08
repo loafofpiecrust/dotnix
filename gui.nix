@@ -71,6 +71,7 @@
     source-code-pro
     mononoki
     cascadia-code
+    hack-font
 
     # Add user fonts to ~/.local/share/fonts
   ];
@@ -78,13 +79,18 @@
   fonts.fontconfig = {
     defaultFonts = {
       monospace = [
-        # "JetBrains Mono" # Main preference, changes often.
+        "Fira Code" # Main preference, changes often.
         "Source Code Pro" # Provides almost all of the IPA symbols.
         "Noto Sans Mono CJK SC"
         "Noto Emoji"
-        "Material Design Icons"
+        # "Material Design Icons"
       ];
-      sansSerif = [ "Overpass" "Noto Sans" "FreeSans" "Material Design Icons" ];
+      sansSerif = [
+        "Overpass"
+        "Noto Sans"
+        "FreeSans"
+        # "Material Design Icons"
+      ];
       serif = [ "Merriweather" "Liberation Serif" ];
     };
     hinting.enable = false;
@@ -173,6 +179,8 @@
       "${gtk3}/share/gsettings-schemas/${gtk3.name}"
     ];
   };
+
+  environment.pathsToLink = [ "/share" ];
 
   # Provide default settings for any X11 sessions.
   services.xserver = {
