@@ -19,7 +19,7 @@
   # Setup basic boot options and kernel modules.
   boot = {
     plymouth.enable = false;
-    kernelPackages = pkgs.linuxKernel.packages.linux_6_1;
+    kernelPackages = pkgs.linuxKernel.packages.linux_5_15;
     initrd.availableKernelModules =
       [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" "btusb" ];
     blacklistedKernelModules = [ "hid_sensor_hub" ];
