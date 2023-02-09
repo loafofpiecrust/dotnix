@@ -39,7 +39,8 @@
         '';
       screenshot = withRegion:
         pkgs.writeShellScript "take-screenshot" ''
-          IMG_FILENAME="$HOME/Pictures/screenshots/$(date).png"
+          mkdir -p $HOME/pictures/screenshots
+          IMG_FILENAME="$HOME/pictures/screenshots/$(date).png"
           ${pkgs.grim}/bin/grim ${
             if withRegion then "-g $(${pkgs.slurp}/bin/slurp)" else ""
           } "$IMG_FILENAME"

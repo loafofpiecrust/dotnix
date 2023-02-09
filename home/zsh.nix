@@ -81,7 +81,7 @@
         nix run nixpkgs#$1
       }
 
-      ${pkgs.fortune}/bin/fortune
+      ${pkgs.fortune}/bin/fortune | ${pkgs.pokemonsay}/bin/pokemonsay
     '';
     history.expireDuplicatesFirst = true;
     history.ignoreDups = true;
