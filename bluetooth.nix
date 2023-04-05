@@ -1,5 +1,12 @@
 { config, lib, pkgs, ... }: {
-  hardware.bluetooth.package = pkgs.bluezFull;
+  # GUI control center for bluetooth, if enabled.
+  services.blueman.enable = true;
+
+  hardware.bluetooth.disabledPlugins = [ "sap" ];
+
+  systemd.services.bluetooth.serviceConfig = {
+    ConfigurationDirectoryMode = "0755";
+  };
 
   # Support media controls from bluetooth headsets.
   systemd.user.services = lib.mkIf config.hardware.bluetooth.enable {

@@ -1,4 +1,4 @@
-;;; ~/dotfiles/emacs/.config/doom/custom/md-msg.el -*- lexical-binding: t; -*-
+;;; -*- lexical-binding: t; -*-
 ;;; md-msg.el --- Org mode to send and reply to email in HTML. -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2020 Taylor Snead

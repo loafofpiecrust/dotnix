@@ -1,4 +1,4 @@
-@import "/home/snead/.cache/wal/colors-waybar.css";
+@import "../../.cache/wal/colors-waybar.css";
 
 * {
   font-family: "monospace", "Material Icons", "Font Awesome 6 Free";
@@ -20,7 +20,7 @@ tooltip label {
 }
 
 window#waybar {
-  background-color: @background;
+  background-color: alpha(@background, 0.8);
   transition-property: background-color;
   transition-duration: 0.2s;
   min-height: 30px;
@@ -40,15 +40,6 @@ window#waybar.solo {
 }
 */
 
-window#waybar.termite {
-  background-color: #3f3f3f;
-}
-
-window#waybar.chromium {
-  background-color: #000000;
-  border: none;
-}
-
 #workspaces {
   min-width: 20em;
 }
@@ -64,11 +55,13 @@ window#waybar.chromium {
 #workspaces button:hover {
   background: rgba(0, 0, 0, 0.2);
   box-shadow: inherit;
+  border: none;
   /* border-bottom: 3px solid #ffffff; */
 }
 
 #workspaces button.focused {
   background-color: #64727d;
+  border: none;
   /* border-bottom: 3px solid #ffffff; */
 }
 
@@ -77,7 +70,7 @@ window#waybar.chromium {
 }
 
 #mode {
-  background-color: #64727d;
+  background-color: @color1;
   border-bottom: 3px solid #ffffff;
 }
 
@@ -112,9 +105,9 @@ window#waybar.chromium {
 }
 
 #clock {
-  background-color: #64727d;
-  min-width: 120px;
-  margin-right: 0;
+  /* border-bottom: 1px solid @color6; */
+  color: @foreground;
+  min-width: 150px;
   font-weight: bold;
 }
 
@@ -123,6 +116,7 @@ window#waybar.chromium {
 }
 
 #battery {
+  font-family: "monospace";
   /* background-color: #ffffff; */
   color: @color1;
 }

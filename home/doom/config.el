@@ -4,7 +4,7 @@
 ;; https://github.com/rougier/elegant-emacs
 
 ;; Let me load my custom packages.
-(add-load-path! "custom")
+(add-load-path! "~/.config/doom/custom")
 ;;(add-load-path! "/run/current-system/sw/share/emacs/site-lisp/mu4e")
 
 ;; Load custom themes from the "themes" folder here.
@@ -19,6 +19,10 @@
 (menu-bar-mode (if (eq system-type 'darwin) t -1))
 
 (use-package! memoize)
+(use-package! gsettings)
+
+(defvar +snead/theme-night 'ewal-doom-vibrant)
+(defvar +snead/theme-day 'doom-gruvbox-light)
 
 ;; Doom exposes five (optional) variables for controlling fonts in Doom. Here
 ;; are the three important ones:
@@ -33,7 +37,7 @@
 ;; Symbol test: _ -> => , . `' "" O0l1*#
 (setq doom-font (if (eq system-type 'darwin)
                     (font-spec :family "Fira Code" :size 14)
-                    (font-spec :family "Fira Code" :size 15))
+                    (font-spec :family "Hack" :size 15))
       doom-variable-pitch-font (font-spec :family "Inter" :size 15)
       doom-unicode-font doom-font
       ;; doom-unicode-font (font-spec :family "Symbola monospacified for Source Code Pro" :size 15)
@@ -125,9 +129,9 @@ It seems excessive, but apparently necessary for fluid LSP usage!"
 
 (use-package! solar
   :config
-  (setq calendar-location-name "Boston, MA"
-        calendar-latitude 42.360
-        calendar-longitude -71.059))
+  (setq calendar-location-name "Oakland, CA"
+        calendar-latitude 37.8043
+        calendar-longitude -122.2711))
 
 (after! scroll-bar
   ;; remove all scrollbars!
@@ -144,7 +148,7 @@ It seems excessive, but apparently necessary for fluid LSP usage!"
 
 ;; Always show line numbers.
 (after! display-line-numbers
-  (setq display-line-numbers-type t
+  (setq display-line-numbers-type 'relative
         display-line-numbers-grow-only t))
 
 (after! prog-mode
@@ -177,12 +181,12 @@ It seems excessive, but apparently necessary for fluid LSP usage!"
   '((outline-7 outline-8 outline-9) :weight semi-bold)
   ;; Style markdown headers the same way.
   '(markdown-header-face-1 :inherit outline-1)
-  '(markdown-header-face-2 :inherit outline-2)
+  '(markdown-header-face-2 :inherit outline-2 :underline (:style line :color "grey"))
   '(markdown-header-face-3 :inherit outline-3)
   '(markdown-header-face-4 :inherit outline-4)
   '(markdown-header-face-5 :inherit outline-5)
   ;; Not all themes provide this inheritance.
-  '(org-level-1 :inherit outline-1)
+  '(org-level-1 :inherit outline-1 :underline (:style line :color "grey"))
   '(org-level-2 :inherit outline-2)
   '(org-level-3 :inherit outline-3)
   '(org-level-4 :inherit outline-4)
@@ -205,8 +209,14 @@ It seems excessive, but apparently necessary for fluid LSP usage!"
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-one-light
-      doom-gruvbox-brighter-comments t
+(setq doom-theme
+      (if (and (gsettings-available?)
+               (string= "prefer-dark"
+                        (gsettings-get "org.gnome.desktop.interface" "color-scheme")))
+          +snead/theme-night
+        +snead/theme-day))
+
+(setq doom-gruvbox-brighter-comments nil
       doom-peacock-brighter-comments t
       doom-monokai-classic-brighter-comments t
       doom-acario-light-brighter-comments t
@@ -227,13 +237,12 @@ It seems excessive, but apparently necessary for fluid LSP usage!"
                         ;;(cadr bl))))
         ;;unicode-fonts-block-font-mapping)
   ;; Designate private use to font awesome, mostly.
-  (setq my/private-use-fonts '("Material Icons"
-                               "github-octicons"
-                               "file-icons"
-                               "all-the-icons"
-                               "Material Design Icons"))
-  (push `("Private Use Area" ,my/private-use-fonts)
-        unicode-fonts-block-font-mapping)
+  ;; (setq my/private-use-fonts '("github-octicons"
+  ;;                              "file-icons"
+  ;;                              "all-the-icons"
+  ;;                              "Material Icons"))
+  ;; (push `("Private Use Area" ,my/private-use-fonts)
+  ;;       unicode-fonts-block-font-mapping)
   ;; Source Code Pro shares metrics with SF Mono and has full IPA.
   (push '("IPA Extensions" ("Source Code Pro"))
         unicode-fonts-block-font-mapping)
@@ -269,12 +278,6 @@ It seems excessive, but apparently necessary for fluid LSP usage!"
   :config
   (setq ewal-doom-vibrant-brighter-comments t))
 
-(use-package! theme-changer
-  :disabled
-  :after doom-themes
-  :config
-  (change-theme doom-theme 'ewal-doom-dark))
-
 ;;;; org-mode adjustments
 (setq org-directory "~/org/")
 (after! org
@@ -284,13 +287,14 @@ It seems excessive, but apparently necessary for fluid LSP usage!"
   (setq-default org-deadline-warning-days 10)
   ;; Change some org display properties.
   (setq-default org-link-descriptive t
+                org-startup-indented nil
                 org-indent-indentation-per-level 1
                 org-use-property-inheritance t
                 org-list-allow-alphabetical t
                 org-catch-invisible-edits 'smart
                 org-ellipsis " ▾ "
                 org-link-descriptive nil
-                org-list-demote-modify-bullet '(("+" . "-") ("-" . "+") ("*" . "+")))
+                org-list-demote-modify-bullet '(("-" . "+") ("+" . "*") ("*" . "-")))
   ;; Adjust LaTeX display and export with tectonic.
   (setq-default org-latex-compiler "xelatex"
                 org-latex-pdf-process '("tectonic -Z shell-escape %f")
@@ -300,11 +304,12 @@ It seems excessive, but apparently necessary for fluid LSP usage!"
 
 (after! org-superstar
   ;; Bullet symbols: ‣•◦⦾⦿✷🟆➤⮞⁕⊙ ⁖🜔🜕🜖🜗🝆🝎❯⁕✸✿✤✜◆∴∷
-  (setq org-superstar-headline-bullets-list '("∷" "✽" "✿" "✤" "✸" "❁" "✜")
+  (setq ;; org-superstar-headline-bullets-list '("∷" "✽" "✿" "✤" "✸" "❁" "✜")
         org-superstar-prettify-item-bullets t
-        org-superstar-item-bullet-alist '((?* . ?◆)
-                                          (?- . ?●)
-                                          (?+ . ?○))))
+        org-superstar-item-bullet-alist '((?* . ?‣)
+                                          (?- . ?•)
+                                          (?+ . ?◦))
+        org-superstar-remove-leading-stars t))
 
 ;;;; Password Management!
 (use-package! bitwarden
@@ -505,6 +510,7 @@ Returns nil if not logged in."
 
   ;; We want the same save binding everywhere!
   (map! :gi "C-s" (general-key "C-x C-s")
+        :gi "<f12>" (general-key "C-x C-s")
         :gi "C-v" '+evil-paste-at-point))
 
 (after! org
@@ -522,7 +528,10 @@ Returns nil if not logged in."
                   tree-sitter-hl-face:string
                   font-lock-comment-face
                   font-lock-doc-face
-                  font-lock-string-face)))
+                  font-lock-string-face))
+  (setq-default spell-fu-faces-exclude
+                '(font-lock-constant-face
+                  markdown-code-face)))
 
 ;; Only load the lsp servers that I might actually use.
 ;; Loading these packages is about 40% of the delay when first starting a
@@ -671,7 +680,7 @@ Use `treemacs-select-window' command for old functionality."
 ;; (use-package! flycheck-inline
 ;;   :hook (flycheck-mode . flycheck-inline-mode))
 
-(use-package! cherokee-input)
+;;(use-package! cherokee-input)
 
 ;; Make headlines big!
 
@@ -684,9 +693,6 @@ Use `treemacs-select-window' command for old functionality."
    ivy-truncate-lines nil)
   (map! :map ivy-minibuffer-map
         "C-RET" 'ivy-immediate-done))
-
-(after! all-the-icons-ivy
-  (setq all-the-icons-ivy-icon-args (list :height 1 :v-adjust -0.1)))
 
 (after! message
   (setq message-cite-style message-cite-style-thunderbird
@@ -706,7 +712,7 @@ Use `treemacs-select-window' command for old functionality."
   ;;
   ;; Gmail will handle the rest.
   (defun +mu4e--mark-seen (docid _msg target)
-    (mu4e~proc-move docid (mu4e~mark-check-target target) "+S-u-N"))
+    (mu4e--server-move docid (mu4e--mark-check-target target) "+S-u-N"))
 
   ;; (delq! 'delete mu4e-marks #'assq)
   (setf (alist-get 'trash mu4e-marks)
@@ -715,10 +721,10 @@ Use `treemacs-select-window' command for old functionality."
               :dyn-target (lambda (_target msg) (mu4e-get-trash-folder msg))
               :action
               (lambda (docid msg target)
-                (with~mu4e-context-vars (mu4e-context-determine msg nil)
+                (with-mu4e-context-vars (mu4e-context-determine msg nil)
                     (if +mu4e-context-gmail
                         (+mu4e--mark-seen docid msg target)
-                      (mu4e~proc-move docid (mu4e~mark-check-target target) "-N-u")))))
+                      (mu4e--server-move docid (mu4e--mark-check-target target) "-N-u")))))
 
         ;; Refile will be my "archive" function.
         (alist-get 'refile mu4e-marks)
@@ -727,17 +733,17 @@ Use `treemacs-select-window' command for old functionality."
               :dyn-target (lambda (_target msg) (mu4e-get-refile-folder msg))
               :action
               (lambda (docid msg target)
-                (with~mu4e-context-vars (mu4e-context-determine msg nil)
+                (with-mu4e-context-vars (mu4e-context-determine msg nil)
                     (if +mu4e-context-gmail
                         (+mu4e--mark-seen docid msg target)
-                      (mu4e~proc-move docid (mu4e~mark-check-target target) "-N-u"))))))
+                      (mu4e--server-move docid (mu4e--mark-check-target target) "-N-u"))))))
 
   (defun +mu4e-gmail-fix-flags-h (mark msg)
     "This hook correctly modifies gmail flags on emails when they are marked.
 Without it, refiling (archiving), trashing, and flagging (starring) email
 won't properly result in the corresponding gmail action, since the marks
 are ineffectual otherwise."
-    (with~mu4e-context-vars (mu4e-context-determine msg nil)
+    (with-mu4e-context-vars (mu4e-context-determine msg nil)
         (when +mu4e-context-gmail
           (pcase mark
             (`trash  (mu4e-action-retag-message msg "-\\Inbox,+\\Trash,-\\Draft"))
@@ -757,6 +763,7 @@ are ineffectual otherwise."
         +mu4e-workspace-name "*email*"
         mu4e-completing-read-function 'completing-read
         mu4e-split-view 'vertical
+        mu4e-index-lazy-check t
         mu4e-headers-visible-columns 100
         mu4e-compose-cite-function 'message-cite-original
         ;; mu4e-headers-visible-columns 100
@@ -766,13 +773,13 @@ are ineffectual otherwise."
         ;; Sometimes I have issues with duplicates, so I need to see them.
         mu4e-headers-skip-duplicates nil
         mu4e-headers-leave-behavior 'apply
-        mu4e-view-prefer-html t
+        ;; mu4e-view-prefer-html t
         ;; mu4e-compose-format-flowed nil
         mu4e-compose-context-policy 'ask
         mu4e-context-policy 'pick-first
         mu4e-index-update-error-warning nil
         ;; I don't use mu4e built-in conversion to html.
-        org-mu4e-convert-to-html nil
+        ;; org-mu4e-convert-to-html nil
         ;; Add full citation when replying to emails.
         message-citation-line-function 'message-insert-formatted-citation-line
         ;; These work well if my font has CJK, otherwise Unicode icons may be better.
@@ -790,8 +797,9 @@ are ineffectual otherwise."
                               (:from-or-to . 25)
                               (:subject))
         ;; Convert received messages from html to org.
-        mu4e-html2text-command "pandoc -f html -t markdown-raw_html-smart-link_attributes+emoji-header_attributes-blank_before_blockquote-simple_tables-inline_code_attributes-escaped_line_breaks+hard_line_breaks --markdown-headings=atx --wrap=auto --columns=80 --lua-filter ~/.config/doom/remove-ids.lua"
-        mu4e-view-show-images t)
+        ;; mu4e-html2text-command "pandoc -f html -t markdown-raw_html-smart-link_attributes+emoji-header_attributes-blank_before_blockquote-simple_tables-inline_code_attributes-escaped_line_breaks+hard_line_breaks --markdown-headings=atx --wrap=auto --columns=80 --lua-filter ~/.config/doom/remove-ids.lua"
+        ;; mu4e-view-show-images t
+        )
   ;; I really do want evil bindings for viewing emails.
   (remove-hook 'mu4e-view-mode-hook #'evil-emacs-state)
   ;; Disable line highlight when viewing emails.
@@ -816,7 +824,7 @@ are ineffectual otherwise."
         message-send-mail-function 'message-send-mail-with-sendmail)
 
   ;; Add my email accounts.
-  (when (file-exists-p "~/.mail/neu")
+  (when nil ;;(file-exists-p "~/.mail/neu")
     (set-email-account!
      "neu"
      `((mu4e-sent-folder . "/neu/Sent")
@@ -958,6 +966,15 @@ are ineffectual otherwise."
   ;; Make email nicer to read and write.
   (add-hook! '(md-msg-view-mode-hook md-msg-edit-mode-hook mu4e-view-mode-hook) #'olivetti-mode))
 
+(defun +snead/close-any-pair ()
+  (interactive)
+  (unless (sp-skip-closing-pair)
+    (self-insert-command 1)))
+;; (map! :map prog-mode-map
+;;       :i "]" #'self-insert-command)
+
+
+
 (after! alert
   (setq alert-default-style 'libnotify))
 
@@ -981,15 +998,53 @@ are ineffectual otherwise."
   (interactive)
   (display-line-numbers-mode -1))
 
-(add-hook 'pdf-outline-buffer-mode-hook #'disable-line-numbers)
+(add-hook! '(pdf-outline-buffer-mode-hook)
+           #'disable-line-numbers)
+
+(use-package! mixed-pitch
+  :config
+  (map! :leader "tm" #'mixed-pitch-mode)
+  (add-hook! '(org-mode-hook markdown-mode-hook) #'mixed-pitch-mode)
+  (setq mixed-pitch-set-height t)
+  (delete 'org-indent mixed-pitch-fixed-pitch-faces)
+  (dolist (e '(org-date
+               org-special-keyword
+               org-drawer
+               font-lock-comment-face
+               markdown-markup-face))
+    (add-to-list 'mixed-pitch-fixed-pitch-faces e)))
 
 (use-package! olivetti
-  :hook ((markdown-mode magit-status-mode forge-topic-mode) . olivetti-mode)
+  :hook ((org-mode markdown-mode magit-status-mode forge-topic-mode gnus-article-mode-hook) . olivetti-mode)
   :bind (:map doom-leader-map
-         ("to" . olivetti-mode))
+         ("tz" . olivetti-mode))
   :config
-  (add-hook 'olivetti-mode-hook #'disable-line-numbers)
-  (setq-default olivetti-body-width 95))
+  (add-hook! '(olivetti-mode-hook org-mode-hook markdown-mode-hook) #'disable-line-numbers)
+  (defun mixed-pitch-set-text-scale ()
+    (text-scale-set (if mixed-pitch-mode 1 0)))
+  (add-hook! 'mixed-pitch-mode-hook #'mixed-pitch-set-text-scale)
+  (setq! olivetti-body-width 100
+         olivetti--min-margins '(8 . 8)))
+
+(setq! x-underline-at-descent-line t
+       underline-minimum-offset 2)
+
+;; Retain zen style in sub-buffers. Essential for markdown content with embedded
+;; code blocks!
+(after! polymode
+  (add-to-list 'polymode-move-these-minor-modes-from-base-buffer 'olivetti-mode)
+  (add-hook 'polymode-init-inner-hook
+            (lambda ()
+              (let* ((fix-pitch (face-attribute 'fixed-pitch :family))
+                     (fix-font (face-attribute 'fixed-pitch :font))
+                     (fix-height (face-attribute 'fixed-pitch :height))
+                     (bg (face-attribute 'markdown-code-face :background))
+                     (props `(:inherit markdown-code-face
+                              :extend t
+                              :height ,fix-height
+                              :family ,fix-pitch
+                              :font ,fix-font)))
+                (oset pm/chunkmode adjust-face props)))))
 
 (setq +ligatures-extra-symbols
       '(:name "»"
@@ -1084,20 +1139,17 @@ are ineffectual otherwise."
     :pipe "\\|"
     :turnstile "\\|-"))
 
-(load! "custom/mixed-pitch")
-;; (use-package! mixed-pitch
-;;   :commands mixed-pitch-mode
-;;   :init
-(map! :leader "tm" #'mixed-pitch-mode)
-;; :config
-(setq mixed-pitch-set-height t)
-(dolist (e '(outline-1 outline-2 outline-3 outline-4 outline-5
-                       outline-6 outline-7 outline-8 outline-9
-                       org-date org-special-keyword org-drawer))
-  (add-to-list 'mixed-pitch-fixed-pitch-faces e))
+;; (load! "custom/mixed-pitch")
+;; (use-package! mixed-pitch)
+;; ;;   :init
+;; (map! :leader "tm" #'mixed-pitch-mode)
+;; ;; :config
+;; (setq mixed-pitch-set-height t)
+;; (dolist (e '(org-date org-special-keyword org-drawer))
+;;   (add-to-list 'mixed-pitch-fixed-pitch-faces e))
 
-(custom-set-faces!
-  '(mixed-pitch-variable-pitch :family "Times New Roman" :height 1.25))
+;; (custom-set-faces!
+;;   '(mixed-pitch-variable-pitch :family "Inter" :height 1.25))
 ;;)
 
 ;;;; Periodically clean buffers
@@ -1221,7 +1273,7 @@ are ineffectual otherwise."
 end of the workspace list."
   (interactive
    (list (or current-prefix-arg
-             (if (featurep! :completion ivy)
+             (if (modulep! :completion ivy)
                  (ivy-read "Switch to workspace: "
                            (+workspace-list-names)
                            :caller #'+workspace/switch-to
@@ -1310,8 +1362,8 @@ end of the workspace list."
         doom-localleader-key 'spotify-command-map))
 
 
-;; LSP formatting is messed up for Javascript, so disable it.
-;;(setq +format-with-lsp nil)
+;; LSP formatting doesn't work well for JSX/TSX, so disable it.
+(setq-hook! '(typescript-mode-hook typescript-tsx-mode-hook js-mode-hook js-jsx-mode-hook) +format-with-lsp nil)
 (setq +format-on-save-enabled-modes
       '(not emacs-lisp-mode
             tex-mode
@@ -1497,6 +1549,12 @@ directory, the file name, and its state (modified, read-only or non-existent)."
     (defun doom-modeline-set-ranger-modeline ()
       (setq-local mode-line-format nil
                   header-line-format (doom-modeline 'ranger))))
+
+  (defun doom-modeline-set-header ()
+    (unless (eq mode-line-format nil)
+      (setq-local header-line-format mode-line-format
+                  mode-line-format nil)))
+  ;; (add-hook! 'text-mode-hook #'doom-modeline-set-header)
   ;; (doom-modeline-set-modeline 'upper t)
   ;; Add a mini-modeline with: git, workspace, time, battery, exwm tray
 
@@ -1591,9 +1649,9 @@ Move it to the mode-line."
 
 ;; Add extra line spacing for some modes.
 ;; Not in programming modes because indent guides look a bit funny spaced out.
-;; (setq-hook! '(olivetti-mode-hook
-;;               mu4e-headers-mode-hook)
-;;   line-spacing 2)
+(setq-hook! '(olivetti-mode-hook
+              mu4e-headers-mode-hook)
+  line-spacing 4)
 
 (use-package! svg-icon
   :disabled
@@ -1679,7 +1737,7 @@ Move it to the mode-line."
 
 ;; Make which-key prettier with groups and command descriptions.
 (use-package! pretty-which-key
-	      :disabled
+      :disabled
   :after which-key
   :config
   ;; Add groups and command descriptions to several modes.
@@ -1826,3 +1884,16 @@ Position is calculated base on WIDTH and HEIGHT of childframe text window"
     (exec-path-from-shell-copy-env "SSH_AGENT_PID")
     (exec-path-from-shell-copy-env "SSH_AUTH_SOCK"))
   (add-hook! 'magit-status-mode-hook '+snead/fix-ssh-env))
+
+(use-package! prisma-mode
+  :mode (("\\.prisma\\'" . prisma-mode)))
+
+(use-package! tera-mode
+  :mode (("\\.tera\\'" . tera-mode)
+         ("\\.tera\\.html\\'" . tera-mode))
+  )
+
+(use-package! phscroll)
+
+(after! evil-snipe
+  (setq! evil-snipe-scope 'whole-visible))

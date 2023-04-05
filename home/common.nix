@@ -31,16 +31,16 @@
     config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/spell/.aspell.en.pws";
   home.file."bin/get-password" = {
     executable = true;
-    text = let rbw = "${config.programs.rbw.package}/bin/rbw";
-    in ''
+    text = ''
       #!/bin/sh
+      export PATH=${config.programs.rbw.package}/bin:$PATH
       rbw unlocked || rbw login
       rbw unlocked || rbw unlock
       rbw get "$1" "$2"
     '';
   };
 
-  home.packages = with pkgs; [ unstable.spotify gparted ];
+  home.packages = with pkgs; [ unstable.spotify gparted gnome.simple-scan ];
 
   # GPG agent handles locked files and SSH keys.
   services.gpg-agent = {

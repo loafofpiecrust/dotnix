@@ -5,7 +5,14 @@
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
 
-  environment.systemPackages = with pkgs; [ zlib unrar pokemonsay ];
+  environment.systemPackages = with pkgs; [
+    zlib
+    unrar
+    cowsay
+    pokemonsay
+    usbutils
+    pciutils
+  ];
 
   nix.extraOptions = ''
     experimental-features = nix-command flakes

@@ -1,6 +1,8 @@
 { config, lib, pkgs, inputs, ... }:
 
 {
+  imports = [ inputs.hyprland.nixosModules.default ];
+  programs.hyprland.enable = true;
   environment.systemPackages = with pkgs; [
     gnome3.file-roller # provides all archive formats
     pavucontrol
@@ -59,7 +61,6 @@
     andika
 
     # symbols
-    material-design-icons
     symbola
     emacs-all-the-icons-fonts
     font-awesome
@@ -79,7 +80,7 @@
   fonts.fontconfig = {
     defaultFonts = {
       monospace = [
-        "Fira Code" # Main preference, changes often.
+        "Hack" # Main preference, changes often.
         "Source Code Pro" # Provides almost all of the IPA symbols.
         "Noto Sans Mono CJK SC"
         "Noto Emoji"
@@ -106,12 +107,33 @@
           sha256 = "07g8b62s0mxx4599lb46nkzfxjwp2cv2g0f2n1qrxb7cc80yj1nb";
         };
       });
+      # Override pywal with 16-color fork
+      pywal16 = self.python310Packages.buildPythonPackage {
+        pname = "pywal";
+        version = "3.4.0";
+        propogatedBuildInputs = with self; [
+          imagemagick
+          feh
+          python310Packages.colorthief
+        ];
+        src = builtins.fetchGit {
+          url = "https://github.com/eylles/pywal16";
+          rev = "6bf6234caa4c6c72d8e1e6539d5fce957fd8a2ca";
+        };
+        doCheck = false;
+      };
       # Patch rofi to support wayland.
       rofi-wayland = super.rofi.overrideAttrs (old: {
         src = builtins.fetchurl {
           url =
             "https://github.com/lbonn/rofi/archive/a97ba40bc7aca7e375c500d574cac930a0b3473d.tar.gz";
           sha256 = "13v4l5hw14i5nh26lh4hr6jckpba6pyyvx5nydn2h1vkgs0lz4v4";
+        };
+      });
+      sway = super.sway.overrideAttrs (old: {
+        src = builtins.fetchGit {
+          url = "https://github.com/WillPower3309/swayfx";
+          rev = "4222b98a390f6c377be77b4152e229a89b5276b2";
         };
       });
       # Patch libnotify to support replacing existing notifications.
@@ -144,11 +166,11 @@
       # Remove google tracking from chromium.
       chromium = super.ungoogled-chromium;
     })
-    # inputs.nixpkgs-wayland.overlay
   ];
 
   # Configure sway if I happen to want it in my setup.
   programs.sway = {
+    enable = true;
     extraPackages = with pkgs; [
       swaylock
       swayidle
@@ -226,9 +248,6 @@
   xdg.portal.extraPortals = with pkgs; [ xdg-desktop-portal-gtk ];
   xdg.portal.wlr.enable = true;
 
-  # GUI control center for bluetooth, if enabled.
-  services.blueman.enable = config.hardware.bluetooth.enable;
-
   # Enable full OpenGL support.
   hardware.opengl = {
     enable = true;
@@ -237,4 +256,11 @@
 
   # Support pinentry-gnome3 on non-Gnome DEs.
   services.dbus.packages = [ pkgs.gcr ];
+
+  # Send media control events to the most recently active media.
+  systemd.user.services.playerctld = {
+    wantedBy = [ "graphical-session.target" ];
+    serviceConfig.ExecStart = "${pkgs.playerctl}/bin/playerctld daemon";
+    serviceConfig.Type = "forking";
+  };
 }

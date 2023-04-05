@@ -11,12 +11,13 @@
 
   i18n = {
     defaultLocale = "en_US.UTF-8";
+    # TODO Remove this? I used to be weirdly convinced of using ISO measurements.
     # I prefer ISO time and metric, which come with Danish English.
-    extraLocaleSettings = let alt = "en_DK.UTF-8";
-    in {
-      LC_TIME = alt;
-      LC_MEASUREMENT = alt;
-    };
+    # extraLocaleSettings = let alt = "en_DK.UTF-8";
+    # in {
+    #   LC_TIME = alt;
+    #   LC_MEASUREMENT = alt;
+    # };
   };
 
   # Use doas instead of sudo.
@@ -26,6 +27,7 @@
   # Use pipewire for sound, emulating ALSA and PulseAudio servers.
   services.pipewire = {
     enable = true;
+    wireplumber.enable = true;
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
@@ -47,7 +49,7 @@
   # Allow easy discovery of network devices (like printers).
   services = {
     avahi.enable = true;
-    avahi.nssmdns = true;
+    # avahi.nssmdns = true;
     printing.enable = true;
     printing.drivers = with pkgs.unstable; [ hplipWithPlugin gutenprint ];
   };

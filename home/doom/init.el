@@ -74,7 +74,7 @@
        ;;vi-tilde-fringe   ; fringe tildes to mark beyond EOB
        window-select     ; visually switch windows
        workspaces        ; tab emulation, persistence & separate workspaces
-       ;;zen               ; distraction-free coding or writing
+       ;; zen               ; distraction-free coding or writing
        (emoji +github +unicode)
 
        :editor
@@ -172,7 +172,7 @@
        ;;nim               ; python + lisp at the speed of c
        nix               ; I hereby declare "nix geht mehr!"
        (ocaml +lsp)             ; an objective camel
-       (org +pretty +dragndrop +pomodoro)               ; organize your plain life in plain text
+       (org +pretty +dragndrop +pomodoro +roam2)               ; organize your plain life in plain text
        ;;perl              ; write code no one else can comprehend
        php               ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more

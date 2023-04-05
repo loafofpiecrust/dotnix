@@ -4,16 +4,19 @@
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-wayland = {
       url = "github:nix-community/nixpkgs-wayland";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.master.follows = "nixpkgs-unstable";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     nixos-hardware.url = "github:nixos/nixos-hardware/master";
     nur.url = "github:nix-community/nur";
     home-manager = {
-      url = "github:nix-community/home-manager/release-22.11";
+      url =
+        "github:nix-community/home-manager/363c46b2480f1b73ec37cf68caac61f5daa82a2e";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    emacs-overlay = { url = "github:nix-community/emacs-overlay"; };
+    emacs-overlay = {
+      url = "github:nix-community/emacs-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nix-doom-emacs = {
       url =
         "github:vlaci/nix-doom-emacs/fee14d217b7a911aad507679dafbeaa8c1ebf5ff";
@@ -31,6 +34,14 @@
     darwin = {
       url = "github:lnl7/nix-darwin/master";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+    kmonad = {
+      url = "git+https://github.com/kmonad/kmonad?submodules=1&dir=nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    hyprland = {
+      url = "github:hyprwm/Hyprland";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
   };
 
@@ -55,6 +66,7 @@
               # required to inherit from top-level nixpkgs.
               system = super.system;
               config = super.config;
+              overlays = [ inputs.nixpkgs-wayland.overlay ];
             };
           })
           nur.overlay
@@ -70,7 +82,7 @@
       };
       mkLinux = mkSystem nixpkgs.lib.nixosSystem;
       mkDarwin = mkSystem darwin.lib.darwinSystem;
-    in {
+    in rec {
       # When you first setup a new machine, the hostname won't match yet.
       # $ darwin-rebuild switch --flake .#darwinConfigurations.careerbot13.system
       # After that:
@@ -80,6 +92,9 @@
 
       nixosConfigurations = (mkLinux "x86_64-linux" "portable-spudger"
         ./systems/framework-laptop.nix)
-        // (mkLinux "x86_64-linux" "loafofpiecrust" ./systems/laptop-720s.nix);
+        // (mkLinux "x86_64-linux" "loafofpiecrust" ./systems/laptop-720s.nix)
+        // (mkLinux "aarch64-linux" "steve" ./systems/steve.nix);
+
+      images.steve = nixosConfigurations.steve.config.system.build.sdImage;
     };
 }
