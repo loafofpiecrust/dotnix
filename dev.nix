@@ -59,7 +59,7 @@
     sqlite
   ];
 
-  nixpkgs.overlays = [ (self: super: { emacsCustom = super.emacsPgtk; }) ];
+  nixpkgs.overlays = [ (self: super: { emacsCustom = super.emacs.override { withPgtk = true; withSQLite3 = true; withWebP = true; nativeComp = true; }; }) ];
 
   # Android debugging.
   programs.adb.enable = true;

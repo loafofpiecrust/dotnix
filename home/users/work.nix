@@ -1,8 +1,19 @@
 { config, lib, pkgs, ... }:
 
 {
-  imports = [ ../common.nix ../email.nix ../firefox.nix ../fish.nix ];
-  home.packages = with pkgs; [ teams zoom-us slack chromium ];
+  imports = [
+    ../common.nix
+    ../email.nix
+    ../firefox.nix
+    ../fish.nix
+    ../sway.nix
+    ../zsh.nix
+  ];
+  home.packages = with pkgs; [ # teams
+    unstable.zoom-us
+    unstable.slack
+    chromium
+  ];
   systemd.user.services.vpn-neu = {
     Unit = { Description = "Connect to Northeastern University VPN"; };
     Service = {

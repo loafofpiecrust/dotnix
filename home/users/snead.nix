@@ -5,18 +5,20 @@
     ../firefox.nix
     ../fish.nix
     ../sway.nix
+    ../hyprland.nix
     ../zsh.nix
   ];
   home.packages = with pkgs; [
     unstable.zoom-us
     unstable.discord
+    # teams
     unstable.krita
-    deluge
+    unstable.slack
+    # deluge
     transmission-gtk
     unstable.zotero
-    unstable.slack
+    unstable.ripcord
     calibre # ebook manager
-    unstable.teams
     rclone
     ledger
   ];
@@ -33,44 +35,6 @@
       };
     };
   };
-
-  programs.foot = {
-    enable = true;
-    settings = {
-      main.dpi-aware = false;
-      main.font = "monospace:size=11";
-      colors.alpha = 0.8;
-      main.pad = "8x8";
-    };
-  };
-
-  programs.kitty = {
-    enable = true;
-    font.name = "monospace";
-    font.size = 11;
-  };
-
-  services.stalonetray = {
-    enable = false;
-    config = {
-      window_type = "utility";
-      sticky = true;
-      grow_gravity = "W";
-      icon_gravity = "SE";
-      icon_size = 32;
-      window_strut = null;
-      skip_taskbar = true;
-      dockapp_mode = "simple";
-      decorations = null;
-      geometry = "4x1-12-12";
-      max_geometry = "4x1-12-12";
-      transparent = false;
-    };
-  };
-
-  services.udiskie = { enable = true; };
-
-  #xresources.properties = { "Xft.dpi" = 192; };
 
   gtk.gtk3.bookmarks = [ "file:///home/snead/cloud" ];
   systemd.user.services.rclone-pcloud = {
@@ -125,32 +89,5 @@
   programs.go = {
     enable = true;
     goPath = ".go";
-  };
-
-  services.gammastep = {
-    enable = true;
-    latitude = 37.820248;
-    longitude = -122.284792;
-  };
-
-  # Change any desktop settings I want based on time of day!
-  xdg.configFile."gammastep/hooks/daynight-desktop" = {
-    executable = true;
-    text = let
-      emacsclient = "${config.programs.emacs.package}/bin/emacsclient";
-      gsettings = "${pkgs.glib}/bin/gsettings";
-    in ''
-      #!/bin/sh
-      if [ "$1" = period-changed ]; then
-        case $3 in
-          night)
-            ${emacsclient} --eval '(load-theme +snead/theme-night)'
-            ${gsettings} set org.gnome.desktop.interface color-scheme prefer-dark;;
-          daytime)
-            ${emacsclient} --eval '(load-theme +snead/theme-day)'
-            ${gsettings} set org.gnome.desktop.interface color-scheme prefer-light;;
-          esac
-      fi
-    '';
   };
 }

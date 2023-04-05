@@ -4,6 +4,7 @@
     ./gui.nix
     ./wifi.nix
     ./bluetooth.nix
+    ./keyboard.nix
     inputs.nixos-hardware.nixosModules.common-pc
     inputs.nixos-hardware.nixosModules.common-pc-laptop
     inputs.nixos-hardware.nixosModules.common-pc-laptop-acpi_call
@@ -47,6 +48,7 @@
   hardware.sane.extraBackends = [ pkgs.hplipWithPlugin ];
 
   hardware.logitech.wireless.enable = true;
+  hardware.logitech.wireless.enableGraphical = true;
 
   # Mimic sudo settings, where users in the wheel group can run as root, caching
   # the password for 5 minutes.
@@ -56,20 +58,22 @@
     persist = true;
   }];
 
-  # Allow OTA firmware updates.
+  # Allow OTA firmware updates from the testing channel.
   services.fwupd.enable = true;
   environment.etc."fwupd/remotes.d/lvfs-testing.conf" = {
     source = ./fwupd-lvfs-testing.conf;
   };
+  environment.etc."fwupd/uefi_capsule.conf".source =
+    lib.mkForce ./fwupd-uefi-capsule.conf;
 
   # Common power management for laptops.
-  services.power-profiles-daemon.enable = true;
-  services.tlp.enable = false;
+  services.power-profiles-daemon.enable = false;
+  services.tlp.enable = true;
   services.thermald.enable = true;
   services.auto-cpufreq.enable = true;
   # Optimizes I/O on battery power. Maybe don't need this anymore?
   powerManagement.enable = true;
-  powerManagement.powertop.enable = true;
+  powerManagement.powertop.enable = false;
   # Enables screen dimming and session locking.
   services.upower.enable = true;
   # Backlight management
@@ -92,4 +96,6 @@
   systemd.sleep.extraConfig = ''
     HibernateDelaySec=1h
   '';
+
+  programs.noisetorch.enable = true;
 }

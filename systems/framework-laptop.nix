@@ -1,44 +1,65 @@
+# For touchpad after hibernation:
+# it seems that disabling PS/2 mouse emulation in BIOS fixed the problem.
 { config, lib, pkgs, inputs, ... }: {
   imports = [
-    inputs.nixos-hardware.nixosModules.common-pc-ssd
-    inputs.nixos-hardware.nixosModules.common-cpu-intel
+    inputs.nixos-hardware.nixosModules.framework
     ../laptop.nix
     ../vpn.nix
     ../dev.nix
-    ../erasure.nix
+    # ../erasure.nix
   ];
+
+  environment.etc = let persistInEtc = [ "nixos" ];
+  in lib.mkMerge
+  (map (name: { "${name}".source = "/persist/etc/${name}"; }) persistInEtc);
 
   system.stateVersion = "22.05";
 
-  # Enable fingerprint reader?
-  services.fprintd.enable = false;
-  # services.fprintd.package = pkgs.unstable.fprintd;
   # Disable fingerprint for login, because it's unreliable.
+  services.fprintd.enable = false;
   security.pam.services.greetd.fprintAuth = false;
 
   # Setup basic boot options and kernel modules.
   boot = {
     plymouth.enable = false;
     kernelPackages = pkgs.linuxKernel.packages.linux_5_15;
-    initrd.availableKernelModules =
-      [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" "btusb" ];
-    blacklistedKernelModules = [ "hid_sensor_hub" ];
-    # extraModprobeConfig = "options snd_hda_intel power_save=1";
+    initrd.availableKernelModules = [
+      "xhci_pci"
+      "thunderbolt"
+      "nvme"
+      "usb_storage"
+      "sd_mod"
+      "btusb"
+      "btintel"
+    ];
     kernelModules = [ "kvm-intel" ];
 
     # kernel options
     kernelParams = [
       # "pcie_aspm.policy=powersave"
       "i915.enable_fbc=1"
-      #"i915.enable_psr=1"
       "quiet"
-      #"mem_sleep_default=s3"
-      "nvme.noacpi=1"
+      "nvme.noacpi=1" # Apparently good for battery life
+      "i915.enable_psr=1"
     ];
     kernel.sysctl = { "kernel.nmi_watchdog" = 0; };
 
     # Make the font as large as possible.
     loader.systemd-boot.consoleMode = "max";
+
+    extraModprobeConfig = ''
+      options iwlwifi disable_11ax=Y
+    '';
+  };
+
+  # Recommended for battery life
+  services.tlp.settings = {
+    CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
+    PCIE_ASPM_ON_BAT = "powersupersave";
+    START_CHARGE_THRESH_BAT0 = 89;
+    STOP_CHARGE_THRESH_BAT0 = 94;
+    CPU_SCALING_GOVERNOR_ON_BAT = "balance_performance";
+    ENERGY_PERF_POLICY_ON_BAT = "balance_performance";
   };
 
   hardware.opengl.extraPackages = with pkgs; [
@@ -59,7 +80,7 @@
     subvolume = name: {
       device = "/dev/mapper/enc";
       fsType = "btrfs";
-      options = [ "subvol=${name}" "compress=zstd" "relatime" ];
+      options = [ "subvol=${name}" "compress=zstd" "noatime" ];
     };
   in {
     "/" = subvolume "root";
@@ -83,34 +104,42 @@
 
   users.mutableUsers = false;
   users.defaultUserShell = pkgs.zsh;
-  users.users = {
+  users.users = let
+    extraGroups = [
+      "wheel"
+      "docker"
+      "adbusers"
+      "scanner"
+      "lp"
+      "audio"
+      "video"
+      "libvirtd"
+      "keyd"
+      "plugdev"
+      "input"
+      "uinput"
+    ];
+  in {
     snead = {
+      inherit extraGroups;
       isNormalUser = true;
-      extraGroups = [
-        "wheel"
-        "docker"
-        "adbusers"
-        "scanner"
-        "lp"
-        "audio"
-        "video"
-        "libvirtd"
-      ];
       hashedPassword =
         "$6$PFZjyXdf7W2cu3$55Iw6UjpcdB29fb4RIPcaYFY5Ehtuc9MFZaJBa9wlRbgYxRrDAP0tlApOiIsQY7hoeO9XG7xxiIcsjGYc9QXu1";
     };
 
-    #work = {
-    #  isNormalUser = true;
-    #  extraGroups =
-    #    [ "wheel" "docker" "adbusers" "scanner" "lp" "audio" "video" ];
-    #  hashedPassword =
-    #    "$6$tsPlzan2qXEAIir$Jyj78Sq6tuRqBY/R5raqee0oNjx5iuJTB1m0s4RaAuMukbmojE0q6FjnBth8x/tTpCsFDS7DlWXYRcn65R15q.";
-    #};
+    work = {
+      inherit extraGroups;
+      isNormalUser = true;
+      hashedPassword =
+        "$6$KdJ7E2kLCXKj0knB$xh70j/AmbevG3fpQAqwDK6uX5lWvB7DT/36WsFB6rivFw/cndbhgWCf.krQ4fo77o8.zDjU693QfcbEzED7k.0";
+    };
+
+    root.hashedPassword =
+      "$6$PFZjyXdf7W2cu3$55Iw6UjpcdB29fb4RIPcaYFY5Ehtuc9MFZaJBa9wlRbgYxRrDAP0tlApOiIsQY7hoeO9XG7xxiIcsjGYc9QXu1";
   };
-  users.users.root.hashedPassword =
-    "$6$PFZjyXdf7W2cu3$55Iw6UjpcdB29fb4RIPcaYFY5Ehtuc9MFZaJBa9wlRbgYxRrDAP0tlApOiIsQY7hoeO9XG7xxiIcsjGYc9QXu1";
+
   home-manager.users.snead = ../home/users/snead-framework.nix;
+  home-manager.users.work = ../home/users/work.nix;
 
   # Sway is my primary WM since X doesn't do scaling well.
   programs.sway.enable = true;
@@ -123,7 +152,7 @@
       default_session = {
         command = "${
             lib.makeBinPath [ pkgs.greetd.tuigreet ]
-          }/tuigreet --width 100 --time --asterisks --cmd sway";
+          }/tuigreet --width 85 --time --asterisks -s  ${config.programs.hyprland.package}/share/wayland-sessions:${pkgs.sway}/share/wayland-sessions";
         user = "greeter";
       };
     };
@@ -221,5 +250,12 @@
   virtualisation.libvirtd.enable = false;
 
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
+  programs.evolution.enable = true;
+
+  services.hardware.openrgb = {
+    enable = true;
+    motherboard = "intel";
+  };
 
 }

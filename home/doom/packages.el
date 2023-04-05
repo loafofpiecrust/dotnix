@@ -4,16 +4,17 @@
 ;;(package! benchmark-init)
 
 
-(package! theme-changer :pin "61945695a30d678e6a5d47cbe7c8aff59a8c30ea")
 (package! ewal)
 (package! ewal-doom-themes)
 (package! ewal-evil-cursors)
+
+(package! common-header-mode-line :recipe (:local-repo "common-header-mode-line-0.5.6"))
 
 ;; Utilities
 (package! string-inflection)
 ;; Show registers before using them!
 (package! evil-owl :pin "ed5a98644a9cf321de213b50df6473de9f3a71ed")
-(package! olivetti :pin "61d26644fd9dd2d45b80b9b82f5f930ed17530d0")
+(package! olivetti)
 
 ;; Extra languages
 (package! graphql-mode)
@@ -43,8 +44,10 @@
 
 ;;; Email
 (package! org-msg :disable t)
+(package! md-msg
+  :recipe (:local-repo "custom" :files ("md-msg.el") :build (:not compile)))
 ;; Desktop notifications upon receiving new emails.
-(package! mu4e-alert :pin "91f0657c5b245a9de57aa38391221fb5d141d9bd")
+;; (package! mu4e-alert :pin "91f0657c5b245a9de57aa38391221fb5d141d9bd")
 ;; (package! mu4e-send-delay
 ;;   :recipe (:host github :repo "cacology/mu4e-send-delay"))
 
@@ -132,6 +135,8 @@
 (package! hercules
   :recipe (:host gitlab :repo "jjzmajic/hercules.el"))
 
+(package! gsettings)
+
 ;; (package! org-pandoc-import
 ;;   :recipe (:host github
 ;;            :repo "tecosaur/org-pandoc-import"
@@ -142,7 +147,7 @@
            :repo "neeasade/ct.el"
            :branch "master"))
 
-(package! mixed-pitch :disable t)
+(package! mixed-pitch)
 
 (package! memoize)
 
@@ -151,6 +156,14 @@
 (package! eldoc-box)
 
 (package! sly-asdf)
+
+;; Support for prisma, a database schema language
+(package! prisma-mode :recipe (:host github :repo "pimeys/emacs-prisma-mode" :branch "main"))
+
+(package! tera-mode
+    :recipe (:host github :repo "svavs/tera-mode"))
+
+(package! phscroll :recipe (:host github :repo "misohena/phscroll"))
 
 ;;(package! daemons)
 

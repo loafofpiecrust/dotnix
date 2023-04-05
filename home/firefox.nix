@@ -1,24 +1,25 @@
 { config, lib, pkgs, ... }:
 
 {
-  home.packages = with pkgs; [ tridactyl-native ];
+  home.packages = with pkgs; [ chromium tridactyl-native ];
   programs.firefox = {
     enable = true;
     package = pkgs.firefox-beta-bin;
-    extensions = with pkgs.nur.repos.rycee.firefox-addons; [
-      bitwarden
-      ublock-origin
-      tridactyl
-      darkreader
-      translate-web-pages
-      #adsum-notabs
-    ];
     profiles.default = {
+      extensions = with pkgs.nur.repos.rycee.firefox-addons; [
+        bitwarden
+        ublock-origin
+        tridactyl
+        darkreader
+        translate-web-pages
+        #adsum-notabs
+      ];
       isDefault = true;
       # search.default = "DuckDuckGo";
       settings = {
         # Enable DRM
         "media.eme.enabled" = true;
+        "media.eme.hdcp-policy-check.enabled" = true;
         # Make scrolling a bit slower.
         "mousewheel.default.delta_multiplier_x" = 100;
         "mousewheel.default.delta_multiplier_y" = 100;
@@ -55,6 +56,9 @@
         "media.navigator.mediadatadecoder_vpx_enabled" = true;
         "media.ffvpx.enabled" = false;
         "media.rdd-process.enabled" = false;
+        # Disable sharing pop-up because it duplicates the widget on the URL bar
+        "privacy.webrtc.hideGlobalIndicator" = true;
+        "privacy.webrtc.legacyGlobalIndicator" = false;
       };
 
       userChrome = ''
