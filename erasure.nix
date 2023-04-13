@@ -1,3 +1,4 @@
+# TODO Switch to this eventually: https://github.com/nix-community/impermanence
 { config, lib, pkgs, modulesPath, ... }:
 let
   withoutNulls = l: builtins.filter (e: e != null) l;
@@ -7,15 +8,13 @@ let
     (check config.services.upower.enable "/var/lib/upower")
     (check config.virtualisation.docker.enable "/var/lib/docker")
     (check config.services.fprintd.enable "/var/lib/fprint")
-    (check config.hardware.bluetooth.enable "/var/lib/bluetooth")
+    # (check config.hardware.bluetooth.enable "/var/lib/bluetooth")
   ];
-  persistInEtc = [
-    "machine-id"
-    "adjtime"
-    "NIXOS"
-    "nixos" # "bluetooth"
-  ];
+  persistInEtc = [ "machine-id" "adjtime" "NIXOS" "nixos" ];
 in {
+  # systemd.tmpfiles.rules =
+  #   [ "L /var/lib/bluetooth - - - - /persist/var/lib/bluetooth" ];
+
   # Bind mount persisted folders onto the root partition at boot.
   # Several services don't like their state folders to be symlinks, so bind
   # mounts work better.
@@ -24,7 +23,14 @@ in {
     where = path;
     type = "none";
     options = "bind";
+    mountConfig.DirectoryMode = lib.mkIf (path == "/var/lib/bluetooth") "0755";
   }) persistOther);
+
+  fileSystems."/var/lib/bluetooth" = {
+    device = "/persist/var/lib/bluetooth";
+    options = [ "bind" "noauto" "x-systemd.automount" ];
+    noCheck = true;
+  };
 
   # Let NixOS handle the persistent /etc files.
   environment.etc = lib.mkMerge
@@ -35,10 +41,10 @@ in {
   system.activationScripts.etc.deps = [ "cp-etc" ];
   system.activationScripts.cp-etc = let
     etcLinks = (map (name: ''
-      [ -e "/persist/etc/${name}" ] || cp -Trf {,/persist}/etc/${name} || true
+      [ -e "/persist/etc/${name}" ] || cp -Trfp {,/persist}/etc/${name} || true
     '') persistInEtc);
     otherLinks = (map (path: ''
-      [ -e "/persist${path}" ] || cp -Trf {,/persist}${path} || true
+      [ -e "/persist${path}" ] || cp -Trfp {,/persist}${path} || true
     '') persistOther);
   in ''
     mkdir -p /persist/etc
