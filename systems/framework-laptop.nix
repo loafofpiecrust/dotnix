@@ -239,7 +239,6 @@
   # Disable automatic location updates because geoclue makes the boot process
   # wait for internet, stalling it for 5-10 seconds!
   location = {
-    # Oakland
     latitude = 37.820248;
     longitude = -122.284792;
   };
@@ -250,8 +249,6 @@
   virtualisation.libvirtd.enable = false;
 
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
-
-  programs.evolution.enable = true;
 
   services.hardware.openrgb = {
     enable = true;

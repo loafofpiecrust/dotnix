@@ -24,6 +24,14 @@
   security.doas.enable = true;
   security.sudo.enable = false;
 
+  # Mimic sudo settings, where users in the wheel group can run as root, caching
+  # the password for 5 minutes.
+  security.doas.extraRules = [{
+    groups = [ "wheel" ];
+    runAs = "root";
+    persist = true;
+  }];
+
   # Use pipewire for sound, emulating ALSA and PulseAudio servers.
   services.pipewire = {
     enable = true;
@@ -115,4 +123,12 @@
     pulseaudio
     calc
   ];
+
+  # Allow OTA firmware updates from the testing channel.
+  services.fwupd.enable = true;
+  environment.etc."fwupd/remotes.d/lvfs-testing.conf" = {
+    source = ./fwupd-lvfs-testing.conf;
+  };
+  environment.etc."fwupd/uefi_capsule.conf".source =
+    lib.mkForce ./fwupd-uefi-capsule.conf;
 }

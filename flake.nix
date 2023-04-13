@@ -93,7 +93,8 @@
       nixosConfigurations = (mkLinux "x86_64-linux" "portable-spudger"
         ./systems/framework-laptop.nix)
         // (mkLinux "x86_64-linux" "loafofpiecrust" ./systems/laptop-720s.nix)
-        // (mkLinux "aarch64-linux" "steve" ./systems/steve.nix);
+        // (mkLinux "aarch64-linux" "steve" ./systems/steve.nix)
+        // (mkLinux "x86_64-linux" "kirby" ./systems/kirby.nix);
 
       images.steve = nixosConfigurations.steve.config.system.build.sdImage;
     };
