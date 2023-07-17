@@ -9,6 +9,9 @@
     # ../erasure.nix
   ];
 
+  # Prevent nix from taking all available CPU time.
+  nix.settings.max-jobs = 4;
+
   environment.etc = let persistInEtc = [ "nixos" ];
   in lib.mkMerge
   (map (name: { "${name}".source = "/persist/etc/${name}"; }) persistInEtc);
@@ -18,6 +21,8 @@
   # Disable fingerprint for login, because it's unreliable.
   services.fprintd.enable = false;
   security.pam.services.greetd.fprintAuth = false;
+
+  hardware.i2c.enable = true;
 
   # Setup basic boot options and kernel modules.
   boot = {
@@ -41,6 +46,7 @@
       "quiet"
       "nvme.noacpi=1" # Apparently good for battery life
       "i915.enable_psr=1"
+      "mem_sleep_default=deep"
     ];
     kernel.sysctl = { "kernel.nmi_watchdog" = 0; };
 
@@ -56,8 +62,8 @@
   services.tlp.settings = {
     CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
     PCIE_ASPM_ON_BAT = "powersupersave";
-    START_CHARGE_THRESH_BAT0 = 89;
-    STOP_CHARGE_THRESH_BAT0 = 94;
+    START_CHARGE_THRESH_BAT1 = 75;
+    STOP_CHARGE_THRESH_BAT1 = 80;
     CPU_SCALING_GOVERNOR_ON_BAT = "balance_performance";
     ENERGY_PERF_POLICY_ON_BAT = "balance_performance";
   };
@@ -66,9 +72,6 @@
     intel-media-driver
     intel-gpu-tools
   ];
-
-  # high-resolution display
-  hardware.video.hidpi.enable = lib.mkDefault true;
 
   # Do a monthly scrub of the btrfs volume.
   services.btrfs.autoScrub.enable = true;
@@ -103,7 +106,7 @@
   # networking.interfaces.enp0s20f0u1.useDHCP = true;
 
   users.mutableUsers = false;
-  users.defaultUserShell = pkgs.zsh;
+  users.defaultUserShell = pkgs.fish;
   users.users = let
     extraGroups = [
       "wheel"
@@ -190,11 +193,11 @@
   };
 
   # Framework laptop doesn't require battery polling.
-  services.upower.noPollBatteries = true;
+  # services.upower.noPollBatteries = true;
 
   # Replace docker with podman since it's daemon-less?
   virtualisation.docker = {
-    enable = false;
+    enable = true;
     autoPrune.enable = true;
   };
 
@@ -203,6 +206,7 @@
 
   # Install some applications!
   environment.systemPackages = with pkgs; [
+    docker
     # apps
     # gnome3.gnome-settings-daemon
     gnome.gvfs
@@ -229,6 +233,7 @@
 
     libreoffice
     # virt-manager
+    unstable.pynitrokey
   ];
   # Let mate-panel find applets
   environment.sessionVariables."MATE_PANEL_APPLETS_DIR" =
@@ -255,4 +260,5 @@
     motherboard = "intel";
   };
 
+  hardware.nitrokey.enable = true;
 }

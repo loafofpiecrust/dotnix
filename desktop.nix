@@ -22,9 +22,9 @@
     loader.efi.canTouchEfiVariables = true;
 
     # boot niceties
-    cleanTmpDir = true;
     consoleLogLevel = 0;
-    tmpOnTmpfs = lib.mkDefault false;
+    tmp.useTmpfs = lib.mkDefault false;
+    tmp.cleanOnBoot = true;
   };
 
   # Open the ports needed for Chromecast.
@@ -44,7 +44,7 @@
 
   # Scanning
   hardware.sane.enable = true;
-  hardware.sane.extraBackends = [ pkgs.hplipWithPlugin ];
+  hardware.sane.extraBackends = [ pkgs.hplip ];
 
   hardware.logitech.wireless.enable = true;
   hardware.logitech.wireless.enableGraphical = true;

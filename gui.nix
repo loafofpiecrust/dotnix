@@ -94,7 +94,7 @@
       ];
       serif = [ "Merriweather" "Liberation Serif" ];
     };
-    hinting.enable = false;
+    # hinting.enable = false;
   };
 
   nixpkgs.overlays = [
@@ -165,8 +165,44 @@
       waybar = super.waybar.override { pulseSupport = true; };
       # Remove google tracking from chromium.
       chromium = super.ungoogled-chromium;
+
+      swhkd = pkgs.rustPlatform.buildRustPackage rec {
+        pname = "swhkd";
+        version = "1.3.0";
+        src = pkgs.fetchFromGitHub {
+          owner = "waycrate";
+          repo = pname;
+          rev = "3b19fc33b32efde88311579152a1078a8004397c";
+          sha256 = "245Y3UicW33hrQ6Mtf07I9vsWSpuijIEoEhxIKtjVQE=";
+        };
+        cargoLock = { lockFile = "${src}/Cargo.lock"; };
+        nativeBuildInputs = with pkgs; [ pkg-config makeWrapper ];
+        buildInputs = with pkgs; [ gnumake polkit ];
+        postInstall = ''
+          mkdir -p $out/share/polkit-1/actions
+          ./scripts/build-polkit-policy.sh --policy-path=com.github.swhkd.pkexec.policy --swhkd-path=$out/bin/swhkd
+          install -Dm 644 ./com.github.swhkd.pkexec.policy -t $out/share/polkit-1/actions
+        '';
+        postFixup = ''
+          wrapProgram $out/bin/swhkd --prefix PATH : ${
+            lib.makeBinPath [ pkgs.polkit ]
+          }
+          wrapProgram $out/bin/swhks --prefix PATH : ${
+            lib.makeBinPath [ pkgs.polkit ]
+          }
+        '';
+        doCheck = false;
+      };
     })
   ];
+
+  # Run swhkd system daemon to manage keybindings across all environments!
+  # systemd.services.swhkd = {
+  #   # Launches ASAP
+  #   wantedBy = [ "default.target" ];
+  #   serviceConfig.ExecStart = "${pkgs.swhkd}/bin/swhkd";
+  #   serviceConfig.Type = "forking";
+  # };
 
   # Configure sway if I happen to want it in my setup.
   programs.sway = {

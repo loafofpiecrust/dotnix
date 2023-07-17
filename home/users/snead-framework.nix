@@ -8,6 +8,7 @@
     wine
     winetricks
     freecad
+    kicad
     nodePackages.surge
   ];
 }

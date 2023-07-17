@@ -2,17 +2,9 @@
 
 {
   imports = [ inputs.kmonad.nixosModules.default ];
-  environment.systemPackages = with pkgs; [
-    keyd
-    moused
-    unstable.via
-    unstable.vial
-  ];
-  services.udev.packages = with pkgs; [
-    unstable.qmk-udev-rules
-    unstable.via
-    unstable.vial
-  ];
+  environment.systemPackages = with pkgs; [ keyd moused via vial ];
+  services.udev.packages = with pkgs; [ via ];
+  hardware.keyboard.qmk.enable = true;
   systemd.services.keyd = {
     enable = true;
     description = "key remapping daemon";
@@ -40,6 +32,9 @@
 
   environment.etc."keyd/all-keyboards.conf".source =
     ./keyboard/all-keyboards.conf;
+  environment.etc."keyd/monsgeek.conf".source = ./keyboard/monsgeek.conf;
+  environment.etc."keyd/zoom65.conf".source = ./keyboard/zoom65.conf;
+  environment.etc."keyd/common".source = ./keyboard/common.conf;
   environment.etc."moused.conf".source = ./keyboard/mouse.conf;
 
   nixpkgs.overlays = [
@@ -84,9 +79,6 @@
     })
   ];
 
-  # services.udev.extraRules = ''
-  #   KERNEL=="hidraw*", SUBSYSTEM=="hidraw", MODE="0660", GROUP="users", TAG+="uaccess", TAG+="udev-acl"
-  # '';
   # nixpkgs.overlays = [
   #   (self: super: {
   #     keyd = super.keyd.overrideAttrs (old: {

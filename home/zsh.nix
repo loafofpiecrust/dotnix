@@ -5,12 +5,13 @@
     enableAutosuggestions = true;
     plugins = [
       {
-        name = "doas";
+        name = "sudo";
         src = builtins.fetchGit {
-          url = "https://github.com/Senderman/doas-zsh-plugin";
+          url = "https://github.com/ohmyzsh/ohmyzsh";
           ref = "master";
-          rev = "f5c58a34df2f8e934b52b4b921a618b76aff96ba";
+          rev = "fb4213c34ff8ec83cbe6251f432fdac383378562";
         };
+        file = "plugins/sudo/sudo.plugin.zsh";
       }
       {
         name = "fzf-tab-completion";

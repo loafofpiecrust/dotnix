@@ -1,11 +1,13 @@
 { config, lib, pkgs, ... }: {
   home.packages = with pkgs; [
+    swhkd
     wpgtk
     pywal
     pamixer
-    unstable.swww
+    swww
     clipman
     rofi-wayland
+    wofi
     pamixer
     brightnessctl
     playerctl
@@ -13,13 +15,35 @@
     foot
     grim
     slurp
+    wdisplays
+    wlr-randr
   ];
 
   programs.pywal.enable = true;
 
-  programs.rofi = {
+  services.kanshi = {
     enable = true;
-    package = pkgs.rofi-wayland;
+    systemdTarget = "graphical-session.target";
+    profiles = let
+      laptop-screen = {
+        criteria = "eDP-1";
+        mode = "2256x1504@60Hz";
+        position = "0,300";
+      };
+    in {
+      undocked = { outputs = [ (laptop-screen // { scale = 1.333333; }) ]; };
+      docked-home = {
+        outputs = [
+          (laptop-screen // { scale = 1.6; })
+          {
+            criteria = "Acer Technologies XV272U 0x0000BFCC";
+            position = "1410,0";
+          }
+        ];
+        exec =
+          [ "${pkgs.systemd}/bin/systemctl --user restart dynamic-wallpaper" ];
+      };
+    };
   };
 
   programs.waybar = {
@@ -115,6 +139,8 @@
       battery = {
         states.warning = 30;
         states.critical = 10;
+        design-capacity = false;
+        full-at = 80;
         format = "{icon}";
         format-charging = "{icon}";
         format-plugged = "{icon}";
@@ -177,16 +203,25 @@
 
       [anchor=center]
       max-visible=1
+
+      [body~="Battery charging"]
+      invisible=1
+
+      [body~="Battery discharging"]
+      invisible=1
+
+      [body~="Battery pending charge"]
+      invisible=1
     '';
   };
 
   # Enables power status notifications when using Sway.
-  services.poweralertd.enable = true;
-  systemd.user.services.poweralertd = {
-    Install.WantedBy = lib.mkForce [ "graphical-session.target" ];
-    # TODO I might not need to change Unit.PartOf
-    Unit.PartOf = lib.mkForce [ "graphical-session.target" ];
-  };
+  # services.poweralertd.enable = true;
+  # systemd.user.services.poweralertd = {
+  #   Install.WantedBy = lib.mkForce [ "graphical-session.target" ];
+  #   # TODO I might not need to change Unit.PartOf
+  #   Unit.PartOf = lib.mkForce [ "graphical-session.target" ];
+  # };
 
   services.udiskie = { enable = true; };
   services.blueman-applet.enable = true;
@@ -263,7 +298,7 @@
       script = pkgs.writeShellApplication {
         name = "swww-init";
         text = "swww init";
-        runtimeInputs = with pkgs; [ unstable.swww ];
+        runtimeInputs = with pkgs; [ swww ];
       };
     in "${script}/bin/swww-init";
   };
@@ -286,10 +321,6 @@
     Service.ExecStart = let
       gs = config.services.gammastep;
       ll = "${builtins.toString gs.latitude},${builtins.toString gs.longitude}";
-      setWallpaper = file: ''
-        ln -sf ${file} ~/.wallpaper
-        swww img ${file} -t simple --transition-step 1
-      '';
       script = pkgs.writeShellApplication {
         name = "dynamic-wallpaper";
         # SUN_HOUR=$(sundazel -l ${ll} | cut -d ':' -f 1 | xargs)
@@ -318,4 +349,32 @@
       OnCalendar = "hourly";
     };
   };
+
+  services.swayidle = let randr = "${pkgs.wlr-randr}/bin/wlr-randr";
+  in {
+    enable = false;
+    systemdTarget = "graphical-session.target";
+    timeouts = [{
+      timeout = 300;
+      command = "${randr} --output eDP-1 --off";
+    }];
+    events = [{
+      event = "after-resume";
+      command = "${randr} --output eDP-1 --on";
+    }];
+    extraArgs = [ "idlehint" "600" ];
+  };
+
+  systemd.user.services.keyd-application-mapper = {
+    Install.WantedBy = [ "graphical-session.target" ];
+    Service.Type = "normal";
+    Service.ExecStart = let
+      script = pkgs.writeShellApplication {
+        name = "keyd-application-mapper";
+        text = "keyd-application-mapper";
+        runtimeInputs = with pkgs; [ keyd sway ];
+      };
+    in "${script}/bin/keyd-application-mapper";
+  };
+  xdg.configFile."keyd/app.conf".source = ../keyboard/apps.conf;
 }

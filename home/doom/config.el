@@ -537,10 +537,10 @@ Returns nil if not logged in."
 ;; Loading these packages is about 40% of the delay when first starting a
 ;; language server.
 ;; The rest is actually loading the server and can't be reduced much.
-(setq lsp-client-packages '(ccls lsp-bash lsp-clangd lsp-cmake lsp-css lsp-dart lsp-dockerfile
-                                 lsp-eslint lsp-go lsp-haskell lsp-java lsp-javascript lsp-json lsp-kotlin
-                                 lsp-lua lsp-nix lsp-ocaml lsp-pyls lsp-python-ms lsp-rust lsp-tex lsp-terraform lsp-xml
-                                 lsp-yaml lsp-r))
+;; (setq lsp-client-packages '(ccls lsp-bash lsp-clangd lsp-cmake lsp-css lsp-dart lsp-dockerfile
+;;                                  lsp-eslint lsp-go lsp-haskell lsp-java lsp-javascript lsp-json lsp-kotlin
+;;                                  lsp-lua lsp-nix lsp-ocaml lsp-pyls lsp-python-ms lsp-rust lsp-tex lsp-terraform lsp-xml
+;;                                  lsp-yaml lsp-r lsp-sqls))
 (after! lsp-mode
   (setq lsp-eldoc-render-all nil
         lsp-signature-render-documentation nil
@@ -1860,7 +1860,8 @@ Position is calculated base on WIDTH and HEIGHT of childframe text window"
   (add-to-list 'sly-contribs 'sly-asdf 'append))
 
 (setq lsp-sqls-connections
-    '(((driver . "postgresql") (dataSourceName . "host=127.0.0.1 port=5432 database=customers sslmode=disable"))))
+    '(((driver . "postgresql") (dataSourceName . "host=127.0.0.1 port=5432 database=customers sslmode=disable"))
+      ((driver . "postgresql") (dataSourceName . "host=127.0.0.1 port=5432 user=postgres database=dev_database_lvus sslmode=disable"))))
 (setq sql-connection-alist
       '((pool-a
          (sql-product 'postgres)
