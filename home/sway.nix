@@ -8,11 +8,17 @@
     wrapperFeatures.gtk = true;
     config.output = {
       # Framework Laptop screen
-      "Unknown 0x095F 0x00000000" = {
+      "BOE 0x095F Unknown" = {
         mode = "2256x1504@60Hz";
         # Use a scale that'll frequently give me whole numbers.
         # 4 => 5; 8 => 10; 12 => 15; 16 => 20
-        scale = "1.5";
+        scale = "1.333333"; # Roughly 1080p density
+        scale_filter = "nearest";
+      };
+      "Acer Technologies XV272U 0x0000BFCC" = {
+        mode = "2560x1440@144Hz";
+        # scale = "1.0";
+        scale_filter = "nearest";
       };
     };
 
@@ -22,10 +28,10 @@
       output = "eDP-1";
       workspace = builtins.toString idx;
     }) (lib.range 1 4)) ++ (builtins.map (idx: {
-      output = "DP-2";
+      output = "DP-4";
       workspace = builtins.toString idx;
     }) (lib.range 5 9)) ++ [{
-      output = "DP-2";
+      output = "DP-4";
       workspace = "0";
     }];
 
@@ -75,21 +81,21 @@
       "${mod}+b" = "exec firefox";
       "${mod}+e" = "exec emacsclient -c";
       "${mod}+n" = "exec caja";
-      "${mod}+p" = "exec rofi -show drun";
-      "${mod}+apostrophe" = "exec clipman pick -t rofi";
+      "${mod}+p" = "exec wofi --show drun -I -a -M fuzzy";
+      "${mod}+apostrophe" = "exec clipman pick -t wofi";
       "${mod}+bracketright" = "workspace next";
       "${mod}+bracketleft" = "workspace prev";
       "${mod}+shift+bracketright" = "move container to workspace next";
       "${mod}+shift+bracketleft" = "move container to workspace prev";
-      "XF86AudioRaiseVolume" = "exec ${setVolume "-i 5"}";
-      "XF86AudioLowerVolume" = "exec ${setVolume "-d 5"}";
+      "XF86AudioRaiseVolume" = "exec ${setVolume "-i 2"}";
+      "XF86AudioLowerVolume" = "exec ${setVolume "-d 2"}";
       "XF86AudioMute" = "exec pamixer -t";
       "XF86AudioPlay" = "exec playerctl play-pause";
       "XF86AudioNext" = "exec playerctl next";
       "XF86AudioPrev" = "exec playerctl previous";
       "Shift+XF86AudioRaiseVolume" = "exec ${setMicVolume "-i 5"}";
       "Shift+XF86AudioLowerVolume" = "exec ${setMicVolume "-d 5"}";
-      "Shift+XF86AudioMute" = "exec pamixer --default-source -t";
+      "XF86AudioMicMute" = "exec pamixer --default-source -t";
     };
     config.window = {
       border = 3;
@@ -98,7 +104,7 @@
     config.input."1133:50475:moused_virtual_device" = {
       scroll_method = "on_button_down";
       scroll_button = "button8";
-      scroll_factor = "0.15";
+      scroll_factor = "0.25";
       natural_scroll = "enabled";
     };
     config.input."1149:4128:Kensington_Expert_Mouse" = {
@@ -116,8 +122,8 @@
     };
     config.input."type:keyboard" = {
       xkb_layout = "us";
-      xkb_variant = "altgr-intl";
-      xkb_options = "nodeadkeys";
+      # xkb_variant = "altgr-intl";
+      # xkb_options = "nodeadkeys";
       repeat_delay = "250";
       repeat_rate = "20";
     };

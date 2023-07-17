@@ -21,9 +21,9 @@
         "media.eme.enabled" = true;
         "media.eme.hdcp-policy-check.enabled" = true;
         # Make scrolling a bit slower.
-        "mousewheel.default.delta_multiplier_x" = 100;
-        "mousewheel.default.delta_multiplier_y" = 100;
-        "mousewheel.default.delta_multiplier_z" = 100;
+        "mousewheel.default.delta_multiplier_x" = 80;
+        "mousewheel.default.delta_multiplier_y" = 80;
+        "mousewheel.default.delta_multiplier_z" = 80;
         # Disable scroll momentum when I let go of the touchpad.
         "apz.gtk.kinetic_scroll.enabled" = false;
         "layout.css.devPixelsPerPx" = "-1.0";

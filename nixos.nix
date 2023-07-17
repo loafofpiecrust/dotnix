@@ -20,17 +20,16 @@
     # };
   };
 
-  # Use doas instead of sudo.
-  security.doas.enable = true;
-  security.sudo.enable = false;
+  # Go back to sudo from doas, since it's the ubiquitous standard and the 2021
+  # CVE has been resolved.
+  security.sudo = {
+    enable = true;
+    execWheelOnly = true; # Fixes the 2021 CVE
+    wheelNeedsPassword = true;
+  };
 
-  # Mimic sudo settings, where users in the wheel group can run as root, caching
-  # the password for 5 minutes.
-  security.doas.extraRules = [{
-    groups = [ "wheel" ];
-    runAs = "root";
-    persist = true;
-  }];
+  # Add an alias so that I can ask my computer to PLEASE do stuff.
+  environment.shellAliases = { please = "sudo"; };
 
   # Use pipewire for sound, emulating ALSA and PulseAudio servers.
   services.pipewire = {
@@ -39,14 +38,14 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    config.pipewire = {
-      "context.properties" = {
-        "default.clock.rate" = 44100;
-        #"default.clock.quantum" = 2048;
-        #"default.clock.min-quantum" = 1024;
-        #"default.clock.max-quantum" = 4096;
-      };
-    };
+    # config.pipewire = {
+    #   "context.properties" = {
+    #     "default.clock.rate" = 44100;
+    #     #"default.clock.quantum" = 2048;
+    #     #"default.clock.min-quantum" = 1024;
+    #     #"default.clock.max-quantum" = 4096;
+    #   };
+    # };
   };
   security.rtkit.enable = true;
 
@@ -57,9 +56,10 @@
   # Allow easy discovery of network devices (like printers).
   services = {
     avahi.enable = true;
-    # avahi.nssmdns = true;
+    avahi.nssmdns = true;
+    avahi.openFirewall = true;
     printing.enable = true;
-    printing.drivers = with pkgs.unstable; [ hplipWithPlugin gutenprint ];
+    printing.drivers = with pkgs; [ hplip gutenprint ];
   };
 
   # Add ~/bin to PATH for all users.
@@ -131,4 +131,7 @@
   };
   environment.etc."fwupd/uefi_capsule.conf".source =
     lib.mkForce ./fwupd-uefi-capsule.conf;
+
+  # TODO Figure out what the hell package uses python 2.7 still.
+  nixpkgs.config.permittedInsecurePackages = [ "python-2.7.18.6" ];
 }

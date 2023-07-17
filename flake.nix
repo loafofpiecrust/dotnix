@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-22.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-wayland = {
       url = "github:nix-community/nixpkgs-wayland";
@@ -9,8 +9,7 @@
     nixos-hardware.url = "github:nixos/nixos-hardware/master";
     nur.url = "github:nix-community/nur";
     home-manager = {
-      url =
-        "github:nix-community/home-manager/363c46b2480f1b73ec37cf68caac61f5daa82a2e";
+      url = "github:nix-community/home-manager/release-23.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     emacs-overlay = {
@@ -18,8 +17,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-doom-emacs = {
-      url =
-        "github:vlaci/nix-doom-emacs/fee14d217b7a911aad507679dafbeaa8c1ebf5ff";
+      url = "github:vlaci/nix-doom-emacs";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.emacs-overlay.follows = "emacs-overlay";
       # inputs.straight.follows = "straight";
@@ -93,9 +91,6 @@
       nixosConfigurations = (mkLinux "x86_64-linux" "portable-spudger"
         ./systems/framework-laptop.nix)
         // (mkLinux "x86_64-linux" "loafofpiecrust" ./systems/laptop-720s.nix)
-        // (mkLinux "aarch64-linux" "steve" ./systems/steve.nix)
         // (mkLinux "x86_64-linux" "kirby" ./systems/kirby.nix);
-
-      images.steve = nixosConfigurations.steve.config.system.build.sdImage;
     };
 }

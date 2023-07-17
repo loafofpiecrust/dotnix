@@ -49,6 +49,7 @@
     rust-analyzer
     pgformatter
     python39Packages.sqlparse
+    sqls
 
     # development apps
     plantuml # plain-text diagrams!
@@ -59,7 +60,16 @@
     sqlite
   ];
 
-  nixpkgs.overlays = [ (self: super: { emacsCustom = super.emacs.override { withPgtk = true; withSQLite3 = true; withWebP = true; nativeComp = true; }; }) ];
+  nixpkgs.overlays = [
+    (self: super: {
+      emacsCustom = super.emacs.override {
+        withPgtk = true;
+        withSQLite3 = true;
+        withWebP = true;
+        withNativeCompilation = true;
+      };
+    })
+  ];
 
   # Android debugging.
   programs.adb.enable = true;

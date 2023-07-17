@@ -17,6 +17,7 @@
   powerManagement.powertop.enable = false;
   # Enables screen dimming and session locking.
   services.upower.enable = true;
+  services.upower.criticalPowerAction = "Hibernate";
   # Backlight management
   programs.light.enable = true;
 
@@ -31,24 +32,26 @@
     lidSwitch = "suspend-then-hibernate";
     lidSwitchExternalPower = config.services.logind.lidSwitch;
     extraConfig = ''
-      HandlePowerKey=power-off
+      HandlePowerKey=poweroff
+      IdleAction=suspend
+      IdleActionSec=600
     '';
   };
   systemd.sleep.extraConfig = ''
-    HibernateDelaySec=1h
+    HibernateDelaySec=2h
   '';
 
   services.acpid = {
     enable = true;
-    lidEventCommands = ''
-      case "$1" in
-        close)
-          brightnessctl -s
-          brightnessctl s 0;;
-        open)
-          brightnessctl -r;;
-        *)
-          echo "ACPI action undefined: $1";;
-    '';
+    # lidEventCommands = ''
+    #   case "$1" in
+    #     close)
+    #       brightnessctl -s
+    #       brightnessctl s 0;;
+    #     open)
+    #       brightnessctl -r;;
+    #     *)
+    #       echo "ACPI action undefined: $1";;
+    # '';
   };
 }
