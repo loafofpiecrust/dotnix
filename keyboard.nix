@@ -2,7 +2,7 @@
 
 {
   imports = [ inputs.kmonad.nixosModules.default ];
-  environment.systemPackages = with pkgs; [ keyd moused via vial ];
+  environment.systemPackages = with pkgs; [ keyd moused via ];
   services.udev.packages = with pkgs; [ via ];
   hardware.keyboard.qmk.enable = true;
   systemd.services.keyd = {

@@ -31,10 +31,40 @@
         position = "0,300";
       };
     in {
-      undocked = { outputs = [ (laptop-screen // { scale = 1.333333; }) ]; };
-      docked-home = {
+      undocked = {
         outputs = [
-          (laptop-screen // { scale = 1.6; })
+          (laptop-screen // {
+            scale = 1.333333;
+            status = "enable";
+          })
+        ];
+      };
+      double-docked = {
+        outputs = [
+          (laptop-screen // {
+            scale = 1.6;
+            status = "disable";
+          })
+          {
+            criteria = "Acer Technologies XV272U 0x0000BFCC";
+            position = "1440,500";
+          }
+          {
+            criteria = "Dell Inc. DELL U2717D 67YGV879B54S";
+            position = "0,0";
+            transform = "270";
+          }
+        ];
+        exec =
+          [ "${pkgs.systemd}/bin/systemctl --user restart dynamic-wallpaper" ];
+      };
+
+      single-docked = {
+        outputs = [
+          (laptop-screen // {
+            scale = 1.6;
+            status = "enable";
+          })
           {
             criteria = "Acer Technologies XV272U 0x0000BFCC";
             position = "1410,0";
@@ -352,17 +382,29 @@
 
   services.swayidle = let randr = "${pkgs.wlr-randr}/bin/wlr-randr";
   in {
-    enable = false;
+    enable = true;
     systemdTarget = "graphical-session.target";
-    timeouts = [{
-      timeout = 300;
-      command = "${randr} --output eDP-1 --off";
-    }];
-    events = [{
-      event = "after-resume";
-      command = "${randr} --output eDP-1 --on";
-    }];
-    extraArgs = [ "idlehint" "600" ];
+    timeouts = [
+      {
+        timeout = 240;
+        command = "${pkgs.sway} output '*' dpms off";
+      }
+      {
+        timeout = 360;
+        command = "${pkgs.swaylock}/bin/swaylock -fF";
+      }
+    ];
+    events = [
+      {
+        event = "before-sleep";
+        command = "${pkgs.swaylock}/bin/swaylock";
+      }
+      {
+        event = "after-resume";
+        command = "${pkgs.sway}/bin/swaymsg output '*' dpms on";
+      }
+    ];
+    extraArgs = [ "idlehint" "360" ];
   };
 
   systemd.user.services.keyd-application-mapper = {
@@ -377,4 +419,9 @@
     in "${script}/bin/keyd-application-mapper";
   };
   xdg.configFile."keyd/app.conf".source = ../keyboard/apps.conf;
+
+  programs.swaylock = {
+    enable = true;
+
+  };
 }

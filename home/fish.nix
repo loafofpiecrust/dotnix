@@ -1,8 +1,10 @@
 { config, lib, pkgs, ... }: {
   programs.fish = {
     enable = true;
-    interactiveShellInit =
-      "${pkgs.fortune}/bin/fortune -s | ${pkgs.pokemonsay}/bin/pokemonsay -N";
+    interactiveShellInit = ''
+      cat ~/.cache/wal/sequences
+      ${pkgs.fortune}/bin/fortune -s | ${pkgs.pokemonsay}/bin/pokemonsay -N
+    '';
     shellAliases = { grep = "rg"; };
     # plugins = with pkgs.fishPlugins; [ done ];
     functions = {
