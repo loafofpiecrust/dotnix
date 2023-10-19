@@ -1,8 +1,8 @@
 { config, lib, pkgs, inputs, ... }:
 
 {
-  imports = [ inputs.hyprland.nixosModules.default ];
-  programs.hyprland.enable = true;
+  # imports = [ inputs.hyprland.nixosModules.default ];
+  # programs.hyprland.enable = false;
   environment.systemPackages = with pkgs; [
     gnome3.file-roller # provides all archive formats
     pavucontrol
@@ -133,7 +133,7 @@
       sway = super.sway.overrideAttrs (old: {
         src = builtins.fetchGit {
           url = "https://github.com/WillPower3309/swayfx";
-          rev = "4222b98a390f6c377be77b4152e229a89b5276b2";
+          rev = "d89c365106b8d58e4a37ad58e9987a7da28c8951";
         };
       });
       # Patch libnotify to support replacing existing notifications.
@@ -248,7 +248,7 @@
     autoRepeatDelay = 250;
     autoRepeatInterval = 30; # ms between key repeats
     # I don't use caps lock enough, swap it with escape!
-    xkbOptions = "caps:swapescape, compose:ralt, terminate:ctrl_alt_bksp";
+    xkbOptions = "compose:ralt, terminate:ctrl_alt_bksp";
 
     # Only applies in X sessions, not wayland.
     libinput = {

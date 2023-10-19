@@ -58,29 +58,18 @@
 
     accounts.neu = let address = "snead.t@northeastern.edu";
     in {
-      inherit mu msmtp address realName;
+      inherit mbsync mu msmtp thunderbird address realName;
+      flavor = "gmail.com";
       userName = address;
-      imap.host = "localhost";
-      imap.port = 1143;
-      imap.tls.enable = false;
-      passwordCommand = "echo x";
-      mbsync =
-        lib.mkMerge [ mbsync { extraConfig.account.AuthMechs = "LOGIN"; } ];
-      imapnotify = {
-        enable = true;
-        boxes = [ "Inbox" ];
-        #onPost = ''
-        #  ${pkgs.isync}/bin/mbsync neu
-        #'';
-      };
+      imap.host = "imap.gmail.com";
       smtp = {
-        host = "localhost";
-        port = 1025;
-        tls.enable = false;
+        host = "smtp.gmail.com";
+        port = 587;
+        tls.useStartTls = true;
       };
     };
 
-    accounts.gmail = let address = "taylorsnead@gmail.com";
+    accounts.classcompanion = let address = "snead@classcompanion.com";
     in {
       inherit mbsync mu msmtp address realName;
       flavor = "gmail.com";
@@ -92,6 +81,7 @@
         port = 587;
         tls.useStartTls = true;
       };
+      thunderbird.enable = true;
     };
   };
 }

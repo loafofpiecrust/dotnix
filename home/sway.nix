@@ -149,7 +149,7 @@
     ];
     config.fonts = {
       names = [ "sans" ];
-      size = 4.0;
+      size = 10.0;
     };
     # config.bars = [ ];
     config.bars =

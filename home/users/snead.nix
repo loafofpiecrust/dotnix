@@ -5,7 +5,7 @@
     ../firefox.nix
     ../fish.nix
     ../sway.nix
-    ../hyprland.nix
+    # ../hyprland.nix
     ../zsh.nix
   ];
   home.packages = with pkgs; [

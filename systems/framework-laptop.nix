@@ -11,6 +11,7 @@
 
   # Prevent nix from taking all available CPU time.
   nix.settings.max-jobs = 4;
+  nix.settings.cores = 4;
 
   environment.etc = let persistInEtc = [ "nixos" ];
   in lib.mkMerge
@@ -27,7 +28,7 @@
   # Setup basic boot options and kernel modules.
   boot = {
     plymouth.enable = false;
-    kernelPackages = pkgs.linuxKernel.packages.linux_5_15;
+    kernelPackages = pkgs.linuxKernel.packages.linux_6_1;
     initrd.availableKernelModules = [
       "xhci_pci"
       "thunderbolt"
@@ -155,7 +156,7 @@
       default_session = {
         command = "${
             lib.makeBinPath [ pkgs.greetd.tuigreet ]
-          }/tuigreet --width 85 --time --asterisks -s  ${config.programs.hyprland.package}/share/wayland-sessions:${pkgs.sway}/share/wayland-sessions";
+          }/tuigreet --width 85 --time --asterisks -s ${pkgs.sway}/share/wayland-sessions";
         user = "greeter";
       };
     };
@@ -233,7 +234,7 @@
 
     libreoffice
     # virt-manager
-    unstable.pynitrokey
+    pynitrokey
   ];
   # Let mate-panel find applets
   environment.sessionVariables."MATE_PANEL_APPLETS_DIR" =
@@ -261,4 +262,9 @@
   };
 
   hardware.nitrokey.enable = true;
+
+  services.tailscale = {
+    enable = true;
+    package = pkgs.unstable.tailscale;
+  };
 }

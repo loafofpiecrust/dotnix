@@ -4,9 +4,9 @@
 
   hardware.bluetooth.disabledPlugins = [ "sap" ];
 
-  systemd.services.bluetooth.serviceConfig = {
-    ConfigurationDirectoryMode = "0755";
-  };
+  # systemd.services.bluetooth.serviceConfig = {
+  #   ConfigurationDirectoryMode = "0755";
+  # };
 
   # Support media controls from bluetooth headsets.
   systemd.user.services = lib.mkIf config.hardware.bluetooth.enable {

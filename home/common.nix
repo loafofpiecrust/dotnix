@@ -40,7 +40,7 @@
     '';
   };
 
-  home.packages = with pkgs; [ unstable.spotify gparted gnome.simple-scan ];
+  home.packages = with pkgs; [ spotify gparted gnome.simple-scan ];
 
   # GPG agent handles locked files and SSH keys.
   services.gpg-agent = {
@@ -99,6 +99,7 @@
       ] (_: web))
       (lib.genAttrs [ "image/png" "image/jpeg" ] (_: images))
       {
+        "x-scheme-handler/mailto" = [ "thunderbird.desktop" ];
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document" =
           [ "writer.desktop" ];
         "x-scheme-handler/msteams" = [ "teams.desktop" ];

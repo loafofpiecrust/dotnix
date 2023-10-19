@@ -1,7 +1,7 @@
 { config, lib, pkgs, inputs, ... }: {
   imports = [ ./wayland.nix inputs.hyprland.homeManagerModules.default ];
   wayland.windowManager.hyprland = {
-    enable = true;
+    enable = false;
     xwayland.hidpi = true;
     extraConfig = ''
       exec-once = waybar
