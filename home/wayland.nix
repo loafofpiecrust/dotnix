@@ -253,7 +253,11 @@
   #   Unit.PartOf = lib.mkForce [ "graphical-session.target" ];
   # };
 
-  services.udiskie = { enable = true; };
+  services.udiskie = {
+    enable = true;
+    # Don't write access times to USB drives, it's just a waste of their lifespan.
+    settings = { device_config = [{ options = [ "noatime" ]; }]; };
+  };
   services.blueman-applet.enable = true;
 
   services.gammastep = {

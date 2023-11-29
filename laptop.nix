@@ -12,9 +12,9 @@
   services.power-profiles-daemon.enable = false;
   services.tlp.enable = true;
   services.auto-cpufreq.enable = true;
-  # Optimizes I/O on battery power. Maybe don't need this anymore?
+  # Optimizes I/O on battery power.
   powerManagement.enable = true;
-  powerManagement.powertop.enable = false;
+  powerManagement.powertop.enable = true;
   # Enables screen dimming and session locking.
   services.upower.enable = true;
   services.upower.criticalPowerAction = "Hibernate";

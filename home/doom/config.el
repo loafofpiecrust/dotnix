@@ -22,7 +22,7 @@
 (use-package! gsettings)
 
 (defvar +snead/theme-night 'ewal-doom-vibrant)
-(defvar +snead/theme-day 'doom-gruvbox-light)
+(defvar +snead/theme-day 'modus-operandi)
 
 ;; Doom exposes five (optional) variables for controlling fonts in Doom. Here
 ;; are the three important ones:
@@ -104,8 +104,8 @@ It seems excessive, but apparently necessary for fluid LSP usage!"
   :config
   (setq-default gc-cons-percentage 0.5)
 
-  (setq user-full-name "Taylor Snead"
-        user-mail-address "taylor@snead.xyz")
+  (setq user-full-name "Shelby Snead"
+        user-mail-address "shelby@snead.xyz")
 
   (setq confirm-kill-processes nil)
 
@@ -1784,7 +1784,11 @@ Move it to the mode-line."
 (map! :leader "o -" #'deer)
 (map! :after ranger
       :map ranger-mode-map
-      :mn "?" #'+which-key-show-evil-major)
+      :n "?" #'+which-key-show-evil-major
+      :n "I" #'wdired-change-to-wdired-mode)
+(map! :after ranger
+      :map dired-mode-map
+      :n "I" #'wdired-change-to-wdired-mode)
 
 (after! pdf-view
   (map! :map pdf-view-mode-map

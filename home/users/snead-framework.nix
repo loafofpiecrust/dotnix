@@ -13,8 +13,8 @@
     prusa-slicer
 
     # game dev
-    unstable.godot_4
-    unstable.gdtoolkit
+    godot_4
+    gdtoolkit
     aseprite-unfree
 
     # custom keyboards

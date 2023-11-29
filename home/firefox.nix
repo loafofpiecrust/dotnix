@@ -4,7 +4,7 @@
   home.packages = with pkgs; [ chromium tridactyl-native ];
   programs.firefox = {
     enable = true;
-    package = pkgs.firefox-beta-bin;
+    # package = pkgs.firefox-bin;
     profiles.default = {
       extensions = with pkgs.nur.repos.rycee.firefox-addons; [
         bitwarden
