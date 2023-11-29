@@ -16,11 +16,16 @@
     unstable.slack
     # deluge
     transmission-gtk
-    unstable.zotero
+    zotero
     unstable.ripcord
     calibre # ebook manager
     rclone
     ledger
+
+    # Music collection management
+    strawberry
+    flacon
+    mac
   ];
 
   programs.alacritty = {

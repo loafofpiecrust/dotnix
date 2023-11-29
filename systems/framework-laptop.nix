@@ -10,8 +10,8 @@
   ];
 
   # Prevent nix from taking all available CPU time.
-  nix.settings.max-jobs = 4;
-  nix.settings.cores = 4;
+  nix.settings.max-jobs = 3;
+  nix.settings.cores = 3;
 
   environment.etc = let persistInEtc = [ "nixos" ];
   in lib.mkMerge
@@ -54,6 +54,7 @@
     # Make the font as large as possible.
     loader.systemd-boot.consoleMode = "max";
 
+    # Some people claim on the Framework Laptop forums that this makes wifi more reliable.
     extraModprobeConfig = ''
       options iwlwifi disable_11ax=Y
     '';
@@ -63,8 +64,8 @@
   services.tlp.settings = {
     CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
     PCIE_ASPM_ON_BAT = "powersupersave";
-    START_CHARGE_THRESH_BAT1 = 75;
-    STOP_CHARGE_THRESH_BAT1 = 80;
+    START_CHARGE_THRESH_BAT1 = 80;
+    STOP_CHARGE_THRESH_BAT1 = 90;
     CPU_SCALING_GOVERNOR_ON_BAT = "balance_performance";
     ENERGY_PERF_POLICY_ON_BAT = "balance_performance";
   };
@@ -194,7 +195,7 @@
   };
 
   # Framework laptop doesn't require battery polling.
-  # services.upower.noPollBatteries = true;
+  services.upower.noPollBatteries = true;
 
   # Replace docker with podman since it's daemon-less?
   virtualisation.docker = {

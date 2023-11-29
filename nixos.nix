@@ -117,6 +117,7 @@
     exfat
     moreutils
     gnutls
+    sshfs
 
     # user tools
     playerctl
