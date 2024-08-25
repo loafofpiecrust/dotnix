@@ -48,7 +48,7 @@
     enableSshSupport = true;
     defaultCacheTtl = 60 * 60;
     defaultCacheTtlSsh = 60 * 60;
-    # pinentryFlavor = "gnome3";
+    pinentryPackage = pkgs.pinentry-gnome3;
     extraConfig = ''
       display :0
     '';
@@ -77,7 +77,8 @@
       email = "taylor@snead.xyz";
       # Keep the vault open for 6 hours.
       lock_timeout = 60 * 60 * 6;
-      pinentry = "gnome3";
+      # FIXME must be a package definition
+      # pinentry = "gnome3";
     };
   };
 
@@ -85,10 +86,7 @@
     enable = true;
     mime.enable = true;
     mimeApps.enable = true;
-    mimeApps.defaultApplications = let
-      images = [ "eom.desktop" ];
-      web = [ "firefox.desktop" ];
-    in lib.mkMerge [
+    mimeApps.defaultApplications = lib.mkMerge [
       (lib.genAttrs [
         "text/html"
         "x-scheme-handler/http"
@@ -96,8 +94,9 @@
         "x-scheme-handler/about"
         "application/x-extension-html"
         "application/xhtml+xml"
-      ] (_: web))
-      (lib.genAttrs [ "image/png" "image/jpeg" ] (_: images))
+      ] (_: [ "firefox.desktop" ]))
+      (lib.genAttrs [ "image/png" "image/jpeg" ] (_: [ "eom.desktop" ]))
+      (lib.genAttrs [ "video/mp4" "video/quicktime" ] (_: [ "vlc.desktop" ]))
       {
         "x-scheme-handler/mailto" = [ "thunderbird.desktop" ];
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document" =
@@ -105,7 +104,6 @@
         "x-scheme-handler/msteams" = [ "teams.desktop" ];
         "text/plain" = [ "emacsclient.desktop" ];
         "application/pdf" = [ "atril.desktop" "draw.desktop" ];
-        "video/mp4" = [ "vlc.desktop" ];
       }
     ];
   };
@@ -127,7 +125,7 @@
   # Make QT match the GTK theme.
   qt = {
     enable = true;
-    platformTheme = "gtk";
+    platformTheme.name = "gtk";
   };
 
   home.pointerCursor = {

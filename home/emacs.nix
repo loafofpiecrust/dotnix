@@ -20,6 +20,7 @@
   services.emacs = {
     enable = true;
     client.enable = true;
+    package = config.programs.emacs.finalPackage;
     # socketActivation.enable = true;
   };
 

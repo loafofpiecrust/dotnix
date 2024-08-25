@@ -2,6 +2,9 @@
 { config, lib, pkgs, ... }: {
   imports = [ ./snead.nix ../midi.nix ];
   home.packages = with pkgs; [
+    # Run ANYTHING one-off without installing it!
+    # comma
+
     praat
     wine
     winetricks
@@ -20,7 +23,13 @@
     # custom keyboards
     qmk
     qmk_hid
+    rockbox-utility
 
     obs-studio
+    mp3val
+    flac
+    filezilla
+
+    fontforge-gtk
   ];
 }

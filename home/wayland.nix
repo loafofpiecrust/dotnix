@@ -24,56 +24,66 @@
   services.kanshi = {
     enable = true;
     systemdTarget = "graphical-session.target";
-    profiles = let
+    settings = let
       laptop-screen = {
         criteria = "eDP-1";
         mode = "2256x1504@60Hz";
         position = "0,300";
       };
-    in {
-      undocked = {
-        outputs = [
+    in [
+      {
+        profile.name = "undocked";
+        profile.outputs = [
           (laptop-screen // {
             scale = 1.333333;
             status = "enable";
           })
         ];
-      };
-      double-docked = {
-        outputs = [
-          (laptop-screen // {
-            scale = 1.6;
-            status = "disable";
-          })
-          {
-            criteria = "Acer Technologies XV272U 0x0000BFCC";
-            position = "1440,500";
-          }
-          {
-            criteria = "Dell Inc. DELL U2717D 67YGV879B54S";
-            position = "0,0";
-            transform = "270";
-          }
-        ];
-        exec =
+        profile.exec =
           [ "${pkgs.systemd}/bin/systemctl --user restart dynamic-wallpaper" ];
-      };
-
-      single-docked = {
-        outputs = [
-          (laptop-screen // {
-            scale = 1.6;
-            status = "enable";
-          })
-          {
-            criteria = "Acer Technologies XV272U 0x0000BFCC";
-            position = "1410,0";
-          }
-        ];
-        exec =
-          [ "${pkgs.systemd}/bin/systemctl --user restart dynamic-wallpaper" ];
-      };
-    };
+      }
+      {
+        profile = {
+          name = "docked";
+          outputs = [
+            (laptop-screen // {
+              scale = 1.6;
+              status = "enable";
+            })
+            {
+              criteria = "Acer Technologies XV272U 0x1210BFCC";
+              position = "1410,0";
+            }
+          ];
+          exec = [
+            "${pkgs.systemd}/bin/systemctl --user restart dynamic-wallpaper"
+          ];
+        };
+      }
+      {
+        profile = {
+          name = "double-docked";
+          outputs = [
+            (laptop-screen // {
+              scale = 1.6;
+              status = "disable";
+            })
+            {
+              criteria = "Acer Technologies XV272U 0x1210BFCC";
+              position = "1440,500";
+            }
+            {
+              criteria = "Dell Inc. DELL U2717D";
+              position = "0,0";
+              transform = "270";
+            }
+          ];
+          exec = [
+            "${pkgs.systemd}/bin/systemctl --user restart dynamic-wallpaper"
+          ];
+        };
+      }
+    ];
   };
 
   programs.waybar = {
@@ -360,15 +370,11 @@
         # SUN_HOUR=$(sundazel -l ${ll} | cut -d ':' -f 1 | xargs)
         text = ''
           SUN_HOUR=$(date +%H)
-          SUN_HOUR_OFFSET=$((SUN_HOUR * 16 / 24 + 1))
+          SUN_NUM=$((SUN_HOUR * 16 / 24))
+          SUN_HOUR_OFFSET=$(((16 + (SUN_NUM - 4)) % 16 + 1))
           swww img ${dynamicBg "$SUN_HOUR_OFFSET"} --transition-step 1
         '';
-        runtimeInputs = with pkgs; [
-          unstable.swww
-          wcslib
-          coreutils-full
-          findutils
-        ];
+        runtimeInputs = with pkgs; [ swww wcslib coreutils-full findutils ];
       };
     in "${script}/bin/dynamic-wallpaper";
   };
@@ -380,7 +386,7 @@
     Timer = {
       Unit = "dynamic-wallpaper.service";
       OnStartupSec = "1s";
-      OnCalendar = "hourly";
+      OnCalendar = "*/30 * * * *";
     };
   };
 

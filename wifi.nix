@@ -13,7 +13,7 @@
 
     # Use DHCP only on specific network interfaces.
     useDHCP = false;
-    firewall.enable = true;
+    firewall.enable = lib.mkDefault true;
   };
 
   # services.resolved.enable = true;

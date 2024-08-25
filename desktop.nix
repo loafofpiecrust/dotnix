@@ -10,7 +10,14 @@
     inputs.nixos-hardware.nixosModules.common-pc
     # All of my desktop systems use SSD
     inputs.nixos-hardware.nixosModules.common-pc-ssd
+    inputs.home-manager.nixosModules.home-manager
   ];
+
+  # Pass flake inputs to home-manager modules.
+  home-manager.extraSpecialArgs = { inherit inputs; };
+  home-manager.backupFileExtension = "bak";
+  home-manager.useGlobalPkgs = true;
+  home-manager.useUserPackages = true;
 
   boot = {
     loader.systemd-boot = {
@@ -32,14 +39,15 @@
     allowedTCPPorts = [
       8008
       8009
+      8010
       # Calibre local network port
       9090
     ];
-    allowedUDPPorts = [ 9090 ];
-    # allowedUDPPorts = [{
-    #   from = 32768;
-    #   to = 61000;
-    # }];
+    allowedUDPPorts = [ 9090 5353 ];
+    allowedUDPPortRanges = [{
+      from = 32768;
+      to = 61000;
+    }];
   };
 
   # Scanning
@@ -52,4 +60,7 @@
   services.thermald.enable = true;
 
   hardware.steam-hardware.enable = true;
+
+  programs.java.enable = true;
+  programs.dconf.enable = true;
 }

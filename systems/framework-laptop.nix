@@ -2,7 +2,7 @@
 # it seems that disabling PS/2 mouse emulation in BIOS fixed the problem.
 { config, lib, pkgs, inputs, ... }: {
   imports = [
-    inputs.nixos-hardware.nixosModules.framework
+    inputs.nixos-hardware.nixosModules.framework-11th-gen-intel
     ../laptop.nix
     ../vpn.nix
     ../dev.nix
@@ -39,10 +39,11 @@
       "btintel"
     ];
     kernelModules = [ "kvm-intel" ];
+    blacklistedKernelModules = [ "i2c-designware-pci" ];
 
     # kernel options
     kernelParams = [
-      # "pcie_aspm.policy=powersave"
+      "pcie_aspm.policy=powersave"
       "i915.enable_fbc=1"
       "quiet"
       "nvme.noacpi=1" # Apparently good for battery life
@@ -123,6 +124,8 @@
       "plugdev"
       "input"
       "uinput"
+      "cdrom"
+      "vboxusers"
     ];
   in {
     snead = {
@@ -152,23 +155,24 @@
   # Use greetd because it's the simplest Wayland DM with no issues!
   services.greetd = {
     enable = true;
-    package = pkgs.greetd.greetd;
     settings = {
+      # Might need  ${pkgs.sway}/share/wayland-sessions
       default_session = {
-        command = "${
-            lib.makeBinPath [ pkgs.greetd.tuigreet ]
-          }/tuigreet --width 85 --time --asterisks -s ${pkgs.sway}/share/wayland-sessions";
+        # command = "${config.programs.regreet.package}/bin/regreet";
         user = "greeter";
       };
     };
   };
+
+  programs.regreet = { enable = true; };
+
+  services.displayManager.defaultSession = "sway";
 
   services.xserver = {
     enable = false;
     dpi = 200;
     # Use LightDM instead of GDM because the latter is super fucking slow.
     # displayManager.lightdm.enable = lib.mkForce false;
-    displayManager.defaultSession = "sway";
     videoDrivers = [ "intel" "modesetting" "fbdev" ]; # TODO: Pick gpu drivers
 
     desktopManager = {
@@ -199,8 +203,14 @@
 
   # Replace docker with podman since it's daemon-less?
   virtualisation.docker = {
-    enable = true;
+    enable = false;
+    # DON'T START ON BOOT! Docker draws lots of power!
+    enableOnBoot = false;
     autoPrune.enable = true;
+  };
+  virtualisation.virtualbox = {
+    host.enable = true;
+    # host.enableKvm = true;
   };
 
   # Let's try out bluetooth!
@@ -231,11 +241,16 @@
     xfce.xfce4-settings
     xfce.xfce4-taskmanager
 
+    # Try some file managers
     pcmanfm
+    cinnamon.nemo
+    gnome.nautilus
 
     libreoffice
     # virt-manager
     pynitrokey
+
+    unstable.beets
   ];
   # Let mate-panel find applets
   environment.sessionVariables."MATE_PANEL_APPLETS_DIR" =
@@ -258,14 +273,24 @@
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
   services.hardware.openrgb = {
-    enable = true;
+    enable = false;
     motherboard = "intel";
   };
 
-  hardware.nitrokey.enable = true;
+  hardware.nitrokey.enable = false;
 
-  services.tailscale = {
-    enable = true;
-    package = pkgs.unstable.tailscale;
-  };
+  services.tailscale = { enable = true; };
+
+  # Let me rip and burn CDs on this laptop.
+  programs.k3b.enable = true;
+
+  # Make slack a wayland app
+  environment.sessionVariables.NIXOS_OZONE_WL = "1";
+
+  security.pam.loginLimits = [{
+    domain = "@users";
+    item = "rtprio";
+    type = "-";
+    value = 1;
+  }];
 }

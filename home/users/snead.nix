@@ -12,20 +12,22 @@
     unstable.zoom-us
     unstable.discord
     # teams
-    unstable.krita
-    unstable.slack
+    krita
+    slack
     # deluge
     transmission-gtk
     zotero
-    unstable.ripcord
     calibre # ebook manager
     rclone
     ledger
 
     # Music collection management
-    strawberry
-    flacon
-    mac
+    strawberry # pretty good music player
+    flacon # extracts disc files into individual tracks
+    sox # resamples FLAC files
+    mac # converts .ape files
+    normalize # normalizes volume within a folder, good for making mix CDs
+    wavpack
   ];
 
   programs.alacritty = {

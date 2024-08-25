@@ -38,7 +38,7 @@
 
     # formatters + language servers
     editorconfig-core-c
-    nixfmt
+    nixfmt-classic
     html-tidy
     pipenv
     # python37Packages.python-language-server
@@ -56,7 +56,7 @@
 
     # editing!
     zstd # compression for emacs session files
-    pinentry_emacs
+    pinentry-emacs
     sqlite
   ];
 
@@ -65,7 +65,7 @@
       emacsCustom = super.emacs.override {
         withPgtk = true;
         withSQLite3 = true;
-        withWebP = true;
+        # withWebP = true;
         withNativeCompilation = true;
       };
     })

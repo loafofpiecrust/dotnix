@@ -44,8 +44,8 @@
     gst_all_1.gst-plugins-good
   ];
 
-  fonts.enableDefaultFonts = true;
-  fonts.fonts = with pkgs; [
+  fonts.enableDefaultPackages = true;
+  fonts.packages = with pkgs; [
     noto-fonts
     noto-fonts-cjk
     noto-fonts-emoji
@@ -94,6 +94,7 @@
       ];
       serif = [ "Merriweather" "Liberation Serif" ];
     };
+    hinting.style = "slight";
     # hinting.enable = false;
   };
 
@@ -204,6 +205,7 @@
   #   serviceConfig.Type = "forking";
   # };
 
+  programs.xwayland.enable = true;
   # Configure sway if I happen to want it in my setup.
   programs.sway = {
     enable = true;
@@ -243,22 +245,21 @@
   # Provide default settings for any X11 sessions.
   services.xserver = {
     enable = lib.mkDefault true;
-    layout = "us";
+    xkb.layout = "us";
+    xkb.options = "compose:ralt, terminate:ctrl_alt_bksp";
     enableCtrlAltBackspace = true;
     autoRepeatDelay = 250;
     autoRepeatInterval = 30; # ms between key repeats
     # I don't use caps lock enough, swap it with escape!
-    xkbOptions = "compose:ralt, terminate:ctrl_alt_bksp";
+  };
 
-    # Only applies in X sessions, not wayland.
-    libinput = {
-      enable = true;
-      touchpad = {
-        scrollMethod = "twofinger";
-        naturalScrolling = true;
-        tapping = false;
-        clickMethod = "clickfinger";
-      };
+  services.libinput = {
+    enable = true;
+    touchpad = {
+      scrollMethod = "twofinger";
+      naturalScrolling = true;
+      tapping = false;
+      clickMethod = "clickfinger";
     };
   };
 
@@ -299,4 +300,6 @@
     serviceConfig.ExecStart = "${pkgs.playerctl}/bin/playerctld daemon";
     serviceConfig.Type = "forking";
   };
+
+  security.polkit.enable = true;
 }

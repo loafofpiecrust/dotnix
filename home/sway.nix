@@ -154,6 +154,36 @@
     # config.bars = [ ];
     config.bars =
       [{ command = "${config.programs.waybar.package}/bin/waybar"; }];
+    # extraConfigEarly = ''
+    #   include "/home/snead/.cache/wal/colors-sway"
+    # '';
+    config.colors = let
+      theme = import ./themes/catppuccin.nix;
+      colors = theme.light.colors;
+    in {
+      unfocused = {
+        background = colors.color7;
+        border = colors.color7;
+        childBorder = colors.color7;
+        indicator = colors.color2;
+        text = colors.color7;
+      };
+      focusedInactive = {
+        background = colors.color7;
+        border = colors.color7;
+        childBorder = colors.color7;
+        indicator = colors.color2;
+        text = colors.color7;
+      };
+      focused = {
+        background = colors.color3;
+        border = colors.color3;
+        childBorder = colors.color3;
+        indicator = colors.color4;
+        text = colors.color3;
+      };
+    };
+
     extraConfig = let
       gsettings = {
         gtk-theme = config.gtk.theme.name;
@@ -174,11 +204,7 @@
       seat seat xcursor_theme ${config.home.pointerCursor.name} ${
         builtins.toString config.home.pointerCursor.size
       }
-      include "$HOME/.cache/wal/colors-sway"
       titlebar_border_thickness 0
-      client.unfocused $color7 $color7 $color7 $color2 $color7
-      client.focused_inactive $color7 $color7 $color7 $color2 $color7
-      client.focused $color3 $color3 $color3 $color4 $color3
       for_window [app_id="firefox"] inhibit_idle fullscreen
       for_window [app_id="firefox" title="^Picture-in-Picture$"] floating enable, sticky enable, move position center, resize set width 704 height 396
       for_window [app_id="pavucontrol"] floating enable, move position center

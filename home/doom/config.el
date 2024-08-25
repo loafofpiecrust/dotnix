@@ -11,14 +11,14 @@
 (setq custom-theme-directory (expand-file-name "~/.config/doom/themes"))
 
 ;; Make shell commands run faster using bash...
-;;(setq shell-file-name "/run/current-system/sw/bin/bash")
+(setq shell-file-name (executable-find "bash"))
 ;; ...But let me use fish for interactive sessions.
 ;;(after! vterm
-  ;;(setq vterm-shell "/run/current-system/sw/bin/fish"))
+;;(setq vterm-shell "/run/current-system/sw/bin/fish"))
 
 (menu-bar-mode (if (eq system-type 'darwin) t -1))
 
-(use-package! memoize)
+;; (use-package! memoize)
 (use-package! gsettings)
 
 (defvar +snead/theme-night 'ewal-doom-vibrant)
@@ -37,7 +37,7 @@
 ;; Symbol test: _ -> => , . `' "" O0l1*#
 (setq doom-font (if (eq system-type 'darwin)
                     (font-spec :family "Fira Code" :size 14)
-                    (font-spec :family "Hack" :size 15))
+                  (font-spec :family "monospace" :size 15))
       doom-variable-pitch-font (font-spec :family "Inter" :size 15)
       doom-unicode-font doom-font
       ;; doom-unicode-font (font-spec :family "Symbola monospacified for Source Code Pro" :size 15)
@@ -58,10 +58,10 @@ It seems excessive, but apparently necessary for fluid LSP usage!"
 
 ;; Increase garbage collection threshold while active.
 ;; This keeps emacs from being sluggish while typing.
-(after! lsp-mode (+snead/increase-mem))
-(after! gcmh
-  (setq-default gcmh-idle-delay 5)
-  (+snead/increase-mem))
+;; (after! lsp-mode (+snead/increase-mem))
+;; (after! gcmh
+;;   (setq-default gcmh-idle-delay 5)
+;;   (+snead/increase-mem))
 
 (defvar +snead/frame-border-width 3)
 (defvar +snead/frame-fringe 8)
@@ -229,13 +229,13 @@ It seems excessive, but apparently necessary for fluid LSP usage!"
 (after! unicode-fonts
   ;; Replace all instances of Symbola with a monospacified Symbola.
   ;;(mapc (lambda (bl)
-          ;;(setf (cadr bl)
-                ;;(mapcar (lambda (font)
-                          ;;(if (string= font "Symbola")
-                              ;;"Symbola monospacified for Source Code Pro"
-                            ;;font))
-                        ;;(cadr bl))))
-        ;;unicode-fonts-block-font-mapping)
+  ;;(setf (cadr bl)
+  ;;(mapcar (lambda (font)
+  ;;(if (string= font "Symbola")
+  ;;"Symbola monospacified for Source Code Pro"
+  ;;font))
+  ;;(cadr bl))))
+  ;;unicode-fonts-block-font-mapping)
   ;; Designate private use to font awesome, mostly.
   ;; (setq my/private-use-fonts '("github-octicons"
   ;;                              "file-icons"
@@ -270,8 +270,8 @@ It seems excessive, but apparently necessary for fluid LSP usage!"
   :init
   ;; Use all 16 colors from our palette, not just the primary 8.
   (setq ewal-ansi-color-name-symbols '(black red green yellow blue magenta cyan white
-                                             brightblack brightred brightgreen brightyellow
-                                             brightblue brightmagenta brightcyan brightwhite)))
+                                       brightblack brightred brightgreen brightyellow
+                                       brightblue brightmagenta brightcyan brightwhite)))
 
 (use-package! ewal-doom-themes
   :after ewal
@@ -305,11 +305,11 @@ It seems excessive, but apparently necessary for fluid LSP usage!"
 (after! org-superstar
   ;; Bullet symbols: ‣•◦⦾⦿✷🟆➤⮞⁕⊙ ⁖🜔🜕🜖🜗🝆🝎❯⁕✸✿✤✜◆∴∷
   (setq ;; org-superstar-headline-bullets-list '("∷" "✽" "✿" "✤" "✸" "❁" "✜")
-        org-superstar-prettify-item-bullets t
-        org-superstar-item-bullet-alist '((?* . ?‣)
-                                          (?- . ?•)
-                                          (?+ . ?◦))
-        org-superstar-remove-leading-stars t))
+   org-superstar-prettify-item-bullets t
+   org-superstar-item-bullet-alist '((?* . ?‣)
+                                     (?- . ?•)
+                                     (?+ . ?◦))
+   org-superstar-remove-leading-stars t))
 
 ;;;; Password Management!
 (use-package! bitwarden
@@ -611,14 +611,6 @@ Use `treemacs-select-window' command for old functionality."
       (treemacs-select-window)))
   (map! :leader "op" '+treemacs/focus))
 
-;; Make yasnippet easier to access in insert mode.
-;; insert: C-p, normal: SPC i s
-;; TODO Get rid of all yasnippet-company business.
-;; (after! yasnippet
-;;   (setq yas-triggers-in-field t)
-;;   (map! :map yas-minor-mode-map
-;;         :i "C-p" 'yas-insert-snippet))
-
 (after! projectile
   (setq projectile-sort-order 'recently-active))
 
@@ -632,9 +624,7 @@ Use `treemacs-select-window' command for old functionality."
 ;; Spell check options
 (after! ispell
   (setq ispell-dictionary "en"
-        ispell-personal-dictionary "~/.aspell.en.pws"
-        ;; ispell-extra-args '("--camel-case" "--sug-mode=ultra" "--run-together")
-        ))
+        ispell-personal-dictionary "~/.aspell.en.pws"))
 
 ;; (use-package! polymode
 ;;   :disabled
@@ -653,12 +643,7 @@ Use `treemacs-select-window' command for old functionality."
   (setq ;; company-auto-commit 'company-explicit-action-p
    ;; Icons make completion quite sluggish!
    company-box-enable-icon nil
-   company-box-doc-frame-parameters `((internal-border-width . ,+snead/frame-border-width)
-                                      (left-fringe . ,+snead/frame-fringe)
-                                      (right-fringe . ,+snead/frame-fringe))
-   company-idle-delay 0.25
-   ;;company-box-doc-delay 2)
-   )
+   company-idle-delay 0.5)
   ;; (when (featurep 'exwm)
   ;;   (appendq! company-box-doc-frame-parameters '((parent-frame . nil))))
   ;; TODO Fix this so we can indent instead of completing all the time!
@@ -677,22 +662,7 @@ Use `treemacs-select-window' command for old functionality."
                                        :right-fringe ,+snead/frame-fringe)
         evil-owl-idle-delay 0.5))
 
-;; (use-package! flycheck-inline
-;;   :hook (flycheck-mode . flycheck-inline-mode))
-
 ;;(use-package! cherokee-input)
-
-;; Make headlines big!
-
-;; (custom-set-faces!
-;;   `(vertical-border :foreground ,(ewal-get-color 'green)))
-
-(after! ivy
-  ;; Use a hydra for ivy alternate actions.
-  (setq ;;ivy-read-action-function 'ivy-read-action-ivy
-   ivy-truncate-lines nil)
-  (map! :map ivy-minibuffer-map
-        "C-RET" 'ivy-immediate-done))
 
 (after! message
   (setq message-cite-style message-cite-style-thunderbird
@@ -722,9 +692,9 @@ Use `treemacs-select-window' command for old functionality."
               :action
               (lambda (docid msg target)
                 (with-mu4e-context-vars (mu4e-context-determine msg nil)
-                    (if +mu4e-context-gmail
-                        (+mu4e--mark-seen docid msg target)
-                      (mu4e--server-move docid (mu4e--mark-check-target target) "-N-u")))))
+                                        (if +mu4e-context-gmail
+                                            (+mu4e--mark-seen docid msg target)
+                                          (mu4e--server-move docid (mu4e--mark-check-target target) "-N-u")))))
 
         ;; Refile will be my "archive" function.
         (alist-get 'refile mu4e-marks)
@@ -734,9 +704,9 @@ Use `treemacs-select-window' command for old functionality."
               :action
               (lambda (docid msg target)
                 (with-mu4e-context-vars (mu4e-context-determine msg nil)
-                    (if +mu4e-context-gmail
-                        (+mu4e--mark-seen docid msg target)
-                      (mu4e--server-move docid (mu4e--mark-check-target target) "-N-u"))))))
+                                        (if +mu4e-context-gmail
+                                            (+mu4e--mark-seen docid msg target)
+                                          (mu4e--server-move docid (mu4e--mark-check-target target) "-N-u"))))))
 
   (defun +mu4e-gmail-fix-flags-h (mark msg)
     "This hook correctly modifies gmail flags on emails when they are marked.
@@ -744,12 +714,12 @@ Without it, refiling (archiving), trashing, and flagging (starring) email
 won't properly result in the corresponding gmail action, since the marks
 are ineffectual otherwise."
     (with-mu4e-context-vars (mu4e-context-determine msg nil)
-        (when +mu4e-context-gmail
-          (pcase mark
-            (`trash  (mu4e-action-retag-message msg "-\\Inbox,+\\Trash,-\\Draft"))
-            (`refile (mu4e-action-retag-message msg "-\\Inbox"))
-            (`flag   (mu4e-action-retag-message msg "+\\Starred"))
-            (`unflag (mu4e-action-retag-message msg "-\\Starred"))))))
+                            (when +mu4e-context-gmail
+                              (pcase mark
+                                (`trash  (mu4e-action-retag-message msg "-\\Inbox,+\\Trash,-\\Draft"))
+                                (`refile (mu4e-action-retag-message msg "-\\Inbox"))
+                                (`flag   (mu4e-action-retag-message msg "+\\Starred"))
+                                (`unflag (mu4e-action-retag-message msg "-\\Starred"))))))
 
   (add-hook 'mu4e-mark-execute-pre-hook #'+mu4e-gmail-fix-flags-h))
 
@@ -956,7 +926,7 @@ are ineffectual otherwise."
   :hook (mu4e-headers-mode . md-msg-mode)
   :config
   (setq mml-content-disposition-alist '((text (rtf . "attachment")
-                                              (t . nil))
+                                         (t . nil))
                                         (t . "attachment")))
   ;; TODO Move this binding to md-msg itself.
   (map! :map md-msg-view-mode-map
@@ -966,15 +936,6 @@ are ineffectual otherwise."
   ;; Make email nicer to read and write.
   (add-hook! '(md-msg-view-mode-hook md-msg-edit-mode-hook mu4e-view-mode-hook) #'olivetti-mode))
 
-(defun +snead/close-any-pair ()
-  (interactive)
-  (unless (sp-skip-closing-pair)
-    (self-insert-command 1)))
-;; (map! :map prog-mode-map
-;;       :i "]" #'self-insert-command)
-
-
-
 (after! alert
   (setq alert-default-style 'libnotify))
 
@@ -983,13 +944,6 @@ are ineffectual otherwise."
   (alert (s-capitalize status)
          :title (buffer-name buffer)))
 (add-hook 'compilation-finish-functions #'+alert/compilation)
-
-;; (use-package! mu4e-send-delay
-;;   :disabled
-;;   :after mu4e
-;;   :config
-;;   (add-hook 'mu4e-main-mode-hook #'mu4e-send-delay-initialize-send-queue-timer)
-;;   (mu4e-send-delay-setup))
 
 (after! web-mode
   (add-to-list 'web-mode-engines-alist '("django" . "\\.tera\\.(xml|html)\\'")))
@@ -1017,7 +971,7 @@ are ineffectual otherwise."
 (use-package! olivetti
   :hook ((org-mode markdown-mode magit-status-mode forge-topic-mode gnus-article-mode-hook) . olivetti-mode)
   :bind (:map doom-leader-map
-         ("tz" . olivetti-mode))
+              ("tz" . olivetti-mode))
   :config
   (add-hook! '(olivetti-mode-hook org-mode-hook markdown-mode-hook) #'disable-line-numbers)
   (defun mixed-pitch-set-text-scale ()
@@ -1114,10 +1068,10 @@ are ineffectual otherwise."
 
 (after! markdown-mode
   (set-ligatures! 'markdown-mode
-    :src_block "```"))
+                  :src_block "```"))
 
-(after! web-mode
-  (setq web-mode-prettify-symbols-alist nil))
+;; (after! web-mode
+;;   (setq web-mode-prettify-symbols-alist nil))
 
 
 ;; Prettify escaped symbols in viewed emails as much as possible.
@@ -1125,19 +1079,19 @@ are ineffectual otherwise."
 ;; TODO maybe there's a better machanism for replacing these that works more consistently?
 (after! md-msg
   (set-ligatures! 'md-msg-view-mode
-    :exclamation "\\!"
-    :dash "\\-"
-    :endash "\\--"
-    :asterisk "\\*"
-    :lt "\\<"
-    ;; :nothing "\n\\\n"
-    ;; :nothing "\n\n\n"
-    ;; :nothing "\\"
-    :at_symbol "\\@"
-    :pound "\\#"
-    :arrow "-\\>"
-    :pipe "\\|"
-    :turnstile "\\|-"))
+                  :exclamation "\\!"
+                  :dash "\\-"
+                  :endash "\\--"
+                  :asterisk "\\*"
+                  :lt "\\<"
+                  ;; :nothing "\n\\\n"
+                  ;; :nothing "\n\n\n"
+                  ;; :nothing "\\"
+                  :at_symbol "\\@"
+                  :pound "\\#"
+                  :arrow "-\\>"
+                  :pipe "\\|"
+                  :turnstile "\\|-"))
 
 ;; (load! "custom/mixed-pitch")
 ;; (use-package! mixed-pitch)
@@ -1170,10 +1124,11 @@ are ineffectual otherwise."
                                          "\\`vterm"
                                          "\\`\\*eshell"
                                          "Aweshell:")
-        clean-buffer-list-delay-general 1
+        clean-buffer-list-delay-general 2
         clean-buffer-list-delay-special (* 60 60 2)
-        ;; Clean out potentially old buffers every hour
-        midnight-period (* 60 60)))
+        ;; Clean out potentially old buffers every 12 hours
+        ;; I think this causes Emacs to hang when it runs
+        midnight-period (* 60 60 12)))
 
 ;; Using C-/ for comments aligns with other editors.
 ;; IMPORTANT: This MUST be in the global map or else undo-tree doesn't work!
@@ -1366,15 +1321,15 @@ end of the workspace list."
 (setq-hook! '(typescript-mode-hook typescript-tsx-mode-hook js-mode-hook js-jsx-mode-hook) +format-with-lsp nil)
 (setq +format-on-save-enabled-modes
       '(not emacs-lisp-mode
-            tex-mode
-            latex-mode
-            ;; There are several different formats I use web-mode for that
-            ;; can't be reliably formatted on save.
-            web-mode
-            mhtml-mode
-            mu4e-compose-mode
-            md-msg-edit-mode
-            message-mode))
+        tex-mode
+        latex-mode
+        ;; There are several different formats I use web-mode for that
+        ;; can't be reliably formatted on save.
+        web-mode
+        mhtml-mode
+        mu4e-compose-mode
+        md-msg-edit-mode
+        message-mode))
 
 ;; (setq! fancy-splash-image "~/.config/wpg/.current"
 ;;        +doom-dashboard-banner-padding '(0 . 0)
@@ -1388,13 +1343,6 @@ end of the workspace list."
 
 (after! highlight-indent-guides
   (setq-default highlight-indent-guides-method 'character))
-
-;; (after! paren
-;;   (defun +snead/switch-show-paren (&optional arg)
-;;     (interactive)
-;;     (show-paren-mode -1)
-;;     (show-smartparens-mode arg))
-;;   (add-hook! 'show-paren-mode-hook #'+snead/switch-show-paren))
 
 (use-package! emms
   :commands emms-smart-browse
@@ -1419,35 +1367,12 @@ end of the workspace list."
   ;; Always open EMMS in its own workspace.
   )
 
-;; (insert-image (create-image
-;; "~/.config/doom/vscode-icons/icons/file_type_rust.svg" 'svg nil :scale 1))
-
-;; (defun all-the-icons-ivy-icon-for-file (s)
-;;   "Return icon for filename S.
-;; Return the octicon for directory if S is a directory.
-;; Otherwise fallback to calling `all-the-icons-icon-for-file'."
-;;   (cond
-;;    ((string-match-p "\\/$" s)
-;;     (apply 'all-the-icons-octicon
-;;      (append
-;;       (list "file-directory")
-;;       all-the-icons-ivy-icon-args
-;;       (list :face 'all-the-icons-ivy-dir-face))))
-;;    (t
-;;     ;; TODO Create a cache, if necessary.
-;;     (let* ((icon-path "~/.config/doom/vscode-icons/icons")
-;;           (icon-file (format "%s/file_type_%s.svg" icon-path
-;;                              (file-name-extension s)))
-;;           (real-icon-file (if (file-exists-p icon-file) icon-file
-;;                             (format "%s/default_file.svg" icon-path))))
-;;       (create-image real-icon-file 'svg nil :scale 0.1)))))
-
 (map! :mnv "go" #'avy-goto-char)
 
 ;; Launch programs directly from an Emacs prompt.
 (use-package! app-launcher
   :bind (:map doom-leader-map
-         ("o o" . app-launcher-run-app)))
+              ("o o" . app-launcher-run-app)))
 
 ;; Sync my org agenda entries to my calendar, so I can see these entries on my
 ;; phone and get reminders there.
@@ -1483,8 +1408,7 @@ end of the workspace list."
 
 ;; Give full state names to make learning the names easier.
 (after! evil
-  (setq-default evil-kill-on-visual-paste nil
-                evil-move-cursor-back t
+  (setq-default evil-move-cursor-back t
                 evil-visual-region-expanded t)
   (setq evil-normal-state-tag " NORMAL "
         evil-insert-state-tag " INSERT "
@@ -1526,7 +1450,7 @@ directory, the file name, and its state (modified, read-only or non-existent)."
 
   (doom-modeline-def-modeline 'main
     '(ace-window modals buffer-info-revised buffer-position " " matches vertical-pad)
-    '(misc-info input-method major-mode vcs lsp checker " "))
+    '(misc-info input-method major-mode vcs lsp " "))
   (doom-modeline-def-modeline 'project
     '(ace-window buffer-default-directory vertical-pad)
     '(misc-info irc mu4e github debug major-mode process " "))
@@ -1546,9 +1470,9 @@ directory, the file name, and its state (modified, read-only or non-existent)."
     '(ace-window " " ranger vertical-pad)
     '())
   (add-hook 'ranger-mode-hook
-    (defun doom-modeline-set-ranger-modeline ()
-      (setq-local mode-line-format nil
-                  header-line-format (doom-modeline 'ranger))))
+            (defun doom-modeline-set-ranger-modeline ()
+              (setq-local mode-line-format nil
+                          header-line-format (doom-modeline 'ranger))))
 
   (defun doom-modeline-set-header ()
     (unless (eq mode-line-format nil)
@@ -1565,11 +1489,11 @@ directory, the file name, and its state (modified, read-only or non-existent)."
 
 (defvar +snead/volume nil)
 ;;(defun +snead/volume-update ()
-  ;;(setq +snead/volume (list (+svg-icon-string "material" "volume-high")
-                            ;;(propertize " " 'display '(space :width 0.5))
-                            ;;(concat (desktop-environment-volume-get) "%"))))
+;;(setq +snead/volume (list (+svg-icon-string "material" "volume-high")
+;;(propertize " " 'display '(space :width 0.5))
+;;(concat (desktop-environment-volume-get) "%"))))
 ;;(after! desktop-environment
-  ;;(run-with-timer 1 2 #'+snead/volume-update))
+;;(run-with-timer 1 2 #'+snead/volume-update))
 
 (use-package! mini-modeline
   :if (equal "t" (getenv "EMACS_EXWM"))
@@ -1653,76 +1577,76 @@ Move it to the mode-line."
               mu4e-headers-mode-hook)
   line-spacing 4)
 
-(use-package! svg-icon
-  :disabled
-  :after all-the-icons doom-modeline
-  :config
-  (defun +svg-icon-string (collection name)
-    (propertize "--" 'display (svg-icon collection name (face-attribute 'default :foreground))))
-  (memoize 'svg-icon)
-  ;; Redefine battery icon display using svg-icon.
-  (defun doom-modeline-update-battery-status ()
-    "Update battery status."
-    (setq doom-modeline--battery-status
-          (when (bound-and-true-p display-battery-mode)
-            (let* ((data (and (bound-and-true-p battery-status-function)
-                              (funcall battery-status-function)))
-                   (charging? (string-equal "AC" (cdr (assoc ?L data))))
-                   (percentage (car (read-from-string (or (cdr (assq ?p data)) "ERR"))))
-                   (valid-percentage? (and (numberp percentage)
-                                           (>= percentage 0)
-                                           (<= percentage battery-mode-line-limit)))
-                   (face (if valid-percentage?
-                             (cond (charging? 'doom-modeline-battery-charging)
-                                   ((< percentage battery-load-critical) 'doom-modeline-battery-critical)
-                                   ((< percentage 25) 'doom-modeline-battery-warning)
-                                   ((< percentage 95) 'doom-modeline-battery-normal)
-                                   (t 'doom-modeline-battery-full))
-                           'doom-modeline-battery-error))
-                   (icon (if valid-percentage?
-                             (cond (charging?
-                                    (+svg-icon-string "material" "battery-charging-100")
-                                    ;; (doom-modeline-icon 'alltheicon "battery-charging" "🔋" "+"
-                                    ;;                     :face face :height 1.4 :v-adjust -0.1)
-                                    )
-                                   ((> percentage 95)
-                                    (+svg-icon-string "material" "battery")
-                                    ;; (doom-modeline-icon 'faicon "battery-full" "🔋" "-"
-                                    ;;                     :face face :v-adjust -0.0575)
-                                    )
-                                   ((> percentage 70)
-                                    (+svg-icon-string "material" "battery-70")
-                                    ;; (doom-modeline-icon 'faicon "battery-three-quarters" "🔋" "-"
-                                    ;;                     :face face :v-adjust -0.0575)
-                                    )
-                                   ((> percentage 40)
-                                    (+svg-icon-string "material" "battery-40")
-                                    ;; (doom-modeline-icon 'faicon "battery-half" "🔋" "-"
-                                    ;;                     :face face :v-adjust -0.0575)
-                                    )
-                                   ((> percentage battery-load-critical)
-                                    (+svg-icon-string "material" "battery-10")
-                                    ;; (doom-modeline-icon 'faicon "battery-quarter" "🔋" "-"
-                                    ;;                     :face face :v-adjust -0.0575)
-                                    )
-                                   (t ;; (doom-modeline-icon 'faicon "battery-empty" "🔋" "!"
-                                    ;;                     :face face :v-adjust -0.0575)
-                                    (+svg-icon-string "material" "battery-alert")
-                                    ))
-                           (+svg-icon-string "material" "battery-unknown");; (doom-modeline-icon 'faicon "battery-empty" "⚠" "N/A"
-                           ;;                     :face face :v-adjust -0.0575)
-                           ))
-                   (text (if valid-percentage? (format "%d%%%%" percentage) ""))
-                   (help-echo (if (and battery-echo-area-format data valid-percentage?)
-                                  (battery-format battery-echo-area-format data)
-                                "Battery status not available")))
-              (cons (propertize icon 'help-echo help-echo)
-                    (propertize text 'face face 'help-echo help-echo))))))
-  ;;(defun all-the-icons-material (icon-name &rest args)
-  ;;(propertize "--" 'display (svg-icon "material" icon-name)))
-  ;; (defun all-the-icons-faicon (icon-name &rest args)
-  ;;   (propertize "--" 'display (svg-icon "")))
-  )
+;; (use-package! svg-icon
+;;   :disabled
+;;   :after all-the-icons doom-modeline
+;;   :config
+;;   (defun +svg-icon-string (collection name)
+;;     (propertize "--" 'display (svg-icon collection name (face-attribute 'default :foreground))))
+;;   (memoize 'svg-icon)
+;;   ;; Redefine battery icon display using svg-icon.
+;;   (defun doom-modeline-update-battery-status ()
+;;     "Update battery status."
+;;     (setq doom-modeline--battery-status
+;;           (when (bound-and-true-p display-battery-mode)
+;;             (let* ((data (and (bound-and-true-p battery-status-function)
+;;                               (funcall battery-status-function)))
+;;                    (charging? (string-equal "AC" (cdr (assoc ?L data))))
+;;                    (percentage (car (read-from-string (or (cdr (assq ?p data)) "ERR"))))
+;;                    (valid-percentage? (and (numberp percentage)
+;;                                            (>= percentage 0)
+;;                                            (<= percentage battery-mode-line-limit)))
+;;                    (face (if valid-percentage?
+;;                              (cond (charging? 'doom-modeline-battery-charging)
+;;                                    ((< percentage battery-load-critical) 'doom-modeline-battery-critical)
+;;                                    ((< percentage 25) 'doom-modeline-battery-warning)
+;;                                    ((< percentage 95) 'doom-modeline-battery-normal)
+;;                                    (t 'doom-modeline-battery-full))
+;;                            'doom-modeline-battery-error))
+;;                    (icon (if valid-percentage?
+;;                              (cond (charging?
+;;                                     (+svg-icon-string "material" "battery-charging-100")
+;;                                     ;; (doom-modeline-icon 'alltheicon "battery-charging" "🔋" "+"
+;;                                     ;;                     :face face :height 1.4 :v-adjust -0.1)
+;;                                     )
+;;                                    ((> percentage 95)
+;;                                     (+svg-icon-string "material" "battery")
+;;                                     ;; (doom-modeline-icon 'faicon "battery-full" "🔋" "-"
+;;                                     ;;                     :face face :v-adjust -0.0575)
+;;                                     )
+;;                                    ((> percentage 70)
+;;                                     (+svg-icon-string "material" "battery-70")
+;;                                     ;; (doom-modeline-icon 'faicon "battery-three-quarters" "🔋" "-"
+;;                                     ;;                     :face face :v-adjust -0.0575)
+;;                                     )
+;;                                    ((> percentage 40)
+;;                                     (+svg-icon-string "material" "battery-40")
+;;                                     ;; (doom-modeline-icon 'faicon "battery-half" "🔋" "-"
+;;                                     ;;                     :face face :v-adjust -0.0575)
+;;                                     )
+;;                                    ((> percentage battery-load-critical)
+;;                                     (+svg-icon-string "material" "battery-10")
+;;                                     ;; (doom-modeline-icon 'faicon "battery-quarter" "🔋" "-"
+;;                                     ;;                     :face face :v-adjust -0.0575)
+;;                                     )
+;;                                    (t ;; (doom-modeline-icon 'faicon "battery-empty" "🔋" "!"
+;;                                     ;;                     :face face :v-adjust -0.0575)
+;;                                     (+svg-icon-string "material" "battery-alert")
+;;                                     ))
+;;                            (+svg-icon-string "material" "battery-unknown");; (doom-modeline-icon 'faicon "battery-empty" "⚠" "N/A"
+;;                            ;;                     :face face :v-adjust -0.0575)
+;;                            ))
+;;                    (text (if valid-percentage? (format "%d%%%%" percentage) ""))
+;;                    (help-echo (if (and battery-echo-area-format data valid-percentage?)
+;;                                   (battery-format battery-echo-area-format data)
+;;                                 "Battery status not available")))
+;;               (cons (propertize icon 'help-echo help-echo)
+;;                     (propertize text 'face face 'help-echo help-echo))))))
+;;   ;;(defun all-the-icons-material (icon-name &rest args)
+;;   ;;(propertize "--" 'display (svg-icon "material" icon-name)))
+;;   ;; (defun all-the-icons-faicon (icon-name &rest args)
+;;   ;;   (propertize "--" 'display (svg-icon "")))
+;;   )
 
 (map! :leader "fa" (cmd! (consult-find "~")))
 
@@ -1737,7 +1661,7 @@ Move it to the mode-line."
 
 ;; Make which-key prettier with groups and command descriptions.
 (use-package! pretty-which-key
-      :disabled
+  :disabled
   :after which-key
   :config
   ;; Add groups and command descriptions to several modes.
@@ -1808,7 +1732,7 @@ Move it to the mode-line."
 
 ;; Benchmark startup if Emacs is launched with --debug-init
 (use-package! benchmark-init
-	      :disabled
+  :disabled
   :if doom-debug-p
   :config
   (add-hook 'doom-first-input-hook #'benchmark-init/deactivate))
@@ -1864,8 +1788,8 @@ Position is calculated base on WIDTH and HEIGHT of childframe text window"
   (add-to-list 'sly-contribs 'sly-asdf 'append))
 
 (setq lsp-sqls-connections
-    '(((driver . "postgresql") (dataSourceName . "host=127.0.0.1 port=5432 database=customers sslmode=disable"))
-      ((driver . "postgresql") (dataSourceName . "host=127.0.0.1 port=5432 user=postgres database=dev_database_lvus sslmode=disable"))))
+      '(((driver . "postgresql") (dataSourceName . "host=127.0.0.1 port=5432 database=customers sslmode=disable"))
+        ((driver . "postgresql") (dataSourceName . "host=127.0.0.1 port=5432 user=postgres database=dev_database_lvus sslmode=disable"))))
 (setq sql-connection-alist
       '((pool-a
          (sql-product 'postgres)
@@ -1875,13 +1799,13 @@ Position is calculated base on WIDTH and HEIGHT of childframe text window"
          (sql-database "customers")
          (sql-port 5432))))
 
-(set-formatter! 'sqlfluff "sqlfluff fix -f --disable_progress_bar -n -" :modes '(sql-mode))
+(set-formatter! 'sqlfluff '("sqlfluff" "format" "--config" (format "%s/.sqlfluff" (projectile-project-root)) "--disable-progress-bar" "-n"  "-") :modes '(sql-mode))
 
 (after! format-all
   (advice-add 'format-all-buffer--with :around #'envrc-propagate-environment))
 
 (after! emojify
- (setq emojify-display-style 'unicode))
+  (setq emojify-display-style 'unicode))
 
 (use-package! exec-path-from-shell
   :config

@@ -1,6 +1,8 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
+    nixpkgs-bitwig.url = "github:nixos/nixpkgs/nixos-23.11";
+    # nixpkgs-old.url = "github:nixos/nixpkgs/nixos-23.05";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-wayland = {
       url = "github:nix-community/nixpkgs-wayland";
@@ -9,7 +11,7 @@
     nixos-hardware.url = "github:nixos/nixos-hardware/master";
     nur.url = "github:nix-community/nur";
     home-manager = {
-      url = "github:nix-community/home-manager/release-23.05";
+      url = "github:nix-community/home-manager/release-24.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     emacs-overlay = {
@@ -52,6 +54,7 @@
           nixpkgs.flake = nixpkgs;
           nixos-hardware.flake = inputs.nixos-hardware;
           nixpkgs-unstable.flake = inputs.nixpkgs-unstable;
+          # nixpkgs-old.flake = inputs.nixpkgs-old;
           nur.flake = inputs.nur;
         };
         nixpkgs.overlays = [
@@ -64,7 +67,90 @@
               # required to inherit from top-level nixpkgs.
               system = super.system;
               config = super.config;
-              overlays = [ inputs.nixpkgs-wayland.overlay ];
+              overlays = [
+                inputs.nixpkgs-wayland.overlay
+
+                (self: super: {
+                  beets = with super;
+                    beets-unstable.override {
+                      version = "2.0.0-240807";
+                      # extraNativeBuildInputs = [ self.unstable.python3Packages.setuptools ];
+                      pluginOverrides = {
+                        copyartifacts = {
+                          enable = true;
+                          propogatedBuildInputs =
+                            [ beetsPackages.copyartifacts ];
+                        };
+                        # extrafiles = {
+                        #   enable = true;
+                        #   propagatedBuildInputs = [ self.unstable.beetsPackages.extrafiles ];
+                        # };
+                        alternatives = {
+                          enable = true;
+                          propagatedBuildInputs = [
+                            (python3Packages.buildPythonApplication rec {
+                              pname = "beets-alternatives";
+                              version = "unstable-2024-08-07";
+                              format = "pyproject";
+
+                              # Use the branch that fixes FAT32 usage
+                              src = fetchFromGitHub {
+                                repo = "beets-alternatives";
+                                owner = "loafofpiecrust";
+                                rev =
+                                  "f6260da3081ecec1bd4f13acbdf45a20c1e863ea";
+                                sha256 =
+                                  "sha256-OyMefC+Qua5rn5jZWk8Zt07vMcnlhfqoLUrgxNfqorg=";
+                              };
+
+                              postPatch = ''
+                                substituteInPlace pyproject.toml \
+                                  --replace 'addopts = "--cov --cov-report=term --cov-report=html"' ""
+                              '';
+                              preCheck = ''
+                                export HOME=$(mktemp -d)
+                              '';
+
+                              nativeBuildInputs = [ beets-unstable poetry ]
+                                ++ (with python3Packages; [
+                                  poetry-core
+                                  typeguard
+                                ]);
+
+                              nativeCheckInputs = with python3Packages; [
+                                pytestCheckHook
+                                mock
+                                typeguard
+                                poetry-core
+                              ];
+                            })
+                          ];
+                        };
+                        # I have to manually enable some new plugins
+                        limit = {
+                          enable = true;
+                          builtin = true;
+                        };
+                        substitute = {
+                          enable = true;
+                          builtin = true;
+                        };
+                        autobpm = {
+                          enable = true;
+                          builtin = true;
+                        };
+                        advancedrewrite = {
+                          enable = true;
+                          builtin = true;
+                        };
+                      };
+                    };
+                })
+              ];
+            };
+            old = import inputs.nixpkgs-old {
+              system = super.system;
+              config = super.config;
             };
           })
           nur.overlay
@@ -90,7 +176,7 @@
 
       nixosConfigurations = (mkLinux "x86_64-linux" "portable-spudger"
         ./systems/framework-laptop.nix)
-        // (mkLinux "x86_64-linux" "loafofpiecrust" ./systems/laptop-720s.nix)
         // (mkLinux "x86_64-linux" "kirby" ./systems/kirby.nix);
+
     };
 }

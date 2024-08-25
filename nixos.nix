@@ -1,5 +1,5 @@
 { config, lib, pkgs, inputs, ... }: {
-  imports = [ ./common.nix inputs.home-manager.nixosModules.home-manager ];
+  imports = [ ./common.nix ];
 
   # IMPORTANT! Allows system to load firmware directly from hardware devices.
   hardware.enableRedistributableFirmware = true;
@@ -25,7 +25,7 @@
   security.sudo = {
     enable = true;
     execWheelOnly = true; # Fixes the 2021 CVE
-    wheelNeedsPassword = true;
+    wheelNeedsPassword = lib.mkDefault true;
   };
 
   # Add an alias so that I can ask my computer to PLEASE do stuff.
@@ -33,7 +33,8 @@
 
   # Use pipewire for sound, emulating ALSA and PulseAudio servers.
   services.pipewire = {
-    enable = true;
+    enable = lib.mkDefault true;
+    audio.enable = true;
     wireplumber.enable = true;
     alsa.enable = true;
     alsa.support32Bit = true;
@@ -56,9 +57,9 @@
   # Allow easy discovery of network devices (like printers).
   services = {
     avahi.enable = true;
-    avahi.nssmdns = true;
+    avahi.nssmdns4 = true;
     avahi.openFirewall = true;
-    printing.enable = true;
+    printing.enable = lib.mkDefault true;
     printing.drivers = with pkgs; [ hplip gutenprint ];
   };
 
@@ -67,14 +68,12 @@
 
   programs = {
     # Use fish for my shell.
-    fish.enable = true;
-    dconf.enable = true;
-    java.enable = true;
+    fish.enable = lib.mkDefault true;
     # seahorse.enable = true; # GUI to manage keyring passwords.
   };
 
   programs.zsh = {
-    enable = true;
+    enable = lib.mkDefault false;
     # Leave pretty much everything up to home-manager.
     # Enable completion here to get bash completions and ensure it's kosher with
     # installed packages.
@@ -126,7 +125,7 @@
   ];
 
   # Allow OTA firmware updates from the testing channel.
-  services.fwupd.enable = true;
+  services.fwupd.enable = lib.mkDefault true;
   environment.etc."fwupd/remotes.d/lvfs-testing.conf" = {
     source = ./fwupd-lvfs-testing.conf;
   };

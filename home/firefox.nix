@@ -15,7 +15,7 @@
         #adsum-notabs
       ];
       isDefault = true;
-      # search.default = "DuckDuckGo";
+      # search.default = "Google";
       settings = {
         # Enable DRM
         "media.eme.enabled" = true;
@@ -51,6 +51,8 @@
         "browser.compactmode.show" = true;
         "browser.uidensity" = 1;
         # GPU acceleration
+        "gfx.webrender.all" = true;
+        "layers.acceleration.force-enabled" = false;
         "media.rdd-ffmpeg.enabled" = true;
         "media.ffmpeg.vaapi.enabled" = true;
         "media.navigator.mediadatadecoder_vpx_enabled" = true;

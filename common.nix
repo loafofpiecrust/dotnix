@@ -1,9 +1,5 @@
 { config, lib, pkgs, inputs, ... }: {
   imports = [ ./cachix.nix ];
-  # Pass flake inputs to home-manager modules.
-  home-manager.extraSpecialArgs = { inherit inputs; };
-  home-manager.useGlobalPkgs = true;
-  home-manager.useUserPackages = true;
 
   environment.systemPackages = with pkgs; [
     zlib
@@ -59,7 +55,7 @@
 
   programs.git = {
     enable = true;
-    package = pkgs.gitAndTools.gitFull;
+    # package = pkgs.gitAndTools.gitFull;
     lfs.enable = true;
   };
 }

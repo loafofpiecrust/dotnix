@@ -149,7 +149,7 @@
 
 (package! mixed-pitch)
 
-(package! memoize)
+;; (package! memoize)
 
 (package! disk-usage)
 

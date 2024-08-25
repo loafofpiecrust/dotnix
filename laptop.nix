@@ -9,8 +9,8 @@
   systemd.services.systemd-udev-settle.enable = false;
 
   # Common power management for laptops.
-  services.power-profiles-daemon.enable = false;
-  services.tlp.enable = true;
+  services.power-profiles-daemon.enable = true;
+  services.tlp.enable = false;
   services.auto-cpufreq.enable = true;
   # Optimizes I/O on battery power.
   powerManagement.enable = true;
