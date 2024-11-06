@@ -1,0 +1,155 @@
+directory: /run/media/snead/icepack/music
+library: ~/music/beets-library.db
+original_date: yes
+format_album: $albumartist/[$year] $album ($release_year, $country, $label, $media)
+format_item: $artist - $album - $disc.$track. $title
+sort_album: albumartist+ year+ album+
+per_disc_numbering: yes
+import:
+  detail: yes
+  autotag: yes
+  copy: no
+  timid: yes
+  languages: en
+  incremental: yes
+  incremental_skip_later: no
+match:
+  preferred:
+    countries: ["US", "GB|UK", "JP"]
+    media: ["CD", "DigitalMedia|File", "Vinyl"]
+    original_year: yes
+musicbrainz:
+  extra_tags: [year, catalognum, country, media]
+paths:
+  albumtype:soundtrack: "0. Soundtracks/[$realyear] $album/%if{$multidisc,Disc %right{$disc,1}/}$track. $title"
+  albumtype:single: %the{$albumartist}/Singles/[$realyear]%if{$subartist,[$subartist]} $album/$track. $title
+  comp: "0. %first{$genre}/[$realyear]%if{$subartist,[$subartist]} $album%ifdef{atypes, $atypes}/%if{$multidisc,%if{$grouping,$grouplabel,$disclabel}/,%if{$grouping,$grouping/}}$track. $title"
+  default: %the{$albumartist}/[$realyear]%if{$subartist,[$subartist]} $album%ifdef{atypes, $atypes}/%if{$multidisc,%if{$grouping,$grouplabel,$disclabel}/,%if{$grouping,$grouping/}}$track. $title
+item_fields:
+  mono: 1 if channels == 1 else 0
+  multidisc: 1 if disctotal > 1 else 0
+  # Vinyl records are usually split up into lettered sides, rather than numbered discs.
+  disclabel: ('Disc ' + str(disc))
+  grouplabel: ('Disc ' + str(disc) + '. ' + grouping)
+  # MF Doom is something special, with all of his alternate names
+  subartist: albumartist_credit if not comp and albumartist.lower() != albumartist_credit.lower() else ''
+  realyear: original_year if original_year != 0 and original_year < year else year
+plugins: the albumtypes rewrite inline alternatives fetchart convert fromfilename badfiles lastgenre replaygain info types zero
+aunique:
+  keys: albumartist album year albumtype
+  disambiguators: albumdisambig media country label catalognum
+  bracket: "()"
+types:
+  release_year: int
+zero:
+  fields: images acoustid_id acoustid_fingerprint asin script barcode comments
+  comments:
+    [
+      "^Exact ?Audio ?Copy",
+      ^Visit http,
+      ^Encoded by,
+      "^[Rr]ip(ped)? by",
+      ^Track \d+$,
+      ^EAC,
+    ]
+  update_database: true
+# Automatically resample all hi-fi FLACs down to CD quality on import
+convert:
+  auto: yes
+  embed: no
+  max_bitrate: 1480
+  never_convert_lossy_files: yes
+  format: flac
+  formats:
+    flac24:
+      command: ffmpeg -y -i $source -acodec flac -af aresample=osf=s24:resampler=soxr:out_sample_rate=48000 $dest
+      extension: flac
+    flac: ffmpeg -y -i $source -acodec flac -af aresample=osf=s16:dither_method=triangular:resampler=soxr:out_sample_rate=48000 $dest
+    wav: ffmpeg -y -i $source -ar 44100 -sample_fmt s16 $dest
+fetchart:
+  auto: yes
+  cautious: yes
+  cover_names: cover front folder album art
+  minwidth: 300
+  maxwidth: 1200
+  enforce_ratio: 3%
+  sources: filesystem coverart itunes
+  high_resolution: yes
+  deinterlace: yes
+albumtypes:
+  types:
+    - ep: "EP"
+    - single: "Single"
+    - live: "Live"
+    - compilation: "Comp"
+  ignore_va: compilation
+  bracket: "()"
+rewrite:
+  albumartist DANGERDOOM: MF DOOM
+  albumartist Viktor Vaughn: MF DOOM
+  albumartist King Geedorah: MF DOOM
+  albumartist Czarface & MF DOOM: MF DOOM
+  albumartist DOOM: MF DOOM
+  albumartist MF DOOM & MF Grimm: MF DOOM
+  albumartist Madvillain: MF DOOM
+  albumartist Efterklang & .*: Efterklang
+  albumartist The Jimi Hendrix Experience: Jimi Hendrix
+  albumartist Mychael Danna, DeVotchKa: DeVotchKa
+  albumartist Adrian Orange: Thanksgiving
+  albumartist The Velvet Underground & Nico: The Velvet Underground
+  albumartist kidkanevil & Daisuke Tanabe: Daisuke Tanabe
+  albumartist David Byrne & St. Vincent: David Byrne
+  albumartist filous & Daði Freyr: Daði Freyr
+  albumartist J\.U\.F: Gogol Bordello
+  albumartist Gorillaz feat.*: Gorillaz
+  albumartist Spacemonkeyz vs. Gorillaz: Gorillaz
+  albumartist Justin Timberlake & .*: Justin Timberlake
+  albumartist The Management: MGMT
+  albumartist Urban Thermo Dynamics: Mos Def
+  albumartist The Flaming Lips .*: The Flaming Lips
+  albumartist Prince and The Revolution: Prince
+alternatives:
+  ipod:
+    directory: /run/media/snead/SHELBY_S IP/Music
+    query: "onplayer:true"
+    removable: true
+  amelies_ipod:
+    directory: /run/media/snead/AD IPOD/Music
+    query: "ABBA , Beta Band , Beijing to Boston , Brave Irene , Buzzcocks , Chicano Batman , Freyr , Deltron 3030 , Dolly Parton , Hiatus Kaiyote , albumartist:Javelin , LCD Soundsystem , Lou Reed , MF DOOM , albumartist:Queen , Soft Hair , albumartist:'PJ Harvey' , Justin Timberlake album:Justified , Medscool , CZARFACE , Tatsuro Yamashita album:'For You' , Sibylle Baier , The Strokes , The Clash , Metallica"
+    removable: true
+# Replace regular slashes with the fraction slash! A trick to keep slashes in file names!! :)
+path_sep_replace: "⁄"
+replace:
+  '\s+$': ""
+  '\?': "¿"
+  '[\\/]': "⁄"
+  '^\.': _
+  '[\x00-\x1f]': _
+  '^\s+': ""
+  "^-": _
+  # Replace some unsupported characters with similar unicode ones (as long as Cantarell has them)
+  '\|': "¦"
+  ":": ";"
+  "‐": "-"
+  '\*': "¤"
+  ">": "›"
+  "<": "‹"
+  '\.\.+': "…"
+  # Replace smart single quotes with apostrophes. I think Cantarell was rendering smart single quotes weird?
+  '"': "″"
+  "’": "'"
+  # Fallback replacements
+  '[\?\.]+$': ""
+  '[<>\?]+': _
+lastgenre:
+  auto: no
+  separator: "; "
+  count: 1
+  canonical: ~/.config/beets/genre-tree.yaml
+  min_weight: 20
+  force: no
+  source: album
+  whitelist: ~/.config/beets/genres.txt
+replaygain:
+  backend: ffmpeg
+  auto: yes

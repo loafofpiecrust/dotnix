@@ -108,6 +108,9 @@
     mimeApps.enable = lib.mkDefault false;
   };
 
+  xdg.configFile."beets/config.yaml".source =
+    config.lib.meta.mkMutableSymlink ./beets.yaml;
+
   gtk = {
     enable = true;
     font.name = "sans";
