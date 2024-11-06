@@ -1,0 +1,26 @@
+[Added Associations]
+x-scheme-handler/magnet=userapp-transmission-gtk-343FT2.desktop;
+font/otf=org.gnome.FontViewer.desktop;
+
+[Default Applications]
+application/pdf=atril.desktop;draw.desktop
+application/vnd.openxmlformats-officedocument.wordprocessingml.document=writer.desktop
+application/x-extension-html=brave-browser.desktop
+application/xhtml+xml=brave-browser.desktop
+image/jpeg=eom.desktop
+image/png=eom.desktop
+text/html=brave-browser.desktop
+text/plain=emacsclient.desktop
+video/mp4=vlc.desktop
+video/quicktime=vlc.desktop
+x-scheme-handler/about=brave-browser.desktop
+x-scheme-handler/http=brave-browser.desktop
+x-scheme-handler/https=brave-browser.desktop
+x-scheme-handler/mailto=thunderbird.desktop
+x-scheme-handler/msteams=teams.desktop
+x-scheme-handler/magnet=userapp-transmission-gtk-343FT2.desktop
+x-scheme-handler/eclipse+command=_nix_store_mh7ay1ibip30sgig03jvmwy1cmx5qq40-dbeaver-bin-24.0.5_opt_dbeaver_.desktop
+font/otf=org.gnome.FontViewer.desktop
+x-scheme-handler/unknown=brave-browser.desktop
+
+[Removed Associations]

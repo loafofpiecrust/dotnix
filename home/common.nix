@@ -72,6 +72,19 @@
     settings = {
       aws.disabled = true;
       battery.disabled = true;
+      directory.read_only = " 󰌾";
+      git_branch.symbol = " ";
+      git_commit.tag_symbol = "  ";
+      hostname.ssh_symbol = " ";
+      nix_shell.symbol = " ";
+      nodejs.symbol = " ";
+      package.symbol = "󰏗 ";
+      python.symbol = " ";
+      rust.symbol = "󱘗 ";
+      ruby.symbol = " ";
+      java.symbol = " ";
+      golang.symbol = " ";
+      docker_context.symbol = " ";
     };
   };
 
@@ -83,35 +96,16 @@
       email = "taylor@snead.xyz";
       # Keep the vault open for 6 hours.
       lock_timeout = 60 * 60 * 6;
-      # FIXME must be a package definition
       pinentry = pkgs.pinentry-gnome3;
     };
   };
 
+  xdg.configFile."mimeapps.list".source =
+    config.lib.meta.mkMutableSymlink ./mimeapps.list;
   xdg = {
     enable = true;
     mime.enable = lib.mkDefault false;
     mimeApps.enable = lib.mkDefault false;
-    mimeApps.defaultApplications = lib.mkMerge [
-      (lib.genAttrs [
-        "text/html"
-        "x-scheme-handler/http"
-        "x-scheme-handler/https"
-        "x-scheme-handler/about"
-        "application/x-extension-html"
-        "application/xhtml+xml"
-      ] (_: [ "brave.desktop" ]))
-      (lib.genAttrs [ "image/png" "image/jpeg" ] (_: [ "eom.desktop" ]))
-      (lib.genAttrs [ "video/mp4" "video/quicktime" ] (_: [ "vlc.desktop" ]))
-      {
-        "x-scheme-handler/mailto" = [ "thunderbird.desktop" ];
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document" =
-          [ "writer.desktop" ];
-        "x-scheme-handler/msteams" = [ "teams.desktop" ];
-        "text/plain" = [ "emacsclient.desktop" ];
-        "application/pdf" = [ "atril.desktop" "draw.desktop" ];
-      }
-    ];
   };
 
   gtk = {
