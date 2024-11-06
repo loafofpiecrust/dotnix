@@ -6,15 +6,7 @@
   programs.emacs = {
     enable = true;
     package = pkgs.emacsCustom;
-    extraPackages = epkgs:
-      with epkgs; [
-        emojify
-        magit
-        forge
-        all-the-icons
-        emacsql
-        emacsql-sqlite
-      ];
+    extraPackages = epkgs: with epkgs; [ emojify vterm emacsql emacsql-sqlite ];
   };
 
   services.emacs = {

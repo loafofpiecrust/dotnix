@@ -8,6 +8,7 @@
     pokemonsay
     usbutils
     pciutils
+    atool
   ];
 
   nix.extraOptions = ''

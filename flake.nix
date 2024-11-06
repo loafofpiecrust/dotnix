@@ -43,6 +43,10 @@
       url = "github:hyprwm/Hyprland";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+    iwmenu = {
+      url = "github:e-tho/iwmenu";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -165,6 +169,7 @@
         };
       };
       mkLinux = mkSystem nixpkgs.lib.nixosSystem;
+      mkUnstableLinux = mkSystem nixpkgs-unstable.lib.nixosSystem;
       mkDarwin = mkSystem darwin.lib.darwinSystem;
     in rec {
       # When you first setup a new machine, the hostname won't match yet.

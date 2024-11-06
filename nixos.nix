@@ -105,6 +105,7 @@
     htop
     zip
     unzip
+    ntfs3g
     # ranger
     # xfce.gvfs
     gnupg

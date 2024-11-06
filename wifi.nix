@@ -5,7 +5,7 @@
     # Enable networking. Use connman instead of networkmanager because it has
     # working iwd support. Saves battery and more reliable.
     wireless.iwd.enable = lib.mkDefault true;
-    nameservers = [ "8.8.8.8" ];
+    nameservers = [ "1.1.1.1" "1.0.0.1" ];
 
     # Use better DNS resolution service, networkd + resolved.
     # useNetworkd = true;

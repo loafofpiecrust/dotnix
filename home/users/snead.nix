@@ -3,10 +3,12 @@
     ../common.nix
     ../email.nix
     ../firefox.nix
+    ../chromium.nix
     ../fish.nix
     ../sway.nix
-    # ../hyprland.nix
+    ../hyprland.nix
     ../zsh.nix
+    ../emacs.nix
   ];
   home.packages = with pkgs; [
     unstable.zoom-us
@@ -30,10 +32,42 @@
     wavpack
   ];
 
+  programs.ranger = {
+    enable = true;
+    package = pkgs.ranger-plus;
+    settings = {
+      preview_images = false;
+      preview_images_method = "kitty";
+    };
+    # Redirect file opening to xdg-open for some mime types.
+    rifle = [
+      {
+        condition = "mime ^image|^video|^audio, has xdg-open, flag f";
+        command = ''xdg-open "$1"'';
+      }
+      {
+        condition =
+          "ext iso|jar|msi|pkg|rar|shar|tar|tgz|xar|xpi|xz|zip, has xdg-open";
+        command = ''xdg-open "$1"'';
+      }
+    ];
+  };
+
+  programs.kitty = {
+    enable = true;
+    shellIntegration.enableFishIntegration = true;
+    shellIntegration.mode = "no-cursor";
+    settings = {
+      window_padding_width = 4;
+      cursor_shape = "block";
+      background_opacity = "0.8";
+    };
+  };
+
   programs.alacritty = {
     enable = true;
     settings = {
-      background_opacity = 0.8;
+      # background_opacity = 0.8;
       font.normal.family = "monospace";
       font.size = 11;
       window.padding = {

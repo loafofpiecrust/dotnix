@@ -2,12 +2,13 @@
 
 {
   # imports = [ inputs.hyprland.nixosModules.default ];
-  # programs.hyprland.enable = false;
+  programs.hyprland.enable = true;
   environment.systemPackages = with pkgs; [
     gnome3.file-roller # provides all archive formats
     pavucontrol
     ffmpeg
     xdg-utils
+    glib
 
     # desktop environment
     # gnome3.gtk
@@ -18,7 +19,7 @@
     #dunst # notifications
     # rofi # MENUS!
     # rofi-menugen
-    feh # wallpapers
+    # feh # wallpapers
     #wpgtk
     # caffeine-ng # prevent screen from sleeping sometimes
     gsettings-desktop-schemas
@@ -38,7 +39,7 @@
 
     # system tools
     libnotify
-    xdg-desktop-portal
+    # xdg-desktop-portal
     imagemagick
     gst_all_1.gst-plugins-base
     gst_all_1.gst-plugins-good
@@ -51,6 +52,8 @@
     noto-fonts-emoji
     noto-fonts-extra
     google-fonts
+    merriweather
+    liberation_ttf
     ubuntu_font_family
     migu
     dejavu_fonts
@@ -73,6 +76,7 @@
     mononoki
     cascadia-code
     hack-font
+    maple-mono-NF
 
     # Add user fonts to ~/.local/share/fonts
   ];
@@ -80,7 +84,7 @@
   fonts.fontconfig = {
     defaultFonts = {
       monospace = [
-        "Hack" # Main preference, changes often.
+        "Hack Nerd Font" # Main preference, changes often.
         "Source Code Pro" # Provides almost all of the IPA symbols.
         "Noto Sans Mono CJK SC"
         "Noto Emoji"
@@ -94,47 +98,26 @@
       ];
       serif = [ "Merriweather" "Liberation Serif" ];
     };
-    hinting.style = "slight";
+    # hinting.style = "slight";
     # hinting.enable = false;
   };
 
   nixpkgs.overlays = [
     (self: super: {
-      # Patch picom to support rounded corners in any X11 window manager.
-      picom = super.picom.overrideAttrs (old: {
-        src = builtins.fetchurl {
-          url =
-            "https://github.com/ibhagwan/picom/archive/68c8f1b5729dfd3c0259b3bbb225193c9ecdb526.tar.gz";
-          sha256 = "07g8b62s0mxx4599lb46nkzfxjwp2cv2g0f2n1qrxb7cc80yj1nb";
-        };
+      pywal = super.unstable.pywal16;
+      # Latest has some fixes I need!! In particular, a fix for OrcaSlicer dropdowns.
+      # hyprland = super.unstable.hyprland;
+      # Add extra dependencies for ranger to have improved file previews.
+      ranger-plus = super.ranger.overrideAttrs (old: {
+        propagatedBuildInputs = old.propagatedBuildInputs
+          ++ (with super; [ ueberzugpp mediainfo poppler_utils bat ]);
       });
-      # Override pywal with 16-color fork
-      pywal16 = self.python310Packages.buildPythonPackage {
-        pname = "pywal";
-        version = "3.4.0";
-        propogatedBuildInputs = with self; [
-          imagemagick
-          feh
-          python310Packages.colorthief
-        ];
-        src = builtins.fetchGit {
-          url = "https://github.com/eylles/pywal16";
-          rev = "6bf6234caa4c6c72d8e1e6539d5fce957fd8a2ca";
-        };
-        doCheck = false;
-      };
       # Patch rofi to support wayland.
       rofi-wayland = super.rofi.overrideAttrs (old: {
         src = builtins.fetchurl {
           url =
             "https://github.com/lbonn/rofi/archive/a97ba40bc7aca7e375c500d574cac930a0b3473d.tar.gz";
           sha256 = "13v4l5hw14i5nh26lh4hr6jckpba6pyyvx5nydn2h1vkgs0lz4v4";
-        };
-      });
-      sway = super.sway.overrideAttrs (old: {
-        src = builtins.fetchGit {
-          url = "https://github.com/WillPower3309/swayfx";
-          rev = "d89c365106b8d58e4a37ad58e9987a7da28c8951";
         };
       });
       # Patch libnotify to support replacing existing notifications.
@@ -162,10 +145,12 @@
       };
       # Support pulseaudio in bar programs.
       # TODO Maybe remove this now that I use pipewire? Alsa should be fine.
-      polybar = super.polybar.override { pulseSupport = true; };
-      waybar = super.waybar.override { pulseSupport = true; };
+      # polybar = super.polybar.override { pulseSupport = true; };
       # Remove google tracking from chromium.
-      chromium = super.ungoogled-chromium;
+      # chromium = super.ungoogled-chromium.override {
+      #   enableWideVine = true;
+      #   proprietaryCodecs = true;
+      # };
 
       swhkd = pkgs.rustPlatform.buildRustPackage rec {
         pname = "swhkd";
@@ -208,7 +193,8 @@
   programs.xwayland.enable = true;
   # Configure sway if I happen to want it in my setup.
   programs.sway = {
-    enable = true;
+    package = pkgs.swayfx;
+    # enable = true;
     extraPackages = with pkgs; [
       swaylock
       swayidle
@@ -282,13 +268,35 @@
 
   # Enable better XDG integration.
   xdg.portal.enable = true;
-  xdg.portal.extraPortals = with pkgs; [ xdg-desktop-portal-gtk ];
-  xdg.portal.wlr.enable = true;
+  xdg.portal.extraPortals = with pkgs; [
+    xdg-desktop-portal-gtk
+    xdg-desktop-portal-xapp
+  ];
+  xdg.portal.wlr = { enable = true; };
+  # xdg.portal.xdgOpenUsePortal = true;
+  # xdg.portal.config = {
+  #   common = {
+  #     default = [ "wlr" "gtk" ];
+  #     "org.freedesktop.impl.portal.Settings" = [ "xapp" "gtk" ];
+  #   };
+  # };
 
   # Enable full OpenGL support.
+  nixpkgs.config.packageOverrides = pkgs: {
+    vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
+  };
+  nixpkgs.config.chromium.enableWideVine = true;
+  nixpkgs.config.chromium.proprietaryCodecs = true;
+  nixpkgs.config.ungoogled-chromium.enableWideVine = true;
+  nixpkgs.config.ungoogled-chromium.proprietaryCodecs = true;
   hardware.opengl = {
     enable = true;
-    driSupport = true;
+    # driSupport = true;
+    extraPackages = with pkgs; [
+      vaapiVdpau
+      libvdpau-va-gl
+      intel-compute-runtime
+    ];
   };
 
   # Support pinentry-gnome3 on non-Gnome DEs.

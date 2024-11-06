@@ -5,24 +5,46 @@
 
 ;; Let me load my custom packages.
 (add-load-path! "~/.config/doom/custom")
-;;(add-load-path! "/run/current-system/sw/share/emacs/site-lisp/mu4e")
 
 ;; Load custom themes from the "themes" folder here.
 (setq custom-theme-directory (expand-file-name "~/.config/doom/themes"))
 
-;; Make shell commands run faster using bash...
+;; Make shell commands run faster and more reliably using bash.
 (setq shell-file-name (executable-find "bash"))
-;; ...But let me use fish for interactive sessions.
-;;(after! vterm
-;;(setq vterm-shell "/run/current-system/sw/bin/fish"))
 
 (menu-bar-mode (if (eq system-type 'darwin) t -1))
 
-;; (use-package! memoize)
+;; Make emacs backgrounds partially transparent!
+;; It's finally here, as of 2022!
+(add-to-list 'default-frame-alist '(alpha-background . 80))
+
 (use-package! gsettings)
 
 (defvar +snead/theme-night 'ewal-doom-vibrant)
 (defvar +snead/theme-day 'modus-operandi)
+
+(defun +snead/load-theme (timesym)
+  (setq catppuccin-flavor (if (eq timesym 'night) 'macchiato 'latte))
+  (catppuccin-reload))
+
+;; There are two ways to load a theme. Both assume the theme is installed and
+;; available. You can either set `doom-theme' or manually load a theme with the
+;; `load-theme' function. This is the default:
+(setq! catppuccin-flavor
+       (if (and (gsettings-available?)
+                (string= "prefer-dark"
+                         (gsettings-get "org.gnome.desktop.interface" "color-scheme")))
+           'macchiato
+         'latte))
+
+(setq doom-theme 'catppuccin)
+
+(setq doom-gruvbox-brighter-comments nil
+      doom-peacock-brighter-comments t
+      doom-monokai-classic-brighter-comments t
+      doom-acario-light-brighter-comments t
+      doom-one-light-brighter-comments t)
+
 
 ;; Doom exposes five (optional) variables for controlling fonts in Doom. Here
 ;; are the three important ones:
@@ -32,36 +54,22 @@
 ;; + `doom-big-font' -- used for `doom-big-font-mode'; use this for
 ;;   presentations or streaming.
 ;;
-;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
-;; font string. You generally only need these two:
 ;; Symbol test: _ -> => , . `' "" O0l1*#
 (setq doom-font (if (eq system-type 'darwin)
                     (font-spec :family "Fira Code" :size 14)
                   (font-spec :family "monospace" :size 15))
-      doom-variable-pitch-font (font-spec :family "Inter" :size 15)
+      doom-variable-pitch-font (font-spec :family "sans-serif" :size 15)
       doom-unicode-font doom-font
       ;; doom-unicode-font (font-spec :family "Symbola monospacified for Source Code Pro" :size 15)
       ;; These fonts were fucking up display of math symbols! Remove them!
       ;; doom-unicode-extra-fonts nil
       )
 
-(setq doom-scratch-initial-major-mode 'org-mode)
+;; Use org mode for the scratch buffer.
+(setq-default doom-scratch-initial-major-mode 'org-mode)
 
 ;; Give each line some room to breathe.
 (setq-default line-spacing 3)
-
-(defun +snead/increase-mem ()
-  "Allow Emacs to use up to 1 GB of memory.
-It seems excessive, but apparently necessary for fluid LSP usage!"
-  (setq +lsp--default-gcmh-high-cons-threshold 1073741824
-        gcmh-high-cons-threshold 1073741824))
-
-;; Increase garbage collection threshold while active.
-;; This keeps emacs from being sluggish while typing.
-;; (after! lsp-mode (+snead/increase-mem))
-;; (after! gcmh
-;;   (setq-default gcmh-idle-delay 5)
-;;   (+snead/increase-mem))
 
 (defvar +snead/frame-border-width 3)
 (defvar +snead/frame-fringe 8)
@@ -88,50 +96,31 @@ It seems excessive, but apparently necessary for fluid LSP usage!"
              (not (memq major-mode +snead/fringe-deny-modes)))
     (+snead/add-fringe)))
 
-(after! fringe
-  (set-fringe-mode 0)
-  (add-hook! '(exwm-mode-hook pdf-view-mode-hook) #'+snead/remove-fringe)
-  ;; (add-hook 'after-change-major-mode-hook #'+snead/set-fringe)
-  (add-hook 'vterm-mode-hook #'+snead/add-fringe))
-
-;; Disable line highlighting by default, relying on mode-specific faces and
-;; highlighting the current line number.
-(setq global-hl-line-modes '())
-
-(setq tab-always-indent t)
+;; (after! fringe
+;;   (set-fringe-mode 0)
+;;   (add-hook! '(exwm-mode-hook pdf-view-mode-hook) #'+snead/remove-fringe)
+;;   ;; (add-hook 'after-change-major-mode-hook #'+snead/set-fringe)
+;;   (add-hook 'vterm-mode-hook #'+snead/add-fringe))
 
 (use-package! emacs
   :config
-  (setq-default gc-cons-percentage 0.5)
-
-  (setq user-full-name "Shelby Snead"
-        user-mail-address "shelby@snead.xyz")
-
-  (setq confirm-kill-processes nil)
-
-  (setq-default truncate-lines nil)
-
-  (setq-default scroll-margin 2)
-
-  ;; Inhibit auto-save messages because they're mostly distracting.
-  (setq-default auto-save-no-message t)
-
-  (setq delete-by-moving-to-trash t
-        x-stretch-cursor t)
+  (setq-default user-full-name "Shelby Snead"
+                user-mail-address "shelby@snead.xyz"
+                confirm-kill-processes nil
+                truncate-lines nil
+                scroll-margin 2
+                ;; Inhibit auto-save messages because they're mostly distracting.
+                auto-save-no-message t
+                delete-by-moving-to-trash t
+                x-stretch-cursor t
+                ;; Trust all themes since I install few.
+                custom-safe-themes t)
 
   (setq-hook! '(vterm-mode-hook eshell-mode-hook)
     truncate-lines nil)
 
   (appendq! initial-frame-alist '((left-fringe . 0)
-                                  (right-fringe . 0)))
-
-  (setq custom-safe-themes t))
-
-(use-package! solar
-  :config
-  (setq calendar-location-name "Oakland, CA"
-        calendar-latitude 37.8043
-        calendar-longitude -122.2711))
+                                  (right-fringe . 0))))
 
 (after! scroll-bar
   ;; remove all scrollbars!
@@ -139,17 +128,18 @@ It seems excessive, but apparently necessary for fluid LSP usage!"
 
 ;; Add dividers between each window.
 (after! frame
-  (setq window-divider-default-right-width 6
-        window-divider-default-bottom-width 6))
+  (setq-default window-divider-default-right-width 5
+                window-divider-default-bottom-width 5
+                window-divider-default-places 'right-only))
 
 ;; Store various logins and things in a gpg file when necessary.
 (after! auth-source
-  (setq auth-sources '("~/.authinfo.gpg")))
+  (setq-default auth-sources '("~/.authinfo.gpg")))
 
 ;; Always show line numbers.
 (after! display-line-numbers
-  (setq display-line-numbers-type 'relative
-        display-line-numbers-grow-only t))
+  (setq-default display-line-numbers-type 'relative
+                display-line-numbers-grow-only t))
 
 (after! prog-mode
   ;; Consider each segment of a camelCase one word,
@@ -161,14 +151,28 @@ It seems excessive, but apparently necessary for fluid LSP usage!"
 ;; Make calculator easy to access.
 (map! :leader "oc" #'calc)
 (after! calc
-  (setq calc-symbolic-mode t))
+  (setq-default calc-symbolic-mode t))
 
-(after! browse-url
-  ;; Open urls with xdg-open so that app links open directly.
-  ;; This let's me open zoommtg:// urls right into zoom.
-  (setq browse-url-generic-program "xdg-open"
-        browse-url-browser-function #'browse-url-generic))
+;; Make calc compatible with evil mode, and add a nice menu on top!
+(use-package! casual-calc
+  :disabled
+  :after calc evil-collection
+  :init
+  (evil-collection-init 'calc)
+  ;; No need for insert mode in the calculator
+  ;; (map! :n "i" 'casual-calc-tmenu)
+  )
 
+;; Support .calc files too!
+(use-package! literate-calc-mode
+  :commands (literate-calc-mode literate-calc-minor-mode)
+  :mode (("\\.calc\\'" . literate-calc-mode))
+  :init (map! :leader "tc" 'literate-calc-minor-mode))
+
+;; Open urls with xdg-open so that app links open directly.
+;; This let's me open zoommtg:// urls right into zoom.
+(setq! browse-url-generic-program "xdg-open"
+       browse-url-browser-function #'browse-url-generic)
 
 (custom-set-faces!
   '(org-document-title :weight extra-bold :height 1.5)
@@ -205,44 +209,11 @@ It seems excessive, but apparently necessary for fluid LSP usage!"
 
 ;; Test for unicode icons (should be marked "seen" and "important")
 ;; neu          11:43:48        Information Technology... Received: INC0628880 – Fwd: Office 365 Transition Ridiculous
-
-;; There are two ways to load a theme. Both assume the theme is installed and
-;; available. You can either set `doom-theme' or manually load a theme with the
-;; `load-theme' function. This is the default:
-(setq doom-theme
-      (if (and (gsettings-available?)
-               (string= "prefer-dark"
-                        (gsettings-get "org.gnome.desktop.interface" "color-scheme")))
-          +snead/theme-night
-        +snead/theme-day))
-
-(setq doom-gruvbox-brighter-comments nil
-      doom-peacock-brighter-comments t
-      doom-monokai-classic-brighter-comments t
-      doom-acario-light-brighter-comments t
-      doom-one-light-brighter-comments t)
-
 ;; Pull exwm config from separate file.
-(use-package! my-exwm-config
-  :if (equal "t" (getenv "EMACS_EXWM")))
+;; (use-package! my-exwm-config
+;;   :if (equal "t" (getenv "EMACS_EXWM")))
 
 (after! unicode-fonts
-  ;; Replace all instances of Symbola with a monospacified Symbola.
-  ;;(mapc (lambda (bl)
-  ;;(setf (cadr bl)
-  ;;(mapcar (lambda (font)
-  ;;(if (string= font "Symbola")
-  ;;"Symbola monospacified for Source Code Pro"
-  ;;font))
-  ;;(cadr bl))))
-  ;;unicode-fonts-block-font-mapping)
-  ;; Designate private use to font awesome, mostly.
-  ;; (setq my/private-use-fonts '("github-octicons"
-  ;;                              "file-icons"
-  ;;                              "all-the-icons"
-  ;;                              "Material Icons"))
-  ;; (push `("Private Use Area" ,my/private-use-fonts)
-  ;;       unicode-fonts-block-font-mapping)
   ;; Source Code Pro shares metrics with SF Mono and has full IPA.
   (push '("IPA Extensions" ("Source Code Pro"))
         unicode-fonts-block-font-mapping)
@@ -264,29 +235,28 @@ It seems excessive, but apparently necessary for fluid LSP usage!"
   )
 
 ;;;; Themes and color management
-(use-package! ewal
-  :after doom-themes
-  :config (ewal-load-colors)
-  :init
-  ;; Use all 16 colors from our palette, not just the primary 8.
-  (setq ewal-ansi-color-name-symbols '(black red green yellow blue magenta cyan white
-                                       brightblack brightred brightgreen brightyellow
-                                       brightblue brightmagenta brightcyan brightwhite)))
+;; (use-package! ewal
+;;   :after doom-themes
+;;   :config (ewal-load-colors)
+;;   :init
+;;   ;; Use all 16 colors from our palette, not just the primary 8.
+;;   (setq ewal-ansi-color-name-symbols '(black red green yellow blue magenta cyan white
+;;                                        brightblack brightred brightgreen brightyellow
+;;                                        brightblue brightmagenta brightcyan brightwhite)))
 
-(use-package! ewal-doom-themes
-  :after ewal
-  :config
-  (setq ewal-doom-vibrant-brighter-comments t))
+;; (use-package! ewal-doom-themes
+;;   :after ewal
+;;   :config
+;;   (setq ewal-doom-vibrant-brighter-comments t))
 
 ;;;; org-mode adjustments
+;; If you use `org' and don't want your org files in the default location below,
+;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
 (after! org
-  ;; If you use `org' and don't want your org files in the default location below,
-  ;; change `org-directory'. It must be set before org loads!
-  ;; Agenda settings
-  (setq-default org-deadline-warning-days 10)
   ;; Change some org display properties.
-  (setq-default org-link-descriptive t
+  (setq-default org-deadline-warning-days 10
+                org-link-descriptive t
                 org-startup-indented nil
                 org-indent-indentation-per-level 1
                 org-use-property-inheritance t
@@ -294,9 +264,9 @@ It seems excessive, but apparently necessary for fluid LSP usage!"
                 org-catch-invisible-edits 'smart
                 org-ellipsis " ▾ "
                 org-link-descriptive nil
-                org-list-demote-modify-bullet '(("-" . "+") ("+" . "*") ("*" . "-")))
-  ;; Adjust LaTeX display and export with tectonic.
-  (setq-default org-latex-compiler "xelatex"
+                org-list-demote-modify-bullet '(("-" . "+") ("+" . "*") ("*" . "-"))
+                ;; Adjust LaTeX display and export with tectonic.
+                org-latex-compiler "xelatex"
                 org-latex-pdf-process '("tectonic -Z shell-escape %f")
                 org-latex-prefer-user-labels t
                 org-log-done t
@@ -311,176 +281,24 @@ It seems excessive, but apparently necessary for fluid LSP usage!"
                                      (?+ . ?◦))
    org-superstar-remove-leading-stars t))
 
-;;;; Password Management!
-(use-package! bitwarden
-  :disabled
-  ;; :commands (bitwarden-getpass
-  ;;            bitwarden-edit
-  ;;            bitwarden-generate-password
-  ;;            bitwarden-getpass-for-user)
-  ;;:init
-  :defer 3
-  :config
-  ;; Bind my most used workflows under <leader> a (authentication)
-  (map! :leader
-        :prefix-map ("a" . "auth")
-        "p" #'bitwarden-getpass
-        "e" #'bitwarden-edit-item
-        "g" #'bitwarden-generate-password
-        "n" #'bitwarden-create-item)
-  ;; I use my main email address for bitwarden, so don't prompt me for it.
-  (setq bitwarden-user user-mail-address
-        ;; TODO Use auth-source to save my bitwarden password?? Seems bad to
-        ;; save my master password literally anywhere. Plus, I would just need
-        ;; my store password to unlock the BW pass.
-        bitwarden-automatic-unlock (lambda () (read-passwd "[Bitwarden] Master password: ")))
-
-  ;; (memoize #'bitwarden-search "1 hour")
-
-  (defun bitwarden-getpass-for-user (domain username)
-    "Return the password for an account with the given USERNAME under the given DOMAIN.
-If the vault is locked, prompt the user for their master email and password."
-    (interactive)
-    ;; Ensure the vault is unlocked, prompting for login if not.
-    (unless (bitwarden-unlocked-p) (bitwarden-unlock))
-    ;; Look for the matching account under the given domain.
-    (let ((acc (cl-find-if (lambda (acc)
-                             (string= username (gethash "username" (gethash "login" acc))))
-                           (bitwarden-search domain))))
-      (and acc (gethash "password" (gethash "login" acc)))))
-
-  (defun bitwarden--read (prompt &optional search-str)
-    (let* ((items (mapcar (lambda (item) (cons (format "%s (%s)"
-                                                       (gethash "name" item)
-                                                       (gethash "username" (gethash "login" item)))
-                                               item))
-                          (bitwarden-search search-str)))
-           (choice (completing-read (concat "[Bitwarden] " prompt)
-                                    items)))
-      (cdr (assoc choice items))))
-
-  ;; TODO Fix login, then unlock after sync.
-  (defun bitwarden-getpass (&optional account print-message)
-    "Pick an account and copy the password for it to the kill-ring."
-    (interactive)
-    ;; Ensure the vault is unlocked, prompting for login if not.
-    (unless (bitwarden-unlocked-p) (bitwarden-unlock))
-    (if (interactive-p)
-        ;; New interactive prompt for account or username.
-        (let ((acc (bitwarden--read "Copy password: ")))
-          (kill-new (gethash "password" (gethash "login" acc)))
-          (message "Copied %s password for %s"
-                   (gethash "name" acc)
-                   (gethash "username" (gethash "login" acc))))
-      ;; Copied over from original bitwarden-getpass
-      (bitwarden--handle-message
-       (bitwarden--auto-cmd (list "get" "password" account))
-       print-message)))
-
-  (defun bitwarden-search (&optional search-str search-type)
-    "Search for vault for items containing SEARCH-STR.
-
-Returns a vector of hashtables of the results."
-    (let* ((args (and search-str (list (format "--%s" (or search-type "search"))
-                                       search-str)))
-           (ret (bitwarden--auto-cmd (append (list "list" "items") args)))
-           (result (bitwarden--handle-message ret)))
-      (when result
-        (let* ((json-object-type 'hash-table)
-               (json-key-type 'string)
-               (json (json-parse-string result)))
-          json))))
-
-  (defun bitwarden--encode (obj)
-    (let ((json-object-type 'hash-table)
-          (json-key-type 'string))
-      (shell-command-to-string (format "echo '%s' | bw encode" (json-serialize obj)))))
-
-  (defun bitwarden-edit-item (&optional existing-account)
-    (interactive)
-    (unless (bitwarden-unlocked-p) (bitwarden-unlock))
-    (let* ((acc (or nil (bitwarden--read "Edit account: ")))
-           (login (gethash "login" acc))
-           (username (read-string "Username: " (gethash "username" login)))
-           (password (read-string "Password: " (gethash "password" login)))
-           (acc-id (gethash "id" acc)))
-      ;; Replace the existing username and password.
-      (puthash "username" username login)
-      (puthash "password" password login)
-      (puthash "login" login acc)
-      ;; Push the updated entry to the vault.
-      (call-process bitwarden-bw-executable nil 0 nil
-                    "edit" "item"
-                    acc-id
-                    (bitwarden--encode acc))
-      (message "Updated %s account for %s" (gethash "name" acc) username)))
-
-  (defun bitwarden-create-item ()
-    (interactive)
-    (unless (bitwarden-unlocked-p) (bitwarden-unlock))
-    (let* ((domain (read-string "Domain name: "))
-           (name (read-string "Entry name: " domain))
-           (username (read-string "Username: "))
-           (password (read-string "Password: "))
-           (acc (make-hash-table :test #'equal))
-           (login (make-hash-table :test #'equal))
-           (uri (make-hash-table :test #'equal)))
-      ;; Replace the existing username and password.
-      (puthash "username" username login)
-      (puthash "password" password login)
-      (puthash "match" :null uri)
-      (puthash "uri" domain uri)
-      (puthash "uris" [uri] login)
-      (puthash "login" login acc)
-      (puthash "name" name acc)
-      ;; Push the updated entry to the vault.
-      (call-process bitwarden-bw-executable nil 0 nil
-                    "create" "item"
-                    (bitwarden--encode acc))
-      (message "Created %s account for %s" domain username)))
-
-  (defun bitwarden-generate-password ()
-    (interactive)
-    (let ((len (read-number "[Bitwarden] Password length: " 24)))
-      (kill-new (shell-command-to-string
-                 (format "bw generate -ulns --length %d" len)))
-      (message "New password copied to the clipboard")))
-
-  (defun bitwarden-logged-in-p ()
-    "Check if `bitwarden-user' is logged in.
-Returns nil if not logged in."
-    (not (string-blank-p (shell-command-to-string (format "cat '%s' | jq .__PROTECTED__key --raw-output"
-                                                          bitwarden-data-file)))))
-
-
-
-  ;; TODO Function to generate a password, then push it into the kill-ring so I
-  ;; can paste it into a web prompt, then when editing the account.
-
-  (require 'auth-source-bitwarden)
-  (auth-source-bitwarden-enable))
-
-;; Use alt + {j,k} for dragging stuff, not just arrow keys.
-(after! drag-stuff
-  (map! "M-j" #'drag-stuff-down
-        "M-k" #'drag-stuff-up))
-
 (after! undo-tree
-  (map! :map undo-tree-map
-        (:leader "ou" 'undo-tree-visualize)))
+  (map! :map undo-tree-mode-map
+        :leader "ou" 'undo-tree-visualize))
+
+;; Make running commands through leader key shorter.
+(map! :leader ";" 'execute-extended-command)
+
+;; Add an easy mapping for exporting minibuffer results (especially from grep)
+(map! :map minibuffer-mode-map "C-e" 'embark-export)
+
+;; FIXME this doesn't quite work for embark-export windows
+(map! :map compilation-mode-map
+      :n "gq" 'kill-buffer-and-window)
 
 ;; I like using <u> for undo and <U> for redo. It's symmetrical.
 (map! :n "U" 'evil-redo)
 
 (after! (evil evil-collection)
-  ;; When Emacs is in server mode, we have to normalize C-i in a graphical window.
-  (defun evil-normalize-ctrl-i (&optional frame)
-    ;;"Untable TAB from C-i, so we can indent."
-    (define-key input-decode-map [(control ?i)] [control-i])
-    (define-key input-decode-map [(control ?I)] [(shift control-i)])
-    (map! :map evil-motion-state-map "C-i" nil)
-    (define-key evil-motion-state-map [control-i] 'evil-jump-forward))
-
   ;; Disable echo area messages when changing evil states.
   (setq evil-insert-state-message nil
         evil-replace-state-message nil
@@ -489,18 +307,17 @@ Returns nil if not logged in."
         evil-visual-char-message nil
         evil-visual-block-message nil)
 
-  (add-hook 'doom-first-buffer-hook #'evil-normalize-ctrl-i)
   ;; Prevent accidental commands when exploring little-used modes.
   (map! :m doom-localleader-key nil)
-  (evil-normalize-ctrl-i)
   ;; Indent current line after more evil commands.
   ;; (advice-add 'evil-join :after #'indent-according-to-mode)
-  (map! "C-j" 'newline-and-indent)
+  (map! :n "<RET>" 'newline-and-indent)
 
   ;; Extra bindings for compilation and editing commit messages.
   (map! :map (compilation-mode-map with-editor-mode-map message-mode-map)
         ;; Stands for "go run", finishes the current operation.
         :nv "gr" (general-simulate-key "C-c C-c")
+        :nv "C-<RET>" (general-simulate-key "C-c C-c")
         ;; Stands for "go quit"
         :nm "gq" (general-simulate-key "C-c C-k"))
 
@@ -513,12 +330,13 @@ Returns nil if not logged in."
         :gi "<f12>" (general-key "C-x C-s")
         :gi "C-v" '+evil-paste-at-point))
 
+;; Add a few other common bindings since I don't use the commands that live
+;; under these keys anyway.
+(map! "C-a" 'mark-whole-buffer)
+
 (after! org
   (map! :map org-mode-map
         :nv "gr" (general-simulate-key "C-c C-c")))
-
-(after! tree-sitter
-  (push '(typescript-tsx-mode . typescript) tree-sitter-major-mode-language-alist))
 
 ;; Make spell-fu compatible with tree-sitter.
 (after! (spell-fu tree-sitter)
@@ -528,28 +346,13 @@ Returns nil if not logged in."
                   tree-sitter-hl-face:string
                   font-lock-comment-face
                   font-lock-doc-face
-                  font-lock-string-face))
+                  font-lock-string-face)))
+
+(after! spell-fu
+  (setq-default spell-fu-word-delimit-camel-case t)
   (setq-default spell-fu-faces-exclude
                 '(font-lock-constant-face
                   markdown-code-face)))
-
-;; Only load the lsp servers that I might actually use.
-;; Loading these packages is about 40% of the delay when first starting a
-;; language server.
-;; The rest is actually loading the server and can't be reduced much.
-;; (setq lsp-client-packages '(ccls lsp-bash lsp-clangd lsp-cmake lsp-css lsp-dart lsp-dockerfile
-;;                                  lsp-eslint lsp-go lsp-haskell lsp-java lsp-javascript lsp-json lsp-kotlin
-;;                                  lsp-lua lsp-nix lsp-ocaml lsp-pyls lsp-python-ms lsp-rust lsp-tex lsp-terraform lsp-xml
-;;                                  lsp-yaml lsp-r lsp-sqls))
-(after! lsp-mode
-  (setq lsp-eldoc-render-all nil
-        lsp-signature-render-documentation nil
-        lsp-symbol-highlighting-skip-current t
-        ;; Always prompt for actions so I know what I'm doing.
-        lsp-auto-execute-action nil
-        ;; Don't show flycheck stuff in the sideline.
-        lsp-ui-sideline-enable nil
-        lsp-ui-sideline-update-mode 'line))
 
 (map! :after git-timemachine
       :map git-timemachine-mode-map
@@ -557,7 +360,7 @@ Returns nil if not logged in."
       "]r" 'git-timemachine-show-next-revision)
 
 (after! (evil evil-collection)
-  (add-hook 'evil-insert-state-exit-hook 'company-abort)
+  ;; (add-hook 'evil-insert-state-exit-hook 'company-abort)
   ;; Associate TAB with all workspace bindings, instead of brackets + w.
   (map! :n "[ TAB" '+workspace/switch-left
         :n "] TAB" '+workspace/switch-right)
@@ -584,16 +387,7 @@ Returns nil if not logged in."
         :localleader
         :n "ri" 'org-ref-insert-ref-link))
 
-(use-package! literate-calc-mode
-  :commands (literate-calc-mode literate-calc-minor-mode)
-  :mode (("\\.calc\\'" . literate-calc-mode))
-  :init (map! :leader "tc" 'literate-calc-minor-mode))
-
-(use-package! graphql-mode
-  :mode (("\\.gql\\'" . graphql-mode)
-         ("\\.graphql\\'" . graphql-mode)))
-
-;; TODO Learn multi-cursor bindings
+(use-package! graphql-mode :mode "\\.gql\\'")
 
 ;; Focus project tree with "op" instead of toggling.
 (after! treemacs
@@ -610,9 +404,6 @@ Use `treemacs-select-window' command for old functionality."
         (treemacs-add-and-display-current-project)
       (treemacs-select-window)))
   (map! :leader "op" '+treemacs/focus))
-
-(after! projectile
-  (setq projectile-sort-order 'recently-active))
 
 ;; Provide syntax highlighting to magit diffs.
 ;; (use-package! magit-delta
@@ -854,6 +645,7 @@ are ineffectual otherwise."
   (let* ((all-trash (mu4e-all-contexts-var 'mu4e-trash-folder))
          (all-spam (mu4e-all-contexts-var 'mu4e-spam-folder))
          (all-archive (mu4e-all-contexts-var 'mu4e-refile-folder))
+
          (all-sent (mu4e-all-contexts-var 'mu4e-sent-folder))
          (all-names (mapcar #'mu4e-context-name mu4e-contexts)))
     (setq my/show-all-trash (mapconcat (lambda (d) (format "maildir:%s" d))
@@ -977,11 +769,11 @@ are ineffectual otherwise."
   (defun mixed-pitch-set-text-scale ()
     (text-scale-set (if mixed-pitch-mode 1 0)))
   (add-hook! 'mixed-pitch-mode-hook #'mixed-pitch-set-text-scale)
-  (setq! olivetti-body-width 100
-         olivetti--min-margins '(8 . 8)))
+  (setq-default olivetti-body-width 100
+                olivetti--min-margins '(8 . 8)))
 
-(setq! x-underline-at-descent-line t
-       underline-minimum-offset 2)
+(setq-default ;;x-underline-at-descent-line t
+ underline-minimum-offset 2)
 
 ;; Retain zen style in sub-buffers. Essential for markdown content with embedded
 ;; code blocks!
@@ -1093,19 +885,6 @@ are ineffectual otherwise."
                   :pipe "\\|"
                   :turnstile "\\|-"))
 
-;; (load! "custom/mixed-pitch")
-;; (use-package! mixed-pitch)
-;; ;;   :init
-;; (map! :leader "tm" #'mixed-pitch-mode)
-;; ;; :config
-;; (setq mixed-pitch-set-height t)
-;; (dolist (e '(org-date org-special-keyword org-drawer))
-;;   (add-to-list 'mixed-pitch-fixed-pitch-faces e))
-
-;; (custom-set-faces!
-;;   '(mixed-pitch-variable-pitch :family "Inter" :height 1.25))
-;;)
-
 ;;;; Periodically clean buffers
 (use-package! midnight
   :hook (doom-first-buffer . midnight-mode)
@@ -1177,20 +956,12 @@ are ineffectual otherwise."
 
 (use-package! string-inflection)
 
-(use-package! zoom
-  :disabled
-  ;; :hook (doom-first-input . zoom-mode)
-  :config
-  (setq zoom-size '(0.65 . 0.65)
-        zoom-ignored-major-modes '(ranger-mode helpful-mode)
-        zoom-ignored-buffer-name-regexps '("^*mu4e" "^*Org" "^*helpful")))
-
 ;; Shows habits on a consistency graph.
-(use-package! org-habit :after org)
+(use-package! org-habit :disabled :after org)
 
 ;; Notify me when a deadline is fast approaching.
 (use-package! org-notify
-  :defer 5
+  :disabled
   :config
   (org-notify-add 'default
                   ;; If we're more than an hour past the deadline, don't notify at all.
@@ -1222,64 +993,24 @@ are ineffectual otherwise."
   :disabled
   :hook (dired-mode . dired-show-readme-mode))
 
-;; TODO Submit a PR to doom-emacs fixing this in +workspace/switch-to
-(defun +workspace/switch-to-other (index)
-  "Switch to a workspace at a given INDEX. A negative number will start from the
-end of the workspace list."
-  (interactive
-   (list (or current-prefix-arg
-             (if (modulep! :completion ivy)
-                 (ivy-read "Switch to workspace: "
-                           (+workspace-list-names)
-                           :caller #'+workspace/switch-to
-                           :preselect +workspace--last)
-               (completing-read "Switch to workspace: "
-                                (+workspace-list-names)
-                                nil nil nil nil
-                                +workspace--last)))))
-  (when (and (stringp index)
-             (string-match-p "^[0-9]+$" index))
-    (setq index (string-to-number index)))
-  (condition-case-unless-debug ex
-      (let ((names (+workspace-list-names))
-            (old-name (+workspace-current-name)))
-        (cond ((numberp index)
-               (let ((dest (nth index names)))
-                 (unless dest
-                   (error "No workspace at #%s" (1+ index)))
-                 (+workspace-switch dest)))
-              ((stringp index)
-               (+workspace-switch index t))
-              (t
-               (error "Not a valid index: %s" index)))
-        (unless (called-interactively-p 'interactive)
-          (if (equal (+workspace-current-name) old-name)
-              (+workspace-message (format "Already in %s" old-name) 'warn)
-            (+workspace/display))))
-    ('error (+workspace-error (cadr ex) t))))
-
 (after! evil
   (defun playerctl-play-pause ()
     (interactive)
-    (exec "playerctl play-pause"))
+    (shell-command "playerctl play-pause"))
   (defun playerctl-next ()
     (interactive)
-    (exec "playerctl next"))
+    (shell-command "playerctl next"))
   (defun playerctl-previous ()
     (interactive)
-    (exec "playerctl previous"))
-  (defun open-browser ()
-    (interactive)
-    (exec "firefox"))
+    (shell-command "playerctl previous"))
   (map! :leader
-        "o b" #'open-browser
         "o g" #'=calendar
         "w U" #'winner-redo
         "w D" #'delete-other-windows
         ;; "<f19>" (general-key (format "%s %s" doom-leader-key doom-leader-key))
-        "TAB" #'+workspace/switch-to-other
+        "TAB" #'+workspace/switch-to
         "\\" #'set-input-method
-        ";" #'toggle-input-method
+        "=" #'toggle-input-method
         "w s" (cmd! (evil-window-vsplit) (other-window 1))
         "w v" (cmd! (evil-window-split) (other-window 1))
         :desc "media" "m" nil
@@ -1296,10 +1027,6 @@ end of the workspace list."
   :init
   (map! :leader "j" #'ace-window)
   :config
-  (setq aw-display-style 'overlay
-        aw-posframe-parameters '())
-  ;; (when (featurep 'exwm)
-  ;;   (setq aw-posframe-parameters '((parent-frame . nil))))
   ;; Show the window key in the header line.
   (ace-window-display-mode))
 
@@ -1307,67 +1034,23 @@ end of the workspace list."
 (use-package! npm-mode
   :hook ((prog-mode text-mode conf-mode) . npm-mode))
 
-(use-package! spotify
-  :disabled
-  :commands (spotify-remote-mode global-spotify-remote-mode)
-  :config
-  (setq spotify-oauth2-client-id "f3e530a58362402fab4ca04976916f80"
-        spotify-oauth2-client-secret "71a43675cd8247edafa85351bede7cf6")
-  (map! :map spotify-mode-map
-        doom-localleader-key 'spotify-command-map))
-
-
 ;; LSP formatting doesn't work well for JSX/TSX, so disable it.
-(setq-hook! '(typescript-mode-hook typescript-tsx-mode-hook js-mode-hook js-jsx-mode-hook) +format-with-lsp nil)
-(setq +format-on-save-enabled-modes
-      '(not emacs-lisp-mode
-        tex-mode
-        latex-mode
-        ;; There are several different formats I use web-mode for that
-        ;; can't be reliably formatted on save.
-        web-mode
-        mhtml-mode
-        mu4e-compose-mode
-        md-msg-edit-mode
-        message-mode))
+;; (setq-hook! '(typescript-mode-hook typescript-tsx-mode-hook js-mode-hook js-jsx-mode-hook) +format-with-lsp nil)
+(after! eglot
+  (add-to-list 'eglot-server-programs
+               '((typescript-tsx-mode :language-id "typescriptreact") . ("typescript-language-server" "--stdio"))))
 
-;; (setq! fancy-splash-image "~/.config/wpg/.current"
-;;        +doom-dashboard-banner-padding '(0 . 0)
-;;        +doom-dashboard--width 0.9)
-
-(after! calfw
-  (remove-hook! 'cfw:calendar-mode-hook 'hide-mode-line-mode))
+(appendq! +format-on-save-disabled-modes
+          '(web-mode
+            mhtml-mode
+            mu4e-compose-mode
+            md-msg-edit-mode
+            message-mode))
 
 (after! vterm
   (setq vterm-buffer-name-string "vterm %s"))
 
-(after! highlight-indent-guides
-  (setq-default highlight-indent-guides-method 'character))
-
-(use-package! emms
-  :commands emms-smart-browse
-  :init
-  (map! :leader "ol" #'emms-smart-browse)
-  (advice-add 'emms-smart-browse :before (defun +emms/switch-workspace () (+workspace-switch "*music*" t)))
-  :custom
-  (emms-source-file-default-directory "~/Music/")
-  ;; (emms-player-list '(emms-player-mpg321
-  ;;                     emms-player-ogg123
-  ;;                     emms-player-mplayer))
-  :config
-  (emms-all)
-  (emms-default-players)
-  (require 'emms-browser)
-  (require 'emms-player-mpd)
-  (add-to-list 'emms-player-list 'emms-player-mpd)
-  (setq emms-info-asynchronously t)
-  (require 'emms-info-libtag)
-  (setq emms-info-functions '(emms-info-mpd emms-info-libtag emms-info-cueinfo))
-  (emms-add-directory-tree emms-source-file-default-directory)
-  ;; Always open EMMS in its own workspace.
-  )
-
-(map! :mnv "go" #'avy-goto-char)
+(map! :mnv "go" #'avy-goto-char-2)
 
 ;; Launch programs directly from an Emacs prompt.
 (use-package! app-launcher
@@ -1377,7 +1060,7 @@ end of the workspace list."
 ;; Sync my org agenda entries to my calendar, so I can see these entries on my
 ;; phone and get reminders there.
 (use-package! org-caldav
-  :defer 5
+  :disabled
   :config
   (setq org-caldav-url "https://dav.mailbox.org/caldav"
         org-caldav-calendar-id "Y2FsOi8vMC8zMQ"
@@ -1408,8 +1091,7 @@ end of the workspace list."
 
 ;; Give full state names to make learning the names easier.
 (after! evil
-  (setq-default evil-move-cursor-back t
-                evil-visual-region-expanded t)
+  ;; (setq-default evil-move-cursor-back t)
   (setq evil-normal-state-tag " NORMAL "
         evil-insert-state-tag " INSERT "
         evil-visual-state-tag " VISUAL "
@@ -1577,77 +1259,6 @@ Move it to the mode-line."
               mu4e-headers-mode-hook)
   line-spacing 4)
 
-;; (use-package! svg-icon
-;;   :disabled
-;;   :after all-the-icons doom-modeline
-;;   :config
-;;   (defun +svg-icon-string (collection name)
-;;     (propertize "--" 'display (svg-icon collection name (face-attribute 'default :foreground))))
-;;   (memoize 'svg-icon)
-;;   ;; Redefine battery icon display using svg-icon.
-;;   (defun doom-modeline-update-battery-status ()
-;;     "Update battery status."
-;;     (setq doom-modeline--battery-status
-;;           (when (bound-and-true-p display-battery-mode)
-;;             (let* ((data (and (bound-and-true-p battery-status-function)
-;;                               (funcall battery-status-function)))
-;;                    (charging? (string-equal "AC" (cdr (assoc ?L data))))
-;;                    (percentage (car (read-from-string (or (cdr (assq ?p data)) "ERR"))))
-;;                    (valid-percentage? (and (numberp percentage)
-;;                                            (>= percentage 0)
-;;                                            (<= percentage battery-mode-line-limit)))
-;;                    (face (if valid-percentage?
-;;                              (cond (charging? 'doom-modeline-battery-charging)
-;;                                    ((< percentage battery-load-critical) 'doom-modeline-battery-critical)
-;;                                    ((< percentage 25) 'doom-modeline-battery-warning)
-;;                                    ((< percentage 95) 'doom-modeline-battery-normal)
-;;                                    (t 'doom-modeline-battery-full))
-;;                            'doom-modeline-battery-error))
-;;                    (icon (if valid-percentage?
-;;                              (cond (charging?
-;;                                     (+svg-icon-string "material" "battery-charging-100")
-;;                                     ;; (doom-modeline-icon 'alltheicon "battery-charging" "🔋" "+"
-;;                                     ;;                     :face face :height 1.4 :v-adjust -0.1)
-;;                                     )
-;;                                    ((> percentage 95)
-;;                                     (+svg-icon-string "material" "battery")
-;;                                     ;; (doom-modeline-icon 'faicon "battery-full" "🔋" "-"
-;;                                     ;;                     :face face :v-adjust -0.0575)
-;;                                     )
-;;                                    ((> percentage 70)
-;;                                     (+svg-icon-string "material" "battery-70")
-;;                                     ;; (doom-modeline-icon 'faicon "battery-three-quarters" "🔋" "-"
-;;                                     ;;                     :face face :v-adjust -0.0575)
-;;                                     )
-;;                                    ((> percentage 40)
-;;                                     (+svg-icon-string "material" "battery-40")
-;;                                     ;; (doom-modeline-icon 'faicon "battery-half" "🔋" "-"
-;;                                     ;;                     :face face :v-adjust -0.0575)
-;;                                     )
-;;                                    ((> percentage battery-load-critical)
-;;                                     (+svg-icon-string "material" "battery-10")
-;;                                     ;; (doom-modeline-icon 'faicon "battery-quarter" "🔋" "-"
-;;                                     ;;                     :face face :v-adjust -0.0575)
-;;                                     )
-;;                                    (t ;; (doom-modeline-icon 'faicon "battery-empty" "🔋" "!"
-;;                                     ;;                     :face face :v-adjust -0.0575)
-;;                                     (+svg-icon-string "material" "battery-alert")
-;;                                     ))
-;;                            (+svg-icon-string "material" "battery-unknown");; (doom-modeline-icon 'faicon "battery-empty" "⚠" "N/A"
-;;                            ;;                     :face face :v-adjust -0.0575)
-;;                            ))
-;;                    (text (if valid-percentage? (format "%d%%%%" percentage) ""))
-;;                    (help-echo (if (and battery-echo-area-format data valid-percentage?)
-;;                                   (battery-format battery-echo-area-format data)
-;;                                 "Battery status not available")))
-;;               (cons (propertize icon 'help-echo help-echo)
-;;                     (propertize text 'face face 'help-echo help-echo))))))
-;;   ;;(defun all-the-icons-material (icon-name &rest args)
-;;   ;;(propertize "--" 'display (svg-icon "material" icon-name)))
-;;   ;; (defun all-the-icons-faicon (icon-name &rest args)
-;;   ;;   (propertize "--" 'display (svg-icon "")))
-;;   )
-
 (map! :leader "fa" (cmd! (consult-find "~")))
 
 (map! :leader "oe" #'proced)
@@ -1655,9 +1266,9 @@ Move it to the mode-line."
   (map! :map proced-mode-map
         :n "gr" #'proced-update))
 
-(after! which-key
-  (setq which-key-idle-delay 0.4
-        which-key-show-prefix nil))
+;; (after! which-key
+;;   (setq which-key-idle-delay 0.4
+;;         which-key-show-prefix nil))
 
 ;; Make which-key prettier with groups and command descriptions.
 (use-package! pretty-which-key
@@ -1666,16 +1277,6 @@ Move it to the mode-line."
   :config
   ;; Add groups and command descriptions to several modes.
   (require 'pretty-which-key-modes))
-
-(use-package! hercules
-  :disabled
-  :after pretty-which-key
-  :config
-  ;; (hercules-def
-  ;;  :toggle-funs #'+mu4e-show-help
-  ;;  :keymap 'mu4e-headers-mode-map
-  ;;  :transient t)
-  )
 
 (defun +which-key-show-evil-major (&optional all mode)
   (interactive "P")
@@ -1705,19 +1306,9 @@ Move it to the mode-line."
       :map mu4e-headers-mode-map
       :mn "?" #'+which-key-show-evil-major)
 
-(map! :leader "o -" #'deer)
-(map! :after ranger
-      :map ranger-mode-map
-      :n "?" #'+which-key-show-evil-major
-      :n "I" #'wdired-change-to-wdired-mode)
-(map! :after ranger
-      :map dired-mode-map
-      :n "I" #'wdired-change-to-wdired-mode)
-
 (after! pdf-view
   (map! :map pdf-view-mode-map
         :mn "?" #'+which-key-show-evil-major))
-
 
 ;; Center the minibuffer to make it easier to read quickly.
 (defvar +snead/minibuffer-margin 120)
@@ -1733,22 +1324,17 @@ Move it to the mode-line."
 ;; Benchmark startup if Emacs is launched with --debug-init
 (use-package! benchmark-init
   :disabled
-  :if doom-debug-p
+  ;; :if doom-debug-mode
   :config
   (add-hook 'doom-first-input-hook #'benchmark-init/deactivate))
-
-(use-package! disk-usage
-  :commands (disk-usage disk-usage-here))
 
 (custom-set-faces!
   '(doom-modeline-spc-face :inherit nil)
   '(header-line :inherit mode-line))
 
-(after! lsp-mode
-  (setq lsp-signature-function #'lsp-lv-message))
-
 (use-package! eldoc-box
-  :hook ((prog-mode) . eldoc-box-hover-mode)
+  :disabled
+  ;; :hook ((prog-mode) . eldoc-box-hover-mode)
   :config
   ;; TODO Avoid point when calculating the box position. (Useful for small windows)
   (defun +eldoc-box--upper-corner-position-function (width _)
@@ -1764,28 +1350,10 @@ Position is calculated base on WIDTH and HEIGHT of childframe text window"
   (after! mini-modeline
     (add-hook 'eldoc-box-buffer-hook 'mini-modeline--no-header)))
 
-;; Highlight regions of operation for slightly longer than default.
-(after! evil-goggles
-  (setq evil-goggles-duration 0.2))
-
-;; Exclude org-mode from company, b/c most of the time I don't need completion there.
-(after! company
-  (setq company-global-modes '(not erc-mode message-mode help-mode gud-mode org-mode)))
-
-;; I don't need smartparens in org-mode.
-;; (add-hook 'org-mode-hook 'turn-off-smartparens-mode)
-
 (after! ws-butler
   (setq ws-butler-keep-whitespace-before-point t))
 
-(use-package! plantuml-mode)
-
 (setq-default inferior-lisp-program "common-lisp.sh")
-
-(use-package! sly-asdf
-  :defer t
-  :init
-  (add-to-list 'sly-contribs 'sly-asdf 'append))
 
 (setq lsp-sqls-connections
       '(((driver . "postgresql") (dataSourceName . "host=127.0.0.1 port=5432 database=customers sslmode=disable"))
@@ -1799,16 +1367,16 @@ Position is calculated base on WIDTH and HEIGHT of childframe text window"
          (sql-database "customers")
          (sql-port 5432))))
 
+;; Format .sql files using sqlfluff
 (set-formatter! 'sqlfluff '("sqlfluff" "format" "--config" (format "%s/.sqlfluff" (projectile-project-root)) "--disable-progress-bar" "-n"  "-") :modes '(sql-mode))
 
+;; Ensure formatting programs installed at the project level are automatically used.
 (after! format-all
   (advice-add 'format-all-buffer--with :around #'envrc-propagate-environment))
 
-(after! emojify
-  (setq emojify-display-style 'unicode))
-
 (use-package! exec-path-from-shell
   :config
+  ;; Ensure my GUI prompt is used for SSH auth.
   (defun +snead/fix-ssh-env ()
     (exec-path-from-shell-copy-env "SSH_AGENT_PID")
     (exec-path-from-shell-copy-env "SSH_AUTH_SOCK"))
@@ -1819,10 +1387,32 @@ Position is calculated base on WIDTH and HEIGHT of childframe text window"
 
 (use-package! tera-mode
   :mode (("\\.tera\\'" . tera-mode)
-         ("\\.tera\\.html\\'" . tera-mode))
-  )
+         ("\\.tera\\.html\\'" . tera-mode)))
 
 (use-package! phscroll)
 
 (after! evil-snipe
   (setq! evil-snipe-scope 'whole-visible))
+
+(use-package! eglot-booster
+  :after eglot
+  :config (eglot-booster-mode))
+
+(defun snead/chmod-this-file (mode)
+  (interactive
+   (list (read-file-modes "File modes: ")))
+  (unless (and buffer-file-name (file-exists-p buffer-file-name))
+    (user-error "Buffer is not visiting any file"))
+  (chmod buffer-file-name mode))
+
+(map! :leader
+      "fC" 'editorconfig-find-current-editorconfig
+      "fc" 'doom/copy-this-file
+      "fm" 'snead/chmod-this-file)
+
+;; Enable native smooth scroll! This new "precision" mode actually works without
+;; being super duper laggy like the old pixel-scroll-mode.
+;; It's slightly laggy with a touchpad but PERFECT with a classic scroll wheel.
+(setq! mouse-wheel-scroll-amount '(1 ((shift) . hscroll))
+       pixel-scroll-precision-interpolation-factor 1.5)
+(pixel-scroll-precision-mode)

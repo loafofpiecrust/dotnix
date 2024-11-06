@@ -2,8 +2,11 @@
 
 {
   imports = [ inputs.kmonad.nixosModules.default ];
-  environment.systemPackages = with pkgs; [ keyd moused via ];
+  environment.systemPackages = with pkgs; [ keyd moused via vial ];
   services.udev.packages = with pkgs; [ via ];
+  services.udev.extraRules = ''
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="046d", ATTR{idProduct}=="c52b", ATTR{power/autosuspend}="60"
+  '';
   hardware.keyboard.qmk.enable = true;
   systemd.services.keyd = {
     enable = true;
@@ -15,9 +18,10 @@
 
     serviceConfig.type = "simple";
     script = "${pkgs.keyd}/bin/keyd";
+    path = with pkgs; [ ddcutil ];
   };
   systemd.services.moused = {
-    enable = true;
+    enable = false;
     description = "mouse remapping daemon";
     wantedBy = [ "sysinit.target" ];
     requires = [ "local-fs.target" ];
@@ -39,7 +43,7 @@
 
   nixpkgs.overlays = [
     (self: super: {
-      keyd = super.keyd.overrideAttrs (old: {
+      keyd-custom = super.keyd.overrideAttrs (old: {
         src = builtins.fetchurl {
           url =
             "https://github.com/rvaiya/keyd/archive/04c9e15d70fe1019dc5a38359540270caf86cfcb.tar.gz";

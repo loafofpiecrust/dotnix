@@ -5,6 +5,7 @@
     ../common.nix
     ../email.nix
     ../firefox.nix
+    ../chromium.nix
     ../fish.nix
     ../sway.nix
     ../zsh.nix
@@ -12,7 +13,6 @@
   home.packages = with pkgs; [ # teams
     unstable.zoom-us
     unstable.slack
-    chromium
   ];
   systemd.user.services.vpn-neu = {
     Unit = { Description = "Connect to Northeastern University VPN"; };

@@ -1,15 +1,15 @@
 @import "../../.cache/wal/colors-waybar.css";
 
 * {
-  font-family: "monospace", "Material Icons", "Font Awesome 6 Free";
-  font-size: 15px;
+  font-family: "sans";
+  font-size: 16px;
   border-radius: 0;
 }
 
 tooltip {
   background-color: @background;
   min-height: 0;
-  border: 2px solid @color2;
+  border: 2px solid @color11;
 }
 
 tooltip label {
@@ -53,24 +53,26 @@ window#waybar.solo {
 
 /* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
 #workspaces button:hover {
-  background: rgba(0, 0, 0, 0.2);
+  background: alpha(@color3, 0.5);
   box-shadow: inherit;
-  border: none;
+  /* border: none; */
   /* border-bottom: 3px solid #ffffff; */
 }
 
-#workspaces button.focused {
-  background-color: #64727d;
-  border: none;
+#workspaces button.focused,
+#workspaces button.active {
+  background-color: @color2;
+  color: @color14;
+  /* border: none; */
   /* border-bottom: 3px solid #ffffff; */
 }
 
 #workspaces button.urgent {
-  background-color: #eb4d4b;
+  background-color: @color6;
 }
 
 #mode {
-  background-color: @color1;
+  background-color: @color8;
   border-bottom: 3px solid #ffffff;
 }
 
@@ -107,22 +109,23 @@ window#waybar.solo {
 #clock {
   /* border-bottom: 1px solid @color6; */
   color: @foreground;
-  min-width: 150px;
+  min-width: 220px;
   font-weight: bold;
 }
 
 #custom-power {
-  color: @color9;
+  color: @color8;
 }
 
 #battery {
-  font-family: "monospace";
+  /* font-family: "monospace"; */
   /* background-color: #ffffff; */
-  color: @color1;
+  color: @color8;
+  letter-spacing: 1px;
 }
 
 #battery.charging {
-  background-color: @color2;
+  background-color: @color11;
   color: @background;
 }
 
@@ -134,7 +137,7 @@ window#waybar.solo {
 }
 
 #battery.critical:not(.charging) {
-  background-color: @color1;
+  background-color: @color8;
   color: @foreground;
   animation-name: blink;
   animation-duration: 0.1s;
@@ -193,7 +196,7 @@ label:focus {
 #tray {
   padding: 0 4px;
   margin: 0 4px;
-  /* background-color: #2980b9; */
+  background-color: alpha(@color12, 0.5);
 }
 
 #idle_inhibitor,
@@ -210,7 +213,7 @@ label:focus {
 }
 
 #idle_inhibitor.activated {
-  background-color: #ecf0f1;
+  background-color: @color5;
   color: #2d3436;
 }
 

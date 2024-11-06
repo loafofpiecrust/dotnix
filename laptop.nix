@@ -9,12 +9,14 @@
   systemd.services.systemd-udev-settle.enable = false;
 
   # Common power management for laptops.
-  services.power-profiles-daemon.enable = true;
-  services.tlp.enable = false;
-  services.auto-cpufreq.enable = true;
+  # Use TLP for now because it's the most comprehensive and has been built and
+  # supported for the longest time.
+  services.power-profiles-daemon.enable = false;
+  services.tlp.enable = true;
+  services.auto-cpufreq.enable = false;
   # Optimizes I/O on battery power.
   powerManagement.enable = true;
-  powerManagement.powertop.enable = true;
+  powerManagement.powertop.enable = false;
   # Enables screen dimming and session locking.
   services.upower.enable = true;
   services.upower.criticalPowerAction = "Hibernate";

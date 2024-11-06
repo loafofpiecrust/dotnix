@@ -14,7 +14,10 @@
   ];
 
   # Pass flake inputs to home-manager modules.
-  home-manager.extraSpecialArgs = { inherit inputs; };
+  home-manager.extraSpecialArgs = {
+    inherit inputs;
+    systemConfig = config;
+  };
   home-manager.backupFileExtension = "bak";
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;

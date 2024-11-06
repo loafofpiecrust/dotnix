@@ -45,12 +45,27 @@
     kernelParams = [
       "pcie_aspm.policy=powersave"
       "i915.enable_fbc=1"
-      "quiet"
       "nvme.noacpi=1" # Apparently good for battery life
       "i915.enable_psr=1"
+      "i915.enable_guc=3"
+      "i915.disable_power_well=0"
       "mem_sleep_default=deep"
+      "snd-hda-intel.power_save=1"
+      "iwlwifi.power_save=1"
+      "iwlmvm.power_scheme=3"
+      # Try to quiet down the boot process to only error messages.
+      "quiet"
+      "loglevel=3"
+      "rd.udev.log_level=3"
+      "systemd.show_status=auto"
+      # Block cursor at boot
+      "vt.current=6"
+      "usbcore.autosuspend=10"
     ];
-    kernel.sysctl = { "kernel.nmi_watchdog" = 0; };
+    kernel.sysctl = {
+      "kernel.nmi_watchdog" = 0;
+      "dev.i915.perf_stream_paranoid" = 0;
+    };
 
     # Make the font as large as possible.
     loader.systemd-boot.consoleMode = "max";
@@ -65,10 +80,14 @@
   services.tlp.settings = {
     CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
     PCIE_ASPM_ON_BAT = "powersupersave";
-    START_CHARGE_THRESH_BAT1 = 80;
-    STOP_CHARGE_THRESH_BAT1 = 90;
-    CPU_SCALING_GOVERNOR_ON_BAT = "balance_performance";
-    ENERGY_PERF_POLICY_ON_BAT = "balance_performance";
+    # START_CHARGE_THRESH_BAT1 = 80;
+    # STOP_CHARGE_THRESH_BAT1 = 95;
+    # ENERGY_PERF_POLICY_ON_BAT = "balance_performance";
+    # Disable auto-suspend on the Logitech unifying receiver
+    # USB_DENYLIST = "046d:c52b";
+    # Give a little more power while plugged in, because it's usually at my desk.
+    CPU_SCALING_GOVERNOR_ON_AC = "performance";
+    INTEL_GPU_MIN_FREQ_ON_AC = 300;
   };
 
   hardware.opengl.extraPackages = with pkgs; [
@@ -109,7 +128,11 @@
   # networking.interfaces.enp0s20f0u1.useDHCP = true;
 
   users.mutableUsers = false;
-  users.defaultUserShell = pkgs.fish;
+  users.defaultUserShell = pkgs.zsh;
+  programs.zsh.enable = true;
+  programs.zsh.promptInit = ''
+    ${pkgs.any-nix-shell}/bin/any-nix-shell zsh --info-right | source /dev/stdin
+  '';
   users.users = let
     extraGroups = [
       "wheel"
@@ -164,9 +187,32 @@
     };
   };
 
-  programs.regreet = { enable = true; };
+  lib.meta = rec {
+    dynamicBgRepo = pkgs.fetchgit {
+      url = "https://github.com/saint-13/Linux_Dynamic_Wallpapers";
+      rev = "8904f832affb667c2926061d8e52b9131687451b";
+      # Avoid massive clone time by only fetching the wallpaper I use.
+      sparseCheckout = [ "Dynamic_Wallpapers/Mojave" ];
+      sha256 = "VW1xOSLtal6VGP7JHv8NKdu7YTXeAHRrwZhnJy+T9bQ=";
+    };
+    dynamicBg = index:
+      "${dynamicBgRepo}/Dynamic_Wallpapers/Mojave/mojave_dynamic_${index}.jpeg";
+  };
 
-  services.displayManager.defaultSession = "sway";
+  programs.regreet = {
+    enable = true;
+    cageArgs = [ "-s" "-m" "last" ];
+    settings = {
+      GTK.cursor_theme_name = "Bibata-Modern-Classic";
+      GTK.font_name = "sans 12";
+      GTK.theme_name = "Arc";
+      GTK.icon_theme_name = "Numix";
+      background.path = config.lib.meta.dynamicBg "1";
+      background.fit = "Cover";
+    };
+  };
+
+  services.displayManager.defaultSession = "SwayFX";
 
   services.xserver = {
     enable = false;
@@ -180,7 +226,7 @@
       xfce = {
         # Bits of xfce that I need: power-manager, session?, xfsettingsd, xfconf
         # Don't need: xfce4-volumed-pulse, nmapplet
-        enable = true;
+        enable = false;
         # noDesktop = true;
         # enableXfwm = false;
       };
@@ -216,9 +262,25 @@
   # Let's try out bluetooth!
   hardware.bluetooth.enable = true;
 
+  # Open the shitload of ports apparently required to connect to my Bambu A1
+  # printer over LAN.
+  networking.firewall.allowedTCPPorts = [ 3000 1990 2021 8883 123 990 6000 ];
+  networking.firewall.allowedTCPPortRanges = [{
+    from = 50000;
+    to = 50100;
+  }];
+  networking.firewall.allowedUDPPortRanges = [{
+    from = 10001;
+    to = 10512;
+  }];
+  networking.firewall.allowedUDPPorts = [ 123 1990 2021 ];
+
   # Install some applications!
   environment.systemPackages = with pkgs; [
+    # blesh
     docker
+    ungoogled-chromium
+    brave
     # apps
     # gnome3.gnome-settings-daemon
     gnome.gvfs
@@ -227,12 +289,12 @@
     gimp
     vlc
     inkscape
-    # audacity # Audacity has telemetry now...
+    audacity # Audacity has telemetry now...
     mate.eom
     mate.caja
     mate.engrampa
     mate.atril # pdf viewer
-    mate.mate-tweak
+    # mate.mate-tweak
     mate.mate-system-monitor
     mate.mate-settings-daemon
     mate.mate-control-center
@@ -240,15 +302,19 @@
     xfce.xfce4-session
     xfce.xfce4-settings
     xfce.xfce4-taskmanager
+    unstable.spotify
+    xfce.xfburn
 
     # Try some file managers
     pcmanfm
+    spaceFM
+    ranger-plus
     cinnamon.nemo
-    gnome.nautilus
+    # gnome.nautilus
 
     libreoffice
     # virt-manager
-    pynitrokey
+    # pynitrokey
 
     unstable.beets
   ];

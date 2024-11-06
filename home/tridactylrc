@@ -1,0 +1,5 @@
+colourscheme shelby
+seturl youtube.com modeindicator false
+unbind <C-f>
+set modeindicatormodes.normal false
+set modeindicatormodes.hint false

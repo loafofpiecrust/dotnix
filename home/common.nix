@@ -1,14 +1,19 @@
 { config, lib, pkgs, inputs, ... }:
 
 {
-  imports = [ ./emacs.nix ];
-
-  home.stateVersion = "21.05";
+  home.stateVersion = lib.mkDefault "21.05";
   home.sessionPath = [
     "${config.home.homeDirectory}/.config/emacs/bin"
     "${config.home.homeDirectory}/.cargo/bin"
     "${config.home.homeDirectory}/.npm/bin"
   ];
+
+  lib.meta = {
+    configPath = "/etc/nixos";
+    mkMutableSymlink = path:
+      config.lib.file.mkOutOfStoreSymlink (config.lib.meta.configPath
+        + lib.removePrefix (toString inputs.self) (toString path));
+  };
 
   xdg.userDirs = {
     enable = true;
@@ -28,7 +33,7 @@
   xdg.configFile."fontconfig/fonts.conf".source = ./gui/fonts.conf;
   home.file.".sbclrc".source = ./lisp/.sbclrc;
   home.file.".aspell.en.pws".source =
-    config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/spell/.aspell.en.pws";
+    config.lib.meta.mkMutableSymlink ./spell/.aspell.en.pws;
   home.file."bin/get-password" = {
     executable = true;
     text = ''
@@ -39,8 +44,9 @@
       rbw get "$1" "$2"
     '';
   };
+  home.file."bin/light-notify".source = ./scripts/light-notify.sh;
 
-  home.packages = with pkgs; [ spotify gparted gnome.simple-scan ];
+  home.packages = with pkgs; [ gparted gnome.simple-scan ];
 
   # GPG agent handles locked files and SSH keys.
   services.gpg-agent = {
@@ -78,14 +84,14 @@
       # Keep the vault open for 6 hours.
       lock_timeout = 60 * 60 * 6;
       # FIXME must be a package definition
-      # pinentry = "gnome3";
+      pinentry = pkgs.pinentry-gnome3;
     };
   };
 
   xdg = {
     enable = true;
-    mime.enable = true;
-    mimeApps.enable = true;
+    mime.enable = lib.mkDefault false;
+    mimeApps.enable = lib.mkDefault false;
     mimeApps.defaultApplications = lib.mkMerge [
       (lib.genAttrs [
         "text/html"
@@ -94,7 +100,7 @@
         "x-scheme-handler/about"
         "application/x-extension-html"
         "application/xhtml+xml"
-      ] (_: [ "firefox.desktop" ]))
+      ] (_: [ "brave.desktop" ]))
       (lib.genAttrs [ "image/png" "image/jpeg" ] (_: [ "eom.desktop" ]))
       (lib.genAttrs [ "video/mp4" "video/quicktime" ] (_: [ "vlc.desktop" ]))
       {

@@ -1,12 +1,13 @@
 ;; -*- no-byte-compile: t; -*-
 ;;; $DOOMDIR/packages.el
 
-;;(package! benchmark-init)
+(package! benchmark-init)
 
 
 (package! ewal)
 (package! ewal-doom-themes)
 (package! ewal-evil-cursors)
+(package! catppuccin-theme)
 
 (package! common-header-mode-line :recipe (:local-repo "common-header-mode-line-0.5.6"))
 
@@ -16,8 +17,10 @@
 (package! evil-owl :pin "ed5a98644a9cf321de213b50df6473de9f3a71ed")
 (package! olivetti)
 
+(package! eglot-booster :recipe (:host github :repo "jdtsmith/eglot-booster"))
+
 ;; Extra languages
-(package! graphql-mode)
+;; (package! graphql-mode)
 (package! polymode)
 (package! poly-markdown)
 (package! poly-org)
@@ -35,8 +38,10 @@
 
 ;; Show errors inline so they never overlap with code.
 (package! flycheck-inline :pin "0662c314bd819f9b46f8b2b13f0c650445b3a8c5")
-(package! flycheck-posframe :disable t)
-(package! flycheck-popup-tip :disable t)
+;; (package! flycheck-posframe :disable t)
+;; (package! flycheck-popup-tip :disable t)
+
+(package! casual)
 
 ;; (package! valign
 ;;   :disable t
@@ -52,7 +57,7 @@
 ;;   :recipe (:host github :repo "cacology/mu4e-send-delay"))
 
 (package! app-launcher
-  :pin "71fb5a501a646703c81783395ff46cdd043e173a"
+  :pin "d5015e394b0a666a8c7c4d4bdf786266e773b145"
   :recipe (:host github :repo "SebastienWae/app-launcher"))
 
 ;; Manage citations and references with ease in org-mode.
@@ -64,15 +69,15 @@
 (package! transmission :disable t)
 
 ;; System stuff!
-(package! anzu :pin "7b8688c84d6032300d0c415182c7c1ad6cb7f819")
-(package! evil-anzu :pin "d3f6ed4773b48767bd5f4708c7f083336a8a8a86")
-(package! posframe :built-in 'prefer)
+;; (package! anzu :pin "7b8688c84d6032300d0c415182c7c1ad6cb7f819")
+;; (package! evil-anzu :pin "d3f6ed4773b48767bd5f4708c7f083336a8a8a86")
+;; (package! posframe :built-in 'prefer)
 (package! mount-mode
   :disable t
   :recipe (:host github :repo "zellerin/mount-mode"))
 
 ;;(package! org-cv
-  ;;:recipe (:host gitlab :repo "loafofpiecrust/org-cv" :branch "explicit-dates"))
+;;:recipe (:host gitlab :repo "loafofpiecrust/org-cv" :branch "explicit-dates"))
 
 ;; I don't use fcitx at all.
 (package! fcitx :disable t)
@@ -80,21 +85,17 @@
 ;; Solaire slows down scrolling too much, though I like how it looks.
 (package! solaire-mode :disable t)
 
-(package! bitwarden
-  :recipe (:host github :repo "seanfarley/emacs-bitwarden" :branch "main"))
-
-(package! zoom :pin "a373e7eed59ad93315e5ae88c816ca70404d2d34")
+;; (package! zoom :pin "a373e7eed59ad93315e5ae88c816ca70404d2d34")
 
 ;; TODO vterm is slightly messed up, I'm not quite sure why.
 ;; (package! vterm :recipe (:no-native-compile t))
 ;; (package! treemacs :recipe (:no-native-compile t))
 (package! vterm :built-in 'prefer)
-(package! undo-tree :built-in 'prefer)
-(package! plantuml-mode :built-in 'prefer)
+;; (package! undo-tree :built-in 'prefer)
 
 (package! highlight-numbers :disable t)
 
-(package! emms)
+;; (package! emms)
 
 (package! dired-show-readme
   :recipe (:host gitlab :repo "kisaragi-hiu/dired-show-readme"))
@@ -104,8 +105,6 @@
 ;;   :recipe (:host github :repo "dalanicolai/pdf-continuous-scroll-mode.el"))
 
 (package! oauth2)
-(package! spotify
-  :recipe (:host github :repo "danielfm/spotify.el"))
 
 (package! calibredb)
 
@@ -113,24 +112,16 @@
   :pin "57977baeba15b92c987eb7bf824629a9c746a3c8"
   :recipe (:host github :repo "loafofpiecrust/ace-window" :branch "main"))
 
-(package! doom-modeline :built-in 'prefer)
-
-;; (package! emacs-webkit
-;;   :recipe (:local-repo "emacs-webkit"))
-
 (package! org-caldav)
 
 (package! mini-modeline
   :recipe (:local-repo "emacs-mini-modeline" :build (:not compile native-compile)))
 
 ;;(package! which-key
-  ;;:recipe (:local-repo "~/pie/emacs-which-key" :build (:not compile native-compile)))
-
-;;(package! general
-  ;;:recipe (:local-repo "~/pie/general.el" :build (:not compile native-compile)))
+;;:recipe (:local-repo "~/pie/emacs-which-key" :build (:not compile native-compile)))
 
 ;;(package! svg-icon
-  ;;:recipe (:host github :repo "loafofpiecrust/emacs-svg-icon" :branch "icon-submodules"))
+;;:recipe (:host github :repo "loafofpiecrust/emacs-svg-icon" :branch "icon-submodules"))
 
 (package! hercules
   :recipe (:host gitlab :repo "jjzmajic/hercules.el"))
@@ -149,8 +140,6 @@
 
 (package! mixed-pitch)
 
-;; (package! memoize)
-
 (package! disk-usage)
 
 (package! eldoc-box)
@@ -161,7 +150,7 @@
 (package! prisma-mode :recipe (:host github :repo "pimeys/emacs-prisma-mode" :branch "main"))
 
 (package! tera-mode
-    :recipe (:host github :repo "svavs/tera-mode"))
+  :recipe (:host github :repo "svavs/tera-mode"))
 
 (package! phscroll :recipe (:host github :repo "misohena/phscroll"))
 

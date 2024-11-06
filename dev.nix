@@ -33,7 +33,6 @@
     (aspellWithDicts (dicts: with dicts; [ en en-computers en-science ]))
 
     # fancy tools
-    # any-nix-shell
     awscli
 
     # formatters + language servers
@@ -50,6 +49,11 @@
     pgformatter
     python39Packages.sqlparse
     sqls
+    clang-tools
+    shfmt
+    stylelint
+    shellcheck
+    emacs-lsp-booster
 
     # development apps
     plantuml # plain-text diagrams!
@@ -59,6 +63,8 @@
     pinentry-emacs
     sqlite
   ];
+
+  fonts.packages = with pkgs; [ nerdfonts ];
 
   nixpkgs.overlays = [
     (self: super: {

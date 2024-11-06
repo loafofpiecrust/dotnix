@@ -240,7 +240,7 @@
     inkscape
     # audacity
     xfce.xfce4-power-manager
-    xfce.thunar
+    # xfce.thunar
     xfce.xfce4-session
     xfce.xfce4-settings
     #xfce.xfce4-taskmanager
