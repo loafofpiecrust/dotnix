@@ -91,7 +91,7 @@
         # "Material Design Icons"
       ];
       sansSerif = [
-        "Overpass"
+        "Ubuntu Nerd Font"
         "Noto Sans"
         "FreeSans"
         # "Material Design Icons"
