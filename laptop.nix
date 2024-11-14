@@ -5,14 +5,17 @@
     inputs.nixos-hardware.nixosModules.common-pc-laptop-acpi_call
   ];
 
+  # Auto-mount plugged in disks
+  services.udisks2.enable = true;
+
   # Disable this service because it consumes a lot of power.
   systemd.services.systemd-udev-settle.enable = false;
 
   # Common power management for laptops.
   # Use TLP for now because it's the most comprehensive and has been built and
   # supported for the longest time.
-  services.power-profiles-daemon.enable = false;
-  services.tlp.enable = true;
+  services.power-profiles-daemon.enable = true;
+  services.tlp.enable = false;
   services.auto-cpufreq.enable = false;
   # Optimizes I/O on battery power.
   powerManagement.enable = true;
@@ -24,36 +27,30 @@
   programs.light.enable = true;
 
   environment.systemPackages = with pkgs; [
-    power-profiles-daemon
+    # power-profiles-daemon
     powertop
     ppp # Needed for NUwave network setup
   ];
 
   services.logind = {
-    killUserProcesses = true;
+    # killUserProcesses = true;
     lidSwitch = "suspend-then-hibernate";
     lidSwitchExternalPower = config.services.logind.lidSwitch;
+    powerKey = "hibernate";
+    powerKeyLongPress = "poweroff";
     extraConfig = ''
-      HandlePowerKey=poweroff
-      IdleAction=suspend
+      IdleAction=suspend-then-hibernate
       IdleActionSec=600
     '';
   };
   systemd.sleep.extraConfig = ''
-    HibernateDelaySec=2h
+    HibernateDelaySec=1h
   '';
 
-  services.acpid = {
-    enable = true;
-    # lidEventCommands = ''
-    #   case "$1" in
-    #     close)
-    #       brightnessctl -s
-    #       brightnessctl s 0;;
-    #     open)
-    #       brightnessctl -r;;
-    #     *)
-    #       echo "ACPI action undefined: $1";;
-    # '';
-  };
+  # Don't wait for networking to come on to finish booting, because for laptops
+  # with WiFi this is often >5s. Let it happen while I type in my password.
+  networking.dhcpcd.wait = "background";
+
+  # Allow loading a color profile for my specific monitor.
+  services.colord.enable = true;
 }

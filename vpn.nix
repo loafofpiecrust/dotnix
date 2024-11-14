@@ -1,9 +1,11 @@
 { config, lib, pkgs, ... }: {
   services.openvpn.servers = {
-    panama = {
+    bahamas = {
       autoStart = false;
-      # TODO put vpn files somewhere better or move config here.
-      config = "config /home/snead/downloads/ovpn-files/UDP/at2-ovpn-udp.ovpn";
+      config = ''
+        config /home/snead/documents/pia/bahamas.ovpn
+        auth-user-pass /home/snead/documents/pia/user-pass.txt
+      '';
     };
   };
 }

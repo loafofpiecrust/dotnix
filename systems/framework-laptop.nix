@@ -28,7 +28,9 @@
   # Setup basic boot options and kernel modules.
   boot = {
     plymouth.enable = false;
-    kernelPackages = pkgs.linuxKernel.packages.linux_6_1;
+    # Use the latest LTS kernel because those keep getting patch updates for 2+ years.
+    # Let's try the latest version...
+    kernelPackages = pkgs.linuxKernel.packages.linux_6_11;
     initrd.availableKernelModules = [
       "xhci_pci"
       "thunderbolt"
@@ -39,7 +41,7 @@
       "btintel"
     ];
     kernelModules = [ "kvm-intel" ];
-    blacklistedKernelModules = [ "i2c-designware-pci" ];
+    # blacklistedKernelModules = [ "i2c-designware-pci" ];
 
     # kernel options
     kernelParams = [
@@ -61,6 +63,9 @@
       # Block cursor at boot
       "vt.current=6"
       "usbcore.autosuspend=10"
+      # Ask the arch wiki
+      ''acpi_osi="!Windows 2020"''
+      "irqaffinity=0,1"
     ];
     kernel.sysctl = {
       "kernel.nmi_watchdog" = 0;
@@ -79,15 +84,18 @@
   # Recommended for battery life
   services.tlp.settings = {
     CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
+    # PLATFORM_PROFILE_ON_BAT = "low-power";
     PCIE_ASPM_ON_BAT = "powersupersave";
     # START_CHARGE_THRESH_BAT1 = 80;
     # STOP_CHARGE_THRESH_BAT1 = 95;
-    # ENERGY_PERF_POLICY_ON_BAT = "balance_performance";
+    # CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_performance";
     # Disable auto-suspend on the Logitech unifying receiver
     # USB_DENYLIST = "046d:c52b";
     # Give a little more power while plugged in, because it's usually at my desk.
     CPU_SCALING_GOVERNOR_ON_AC = "performance";
     INTEL_GPU_MIN_FREQ_ON_AC = 300;
+    DISK_DEVICES = "nvme0n1";
+    DISK_IOSCHED = "mq-deadline";
   };
 
   hardware.opengl.extraPackages = with pkgs; [
@@ -100,7 +108,8 @@
   services.btrfs.autoScrub.fileSystems = [ "/" ];
 
   # Setup root, boot, home, and swap partitions.
-  boot.initrd.luks.devices."enc".device = "/dev/disk/by-partlabel/linux";
+  boot.initrd.luks.devices."enc".device =
+    "/dev/disk/by-uuid/0a45658a-84b6-4a62-bcf5-ee19efa79b7e";
   fileSystems = let
     subvolume = name: {
       device = "/dev/mapper/enc";
@@ -115,7 +124,7 @@
     "/var/log" = (subvolume "log") // { neededForBoot = true; };
 
     "/boot" = {
-      device = "/dev/disk/by-partlabel/boot";
+      device = "/dev/disk/by-uuid/AF05-9D01";
       fsType = "vfat";
     };
   };
@@ -126,6 +135,8 @@
   # This device is for wired tethering with my phone, but now halts my boot for
   # over a minute while it looks for my phone.
   # networking.interfaces.enp0s20f0u1.useDHCP = true;
+  # I don't need fwupd running since this machine has all the updates by now.
+  services.fwupd.enable = false;
 
   users.mutableUsers = false;
   users.defaultUserShell = pkgs.zsh;
@@ -261,6 +272,7 @@
 
   # Let's try out bluetooth!
   hardware.bluetooth.enable = true;
+  hardware.bluetooth.powerOnBoot = false;
 
   # Open the shitload of ports apparently required to connect to my Bambu A1
   # printer over LAN.
@@ -279,12 +291,11 @@
   environment.systemPackages = with pkgs; [
     # blesh
     docker
-    ungoogled-chromium
+    # ungoogled-chromium
     brave
     # apps
     # gnome3.gnome-settings-daemon
     gnome.gvfs
-    xfce.parole # video player
     font-manager
     gimp
     vlc
@@ -296,18 +307,12 @@
     mate.atril # pdf viewer
     # mate.mate-tweak
     mate.mate-system-monitor
-    mate.mate-settings-daemon
-    mate.mate-control-center
     xfce.xfce4-power-manager
-    xfce.xfce4-session
-    xfce.xfce4-settings
-    xfce.xfce4-taskmanager
-    unstable.spotify
     xfce.xfburn
 
     # Try some file managers
-    pcmanfm
-    spaceFM
+    # pcmanfm
+    # spaceFM
     ranger-plus
     cinnamon.nemo
     # gnome.nautilus
@@ -338,14 +343,10 @@
 
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
-  services.hardware.openrgb = {
-    enable = false;
-    motherboard = "intel";
-  };
-
-  hardware.nitrokey.enable = false;
-
+  # Enable the tailscale module, but disable the auto-running service because it
+  # seems to be power hungry even when it's down.
   services.tailscale = { enable = true; };
+  systemd.services.tailscaled.enable = false;
 
   # Let me rip and burn CDs on this laptop.
   programs.k3b.enable = true;
@@ -359,4 +360,19 @@
     type = "-";
     value = 1;
   }];
+
+  programs.partition-manager.enable = true;
+
+  # Userspace workaround for high power usage by touchpad
+  systemd.services.touchpad-smp-affinity = {
+    wantedBy = [ "basic.target" ];
+    script =
+      "/bin/sh -c 'echo 2-2 > /proc/irq/$(grep designware.2 /proc/interrupts | cut -d \":\" -f1 | xargs)/smp_affinity_list'";
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = "yes";
+      ExecStop =
+        "/bin/sh -c 'echo \"0-$(nproc --all --ignore=1)\" > /proc/irq/$(grep designware.2 /proc/interrupts | cut -d \":\" -f1 | xargs)/smp_affinity_list'";
+    };
+  };
 }

@@ -5,6 +5,7 @@
     enable = true;
     package = null;
     config = null;
+    # systemd.enable = true;
     extraConfig = let
       gsettings = {
         gtk-theme = config.gtk.theme.name;

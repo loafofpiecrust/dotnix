@@ -47,6 +47,15 @@
       url = "github:e-tho/iwmenu";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    swayfx = {
+      url = "github:WillPower3309/swayfx";
+      # inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nix-colorizer.url = "github:nutsalhan87/nix-colorizer";
+    spicetify-nix = {
+      url = "github:Gerg-L/spicetify-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =

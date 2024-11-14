@@ -66,7 +66,7 @@
        ;;neotree           ; a project drawer, like NERDTree for vim
        ophints            ; highlight the region an operation acts on
        (popup +defaults)   ; tame sudden yet inevitable temporary windows
-       ;; (ligatures +extra)         ; ligatures or substitute text with pretty symbols
+       ligatures         ; ligatures or substitute text with pretty symbols
        ;;tabs              ; an tab bar for Emacs
        treemacs         ; a project drawer, like neotree but cooler
        unicode          ; extended unicode support for various languages
@@ -174,7 +174,7 @@
        (ocaml +lsp)             ; an objective camel
        (org +pretty +dragndrop +pomodoro +roam2)               ; organize your plain life in plain text
        ;;perl              ; write code no one else can comprehend
-       php               ; perl's insecure younger brother
+       ;; php               ; perl's insecure younger brother
        plantuml          ; diagrams for confusing people more
        ;;purescript        ; javascript, but functional
        (python +tree-sitter)            ; beautiful is better than ugly

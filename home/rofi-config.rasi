@@ -1,0 +1,8 @@
+configuration {
+  font: "sans-serif 14";
+  case-sensitive: false;
+  display-drun: "Run!!!";
+  matching: "fuzzy";
+}
+
+@theme "~/.config/rofi/theme.rasi"

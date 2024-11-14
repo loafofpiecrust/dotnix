@@ -3,10 +3,19 @@
 {
   # imports = [ inputs.nix-doom-emacs.hmModule ];
 
+  home.packages = with pkgs; [ mu ];
   programs.emacs = {
     enable = true;
     package = pkgs.emacsCustom;
-    extraPackages = epkgs: with epkgs; [ emojify vterm emacsql emacsql-sqlite ];
+    extraPackages = epkgs:
+      with epkgs; [
+        emojify
+        vterm
+        emacsql
+        emacsql-sqlite
+        mu4e
+        pkgs.mu
+      ];
   };
 
   services.emacs = {

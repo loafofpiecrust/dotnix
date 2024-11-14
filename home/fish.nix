@@ -29,7 +29,6 @@
     # shellAliases = { grep = "rg"; };
     initExtra = ''
       cat ~/.cache/wal/sequences
-      source ${pkgs.blesh}/share/blesh/ble.sh --rcfile ~/.config/.blerc
       ${pkgs.fortune}/bin/fortune -s | ${pkgs.pokemonsay}/bin/pokemonsay -N
     '';
   };

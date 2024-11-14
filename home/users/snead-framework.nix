@@ -40,4 +40,17 @@
   ];
 
   programs.foot.server.enable = true;
+  systemd.user.services.foot = {
+    Service = {
+      Restart = lib.mkForce "always";
+      RestartSec = 2;
+    };
+  };
+
+  xdg.configFile."easyeffects/output/fw13-easy-effects.json".source =
+    ../fw13-easy-effects.json;
+  services.easyeffects = {
+    enable = true;
+    # preset = "fw13-easy-effects";
+  };
 }

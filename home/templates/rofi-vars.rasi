@@ -1,0 +1,23 @@
+* {
+  foreground: {{foreground}};
+  background: {{background}};
+  cursor-color: {{cursor}};
+  surface1: {{surface1}};
+  surface2: {{surface2}};
+  black: {{black}};
+  red: {{red}};
+  green: {{green}};
+  yellow: {{yellow}};
+  blue: {{blue}};
+  magenta: {{magenta}};
+  cyan: {{cyan}};
+  white: {{white}};
+  brightblack: {{brightblack}};
+  brightred: {{brightred}};
+  brightgreen: {{brightgreen}};
+  brightyellow: {{brightyellow}};
+  brightblue: {{brightblue}};
+  brightmagenta: {{brightmagenta}};
+  brightcyan: {{brightcyan}};
+  brightwhite: {{brightwhite}};
+}

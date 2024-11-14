@@ -2,8 +2,6 @@
 
 CURRENT_TIME=$(date +%s)
 BG_PREFIX="$3"
-LIGHT_THEME="$4"
-DARK_THEME="$5"
 
 # Use sunwait to calculate sunrise/sunset times
 get_sunrise=$(sunwait list civil rise "$1" "$2")
@@ -33,25 +31,25 @@ moonrise=$(date -d "$get_sunset 2 hours" +"%s")
 #7.jpg - 30 min before sunset for 15 min (twilightMid-twilightLate)
 #8.jpg - 15 min before sunset for 15 min (twilightLate-sunset)
 
-if [ "$CURRENT_TIME" -ge "$presunrise" ] && [ "$CURRENT_TIME" -lt "$sunrise" ]; then
+if [[ "$CURRENT_TIME" -ge "$presunrise" ]] && [[ "$CURRENT_TIME" -lt "$sunrise" ]]; then
     image=16
-elif [ "$CURRENT_TIME" -ge "$sunrise" ] && [ "$CURRENT_TIME" -lt "$sunriseMid" ]; then
+elif [[ "$CURRENT_TIME" -ge "$sunrise" ]] && [[ "$CURRENT_TIME" -lt "$sunriseMid" ]]; then
     image=1
-elif [ "$CURRENT_TIME" -ge "$sunriseMid" ] && [ "$CURRENT_TIME" -lt "$sunriseLate" ]; then
+elif [[ "$CURRENT_TIME" -ge "$sunriseMid" ]] && [[ "$CURRENT_TIME" -lt "$sunriseLate" ]]; then
     image=2
-elif [ "$CURRENT_TIME" -ge "$sunriseLate" ] && [ "$CURRENT_TIME" -lt "$morning" ]; then
+elif [[ "$CURRENT_TIME" -ge "$sunriseLate" ]] && [[ "$CURRENT_TIME" -lt "$morning" ]]; then
     image=4
-elif [ "$CURRENT_TIME" -ge "$morning" ] && [ "$CURRENT_TIME" -lt "$afternoon" ]; then
+elif [[ "$CURRENT_TIME" -ge "$morning" ]] && [[ "$CURRENT_TIME" -lt "$afternoon" ]]; then
     image=6
-elif [ "$CURRENT_TIME" -ge "$afternoon" ] && [ "$CURRENT_TIME" -lt "$twilightEarly" ]; then
+elif [[ "$CURRENT_TIME" -ge "$afternoon" ]] && [[ "$CURRENT_TIME" -lt "$twilightEarly" ]]; then
     image=8
-elif [ "$CURRENT_TIME" -ge "$twilightEarly" ] && [ "$CURRENT_TIME" -lt "$twilightMid" ]; then
+elif [[ "$CURRENT_TIME" -ge "$twilightEarly" ]] && [[ "$CURRENT_TIME" -lt "$twilightMid" ]]; then
     image=10
-elif [ "$CURRENT_TIME" -ge "$twilightMid" ] && [ "$CURRENT_TIME" -lt "$twilightLate" ]; then
+elif [[ "$CURRENT_TIME" -ge "$twilightMid" ]] && [[ "$CURRENT_TIME" -lt "$twilightLate" ]]; then
     image=12
-elif [ "$CURRENT_TIME" -ge "$twilightLate" ] && [ "$CURRENT_TIME" -lt "$sunset" ]; then
+elif [[ "$CURRENT_TIME" -ge "$twilightLate" ]] && [[ "$CURRENT_TIME" -lt "$sunset" ]]; then
     image=13
-elif [ "$CURRENT_TIME" -ge "$sunset" ] && [ "$CURRENT_TIME" -lt "$moonrise" ]; then
+elif [[ "$CURRENT_TIME" -ge "$sunset" ]] && [[ "$CURRENT_TIME" -lt "$moonrise" ]]; then
     image=14
 else
     image=15
@@ -60,30 +58,8 @@ fi
 # Only update the wallpaper if necessary to avoid extra costly animations.
 OLD_IMAGE=$(swww query | cut -d' ' -f8)
 NEW_IMAGE="${BG_PREFIX}$image.jpeg"
-if [ "$NEW_IMAGE" != "$OLD_IMAGE" ]; then
+if [[ "$NEW_IMAGE" != "$OLD_IMAGE" ]]; then
     echo "$NEW_IMAGE"
     swww img --transition-duration 10 "$NEW_IMAGE"
-
-    # Gammastep waits a LONG time into night before switching over my color scheme,
-    # so let's do it here.
-    CURRENT_THEME=$(gsettings get org.gnome.desktop.interface color-scheme)
-    if [ "$CURRENT_TIME" -ge "$sunset" ] || [ "$CURRENT_TIME" -lt "$sunrise" ]; then
-        if [ "$CURRENT_THEME" != "'prefer-dark'" ]; then
-            gsettings set org.gnome.desktop.interface color-scheme prefer-dark
-            wal -n -s -f "$DARK_THEME" &>/dev/null
-            sleep 0.5s
-            tee /dev/pts/[0-9]* <~/.cache/wal/base16-sequences >/dev/null
-            makoctl reload
-            emacsclient --eval "(+snead/load-theme 'night)" || true
-        fi
-    elif [ "$CURRENT_TIME" -ge "$sunrise" ]; then
-        if [ "$CURRENT_THEME" != "'prefer-light'" ]; then
-            gsettings set org.gnome.desktop.interface color-scheme prefer-light
-            wal -n -s -f "$LIGHT_THEME" &>/dev/null
-            sleep 0.5s
-            tee /dev/pts/[0-9]* <~/.cache/wal/base16-sequences >/dev/null
-            makoctl reload
-            emacsclient --eval "(+snead/load-theme 'daytime)" || true
-        fi
-    fi
+    # Manually switch between light and dark with the button on my bar!
 fi

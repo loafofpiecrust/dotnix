@@ -16,7 +16,20 @@
 
 ;; Make emacs backgrounds partially transparent!
 ;; It's finally here, as of 2022!
-(add-to-list 'default-frame-alist '(alpha-background . 80))
+;; Ensure no transparency for posframes, only the parent system frame.
+;; (add-to-list 'initial-frame-alist '(alpha-background . 80))
+;; (add-to-list 'minibuffer-frame-alist '(alpha-background . 100))
+
+(after! vertico-posframe
+  (defun posframe-poshandler-frame-top-center-margin (info)
+    "Top center of the frame, offset from the top by a bit"
+    (cons (/ (- (plist-get info :parent-frame-width)
+                (plist-get info :posframe-width))
+             2)
+          32))
+  (setq! vertico-posframe-min-width 80
+         vertico-posframe-parameters '((left-fringe . 8) (right-fringe . 8))
+         vertico-posframe-poshandler 'posframe-poshandler-frame-top-center-margin))
 
 (use-package! gsettings)
 
@@ -43,7 +56,8 @@
       doom-peacock-brighter-comments t
       doom-monokai-classic-brighter-comments t
       doom-acario-light-brighter-comments t
-      doom-one-light-brighter-comments t)
+      doom-one-light-brighter-comments t
+      doom-dracula-brighter-comments nil)
 
 
 ;; Doom exposes five (optional) variables for controlling fonts in Doom. Here
@@ -57,7 +71,7 @@
 ;; Symbol test: _ -> => , . `' "" O0l1*#
 (setq doom-font (if (eq system-type 'darwin)
                     (font-spec :family "Fira Code" :size 14)
-                  (font-spec :family "monospace" :size 15))
+                  (font-spec :family "Hack Nerd Font FC Ligatured CCG" :size 15))
       doom-variable-pitch-font (font-spec :family "sans-serif" :size 15)
       doom-unicode-font doom-font
       ;; doom-unicode-font (font-spec :family "Symbola monospacified for Source Code Pro" :size 15)
@@ -203,7 +217,7 @@
   `(fixed-pitch-serif :family ,nil)
   ;; Disable background color for highlighted parens
   ;; '(show-paren-match :background nil)
-  `(minibuffer-prompt :family ,nil)
+  ;; `(minibuffer-prompt :family ,nil)
   ;; '(pyim-page :height 1.1)
   )
 
@@ -307,11 +321,24 @@
         evil-visual-char-message nil
         evil-visual-block-message nil)
 
+  (defun evil-normalize-ctrl-i (&optional frame)
+    "Untangle TAB from C-i, so we can indent."
+    (define-key input-decode-map [(control ?i)] [control-i])
+    (define-key input-decode-map [(control ?I)] [(shift control-i)])
+    (map! :map evil-motion-state-map "C-i" nil)
+    (define-key evil-motion-state-map [control-i] 'evil-jump-forward))
+
+  (add-hook 'doom-first-buffer-hook #'evil-normalize-ctrl-i)
+  ;; Prevent accidental commands when exploring little-used modes.
+  (evil-normalize-ctrl-i)
+
   ;; Prevent accidental commands when exploring little-used modes.
   (map! :m doom-localleader-key nil)
+
   ;; Indent current line after more evil commands.
   ;; (advice-add 'evil-join :after #'indent-according-to-mode)
   (map! :n "<RET>" 'newline-and-indent)
+  (map! "C-j" 'newline-and-indent)
 
   ;; Extra bindings for compilation and editing commit messages.
   (map! :map (compilation-mode-map with-editor-mode-map message-mode-map)
@@ -860,7 +887,7 @@ are ineffectual otherwise."
 
 (after! markdown-mode
   (set-ligatures! 'markdown-mode
-                  :src_block "```"))
+    :src_block "```"))
 
 ;; (after! web-mode
 ;;   (setq web-mode-prettify-symbols-alist nil))
@@ -871,19 +898,19 @@ are ineffectual otherwise."
 ;; TODO maybe there's a better machanism for replacing these that works more consistently?
 (after! md-msg
   (set-ligatures! 'md-msg-view-mode
-                  :exclamation "\\!"
-                  :dash "\\-"
-                  :endash "\\--"
-                  :asterisk "\\*"
-                  :lt "\\<"
-                  ;; :nothing "\n\\\n"
-                  ;; :nothing "\n\n\n"
-                  ;; :nothing "\\"
-                  :at_symbol "\\@"
-                  :pound "\\#"
-                  :arrow "-\\>"
-                  :pipe "\\|"
-                  :turnstile "\\|-"))
+    :exclamation "\\!"
+    :dash "\\-"
+    :endash "\\--"
+    :asterisk "\\*"
+    :lt "\\<"
+    ;; :nothing "\n\\\n"
+    ;; :nothing "\n\n\n"
+    ;; :nothing "\\"
+    :at_symbol "\\@"
+    :pound "\\#"
+    :arrow "-\\>"
+    :pipe "\\|"
+    :turnstile "\\|-"))
 
 ;;;; Periodically clean buffers
 (use-package! midnight
@@ -1051,6 +1078,17 @@ are ineffectual otherwise."
   (setq vterm-buffer-name-string "vterm %s"))
 
 (map! :mnv "go" #'avy-goto-char-2)
+
+(defun calc-buffer-predicate (b)
+  (member b calc-buffer-list))
+(after! calc
+  (add-hook 'calc-trail-mode-hook 'hide-mode-line-mode)
+  (add-hook 'calc-mode-hook 'hide-mode-line-mode))
+(defun make-calc-frame ()
+  (interactive)
+  (let ((frame (make-frame '((buffer-predicate . calc-buffer-predicate)))))
+    (select-frame frame)
+    (calc nil t)))
 
 ;; Launch programs directly from an Emacs prompt.
 (use-package! app-launcher
@@ -1316,7 +1354,7 @@ Move it to the mode-line."
   (let ((margin +snead/minibuffer-margin))
     (unless (and (featurep 'mini-frame) mini-frame-mode)
       (set-window-fringes nil margin margin))))
-(add-hook 'minibuffer-setup-hook #'+snead/center-minibuffer)
+;; (add-hook 'minibuffer-setup-hook #'+snead/center-minibuffer)
 
 (map! :after envrc
       :leader "e" envrc-command-map)
@@ -1353,7 +1391,7 @@ Position is calculated base on WIDTH and HEIGHT of childframe text window"
 (after! ws-butler
   (setq ws-butler-keep-whitespace-before-point t))
 
-(setq-default inferior-lisp-program "common-lisp.sh")
+;; (setq-default inferior-lisp-program "common-lisp.sh")
 
 (setq lsp-sqls-connections
       '(((driver . "postgresql") (dataSourceName . "host=127.0.0.1 port=5432 database=customers sslmode=disable"))
@@ -1415,4 +1453,4 @@ Position is calculated base on WIDTH and HEIGHT of childframe text window"
 ;; It's slightly laggy with a touchpad but PERFECT with a classic scroll wheel.
 (setq! mouse-wheel-scroll-amount '(1 ((shift) . hscroll))
        pixel-scroll-precision-interpolation-factor 1.5)
-(pixel-scroll-precision-mode)
+;; (pixel-scroll-precision-mode)

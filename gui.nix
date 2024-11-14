@@ -2,7 +2,12 @@
 
 {
   # imports = [ inputs.hyprland.nixosModules.default ];
-  programs.hyprland.enable = true;
+  programs.hyprland = {
+    enable = true;
+    package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+    portalPackage =
+      inputs.hyprland.packages.${pkgs.system}.xdg-desktop-portal-hyprland;
+  };
   environment.systemPackages = with pkgs; [
     gnome3.file-roller # provides all archive formats
     pavucontrol
@@ -12,30 +17,17 @@
 
     # desktop environment
     # gnome3.gtk
-    notify-send-sh
     polkit_gnome
-    #picom # compositor
-    # polybar
-    #dunst # notifications
-    # rofi # MENUS!
     # rofi-menugen
-    # feh # wallpapers
     #wpgtk
-    # caffeine-ng # prevent screen from sleeping sometimes
     gsettings-desktop-schemas
     # farge # color picker
-    scrot
-    xorg.xmodmap
-    #stalonetray
-    gcolor3
+    # gcolor3
 
     # gtk themes
     # arc-theme
     # paper-icon-theme
     bibata-cursors
-
-    # apps I want everywhere
-    tridactyl-native
 
     # system tools
     libnotify
@@ -112,14 +104,6 @@
         propagatedBuildInputs = old.propagatedBuildInputs
           ++ (with super; [ ueberzugpp mediainfo poppler_utils bat ]);
       });
-      # Patch rofi to support wayland.
-      rofi-wayland = super.rofi.overrideAttrs (old: {
-        src = builtins.fetchurl {
-          url =
-            "https://github.com/lbonn/rofi/archive/a97ba40bc7aca7e375c500d574cac930a0b3473d.tar.gz";
-          sha256 = "13v4l5hw14i5nh26lh4hr6jckpba6pyyvx5nydn2h1vkgs0lz4v4";
-        };
-      });
       # Patch libnotify to support replacing existing notifications.
       # libnotify = super.libnotify.overrideAttrs (old: {
       #   src = builtins.fetchGit {
@@ -194,6 +178,7 @@
   # Configure sway if I happen to want it in my setup.
   programs.sway = {
     package = pkgs.swayfx;
+    # package = pkgs.unstable.sway;
     # enable = true;
     extraPackages = with pkgs; [
       swaylock

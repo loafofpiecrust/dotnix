@@ -1,4 +1,4 @@
-@import "../../.cache/wal/colors-waybar.css";
+@import "../../.cache/colors/waybar.css";
 
 * {
   font-family: "sans";
@@ -7,9 +7,11 @@
 }
 
 tooltip {
-  background-color: @background;
+  background-color: @surface1;
   min-height: 0;
-  border: 2px solid @color11;
+  border: 1px solid @surface2;
+  border-radius: 6px;
+  box-shadow: 0px 0px 10px alpha(black, 0.6);
 }
 
 tooltip label {
@@ -20,7 +22,7 @@ tooltip label {
 }
 
 window#waybar {
-  background-color: alpha(@background, 0.8);
+  background-color: @background;
   transition-property: background-color;
   transition-duration: 0.2s;
   min-height: 30px;
@@ -48,31 +50,32 @@ window#waybar.solo {
   padding: 0 6px;
   color: @foreground;
   background-color: transparent;
+  border: none;
   /* border-bottom: 3px solid transparent; */
 }
 
 /* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
 #workspaces button:hover {
-  background: alpha(@color3, 0.5);
+  background: alpha(@surface2, 0.6);
   box-shadow: inherit;
-  /* border: none; */
+  border: none;
   /* border-bottom: 3px solid #ffffff; */
 }
 
 #workspaces button.focused,
 #workspaces button.active {
-  background-color: @color2;
-  color: @color14;
-  /* border: none; */
+  background-color: @blue;
+  color: @background;
+  border: none;
   /* border-bottom: 3px solid #ffffff; */
 }
 
 #workspaces button.urgent {
-  background-color: @color6;
+  background-color: @red;
 }
 
 #mode {
-  background-color: @color8;
+  /* background-color: @color8; */
   border-bottom: 3px solid #ffffff;
 }
 
@@ -97,6 +100,12 @@ window#waybar.solo {
   min-width: 60px;
 }
 
+#power-profiles-daemon {
+  min-width: 20px;
+  padding: 0 4px;
+  margin: 0 4px;
+}
+
 #network {
   min-width: 90px;
 }
@@ -114,18 +123,18 @@ window#waybar.solo {
 }
 
 #custom-power {
-  color: @color8;
+  color: @red;
 }
 
 #battery {
   /* font-family: "monospace"; */
   /* background-color: #ffffff; */
-  color: @color8;
+  color: @red;
   letter-spacing: 1px;
 }
 
 #battery.charging {
-  background-color: @color11;
+  background-color: @green;
   color: @background;
 }
 
@@ -137,10 +146,10 @@ window#waybar.solo {
 }
 
 #battery.critical:not(.charging) {
-  background-color: @color8;
+  background-color: @brightred;
   color: @foreground;
   animation-name: blink;
-  animation-duration: 0.1s;
+  animation-duration: 0.2s;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
   animation-direction: alternate;
@@ -196,13 +205,14 @@ label:focus {
 #tray {
   padding: 0 4px;
   margin: 0 4px;
-  background-color: alpha(@color12, 0.5);
+  background-color: alpha(@cyan, 0.5);
 }
 
 #idle_inhibitor,
 #custom-power,
 #custom-wallpaper,
-#custom-vpn {
+#custom-vpn,
+#custom-color-scheme {
   min-width: 32px;
   padding: 0;
   margin: 0;
@@ -213,7 +223,7 @@ label:focus {
 }
 
 #idle_inhibitor.activated {
-  background-color: @color5;
+  background-color: @magenta;
   color: #2d3436;
 }
 

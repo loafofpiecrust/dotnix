@@ -24,14 +24,14 @@
       #     rev = "774a6ff865cc233a9f7dd503df6feffbab653e03";
       #   };
       # }
-      # {
-      #   name = "fzf-tab";
-      #   src = builtins.fetchGit {
-      #     url = "https://github.com/Aloxaf/fzf-tab";
-      #     ref = "master";
-      #     rev = "220bee396dd3c2024baa54015a928d5915e4f48f";
-      #   };
-      # }
+      {
+        name = "fzf-tab";
+        src = builtins.fetchGit {
+          url = "https://github.com/Aloxaf/fzf-tab";
+          ref = "master";
+          rev = "6aced3f35def61c5edf9d790e945e8bb4fe7b305";
+        };
+      }
       {
         name = "fast-syntax-highlighting";
         src = builtins.fetchGit {
@@ -62,7 +62,7 @@
       autoload -U bashcompinit && bashcompinit
     '';
     initExtra = ''
-      (cat ~/.cache/wal/base16-sequences &)
+      (cat ~/.cache/colors/sequences &)
       bindkey ";3C" forward-word
       bindkey ";3D" backward-word
       # bindkey '^I' fzf_completion
@@ -79,7 +79,7 @@
       }
 
       export KEYTIMEOUT=1
-      export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=20,bg=0"
+      export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=8,bg=0"
       # set -o vi
       # zle -N zle-line-init
       # zle -N zle-keymap-select

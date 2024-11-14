@@ -6,6 +6,7 @@
     ../chromium.nix
     ../fish.nix
     ../sway.nix
+    ../spotify.nix
     ../hyprland.nix
     ../zsh.nix
     ../emacs.nix
@@ -25,6 +26,7 @@
 
     # Music collection management
     strawberry # pretty good music player
+    deadbeef # simple backup music player, in case QT is broken.
     flacon # extracts disc files into individual tracks
     sox # resamples FLAC files
     mac # converts .ape files

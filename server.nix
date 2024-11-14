@@ -4,7 +4,7 @@
   imports = [ ./nixos.nix ];
   # Disable UI stuff
   environment.noXlibs = true;
-  services.udisks2.enable = false;
+  services.udisks2.enable = lib.mkDefault false;
   xdg.autostart.enable = false;
   xdg.mime.enable = false;
   xdg.sounds.enable = false;

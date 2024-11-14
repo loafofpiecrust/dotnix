@@ -1,0 +1,8 @@
+clear-after=120
+typing-key-delay=4
+typer=dotool
+action=type
+target=password
+keybindings=Control+Return:type:username:tab:delay:password,Shift+Return::menu,Control+t:type:totp
+menu-keybindings=Control+c:copy
+selector-args=-matching normal -kb-accept-custom '' -kb-secondary-copy '' -kb-accept-alt ''

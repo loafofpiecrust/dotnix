@@ -1,15 +1,44 @@
 { config, lib, pkgs, systemConfig, inputs, ... }:
 let
-  theme = import ./themes/catppuccin.nix;
+  theme = (import ./themes/dracula.nix) { colorizer = inputs.nix-colorizer; };
   dropHash = x: builtins.substring 1 10 x;
+  generate-theme-files = (pkgs.writeShellApplication {
+    name = "generate-theme-files";
+    runtimeInputs = with pkgs; [
+      coreutils
+      jq
+      mustache-go
+      mako
+      config.programs.emacs.package
+      config.wayland.windowManager.sway.package
+      glib
+    ];
+    text = let
+      addExtraVars = base:
+        (base.colors // base.special // {
+          commands = base.commands;
+          # Add an extra set of the colors with no hash at the start.
+          strip = (builtins.mapAttrs (k: v: builtins.substring 1 10 v)
+            (base.colors // base.special));
+        });
+      lightTheme = builtins.toFile "light.json"
+        (builtins.toJSON (addExtraVars theme.light));
+      darkTheme =
+        builtins.toFile "dark.json" (builtins.toJSON (addExtraVars theme.dark));
+    in ''
+      ${
+        config.lib.meta.mkMutableSymlink ./scripts/generate-theme-files.sh
+      } '${lightTheme}' '${darkTheme}' "$1"
+    '';
+  });
 in {
+  lib.meta.theme = theme;
   home.packages = with pkgs; [
     inputs.iwmenu.packages.${pkgs.system}.default
+    inotify-tools
     sunwait
     mako
-    swhkd
     wpgtk
-    pywal
     pamixer
     swww
     clipman
@@ -17,7 +46,6 @@ in {
     rofi-rbw-wayland
     nwg-wrapper
     swaynotificationcenter
-    wofi
     pamixer
     brightnessctl
     playerctl
@@ -28,12 +56,22 @@ in {
     wev
     notify-send-sh
     wl-clipboard
+    hyprpicker
+    generate-theme-files
+    swaylock-effects
+    dotool
+    zbar # scan QR codes
     # (pkgs.writeShellScriptBin "set-backlight" ''
     #   light $@
     #   LIGHT=$(light -G)
     #   LIGHT=$(printf "%.0f" $LIGHT)
     #   ${pkgs.notify-send-sh}/bin/notify-send.sh "Brightness" -c overlay -h int:value:$LIGHT -R /tmp/overlay-notification
     # '')
+    (pkgs.writeShellApplication {
+      name = "generate-password";
+      runtimeInputs = [ dotool rbw rofi-wayland ];
+      text = builtins.readFile ./scripts/generate-password.sh;
+    })
     (pkgs.writeShellScriptBin "set-volume" ''
       pamixer $@
       VOLUME=$(pamixer --get-volume)
@@ -57,7 +95,7 @@ in {
       notify-send.sh "Screenshot taken" "$IMG_FILENAME" -i "$IMG_FILENAME" -t 2000
     '')
     (pkgs.writeShellScriptBin "update-shell-colors" ''
-      cat ~/.cache/wal/base16-sequences | tee /dev/pts/[0-9]* > /dev/null
+      cat ~/.cache/colors/sequences | tee /dev/pts/[0-9]* > /dev/null
     '')
   ];
 
@@ -75,12 +113,11 @@ in {
         profile.name = "undocked";
         profile.outputs = [
           (laptop-screen // {
-            scale = 1.3333;
+            scale = 1.301038;
             status = "enable";
           })
         ];
-        profile.exec =
-          [ "${pkgs.systemd}/bin/systemctl --user restart dynamic-wallpaper" ];
+        profile.exec = [ "${pkgs.systemd}/bin/systemctl --user restart swww" ];
       }
       {
         profile = {
@@ -96,9 +133,7 @@ in {
               position = "1410,0";
             }
           ];
-          exec = [
-            "${pkgs.systemd}/bin/systemctl --user restart dynamic-wallpaper"
-          ];
+          exec = [ "${pkgs.systemd}/bin/systemctl --user restart swww" ];
         };
       }
       {
@@ -119,9 +154,7 @@ in {
               transform = "270";
             }
           ];
-          exec = [
-            "${pkgs.systemd}/bin/systemctl --user restart dynamic-wallpaper"
-          ];
+          exec = [ "${pkgs.systemd}/bin/systemctl --user restart swww" ];
         };
       }
     ];
@@ -136,23 +169,46 @@ in {
       position = "top";
       layer = "top";
       height = 30;
-      modules-left = [ # "custom/power"
-        "hyprland/workspaces"
+      modules-left = [
+        "custom/power"
+        # "hyprland/workspaces"
         "sway/workspaces"
       ];
       modules-right = [
         # "custom/player"
         "tray"
         # "custom/wallpaper"
+        "custom/color-scheme"
         "idle_inhibitor"
         # "custom/vpn"
         "network"
         "cpu"
         "memory"
         "pulseaudio"
+        "power-profiles-daemon"
         "battery"
         "clock"
       ];
+      "custom/power" = {
+        format = "󰐥";
+        on-click = "power-menu";
+        tooltip = false;
+      };
+      "custom/color-scheme" = {
+        format = "";
+        on-click = "generate-theme-files toggle";
+        tooltip = false;
+      };
+      power-profiles-daemon = {
+        format = "{icon}";
+        tooltip = true;
+        format-icons = {
+          default = "";
+          performance = "";
+          balanced = "";
+          power-saver = "";
+        };
+      };
       pulseaudio = {
         # format-source indicates microphone volume
         scroll-step = 0.5;
@@ -188,12 +244,11 @@ in {
         on-click = "${pkgs.pamixer}/bin/pamixer -t";
         on-click-right = "${pkgs.pavucontrol}/bin/pavucontrol";
       };
-      "sway/mode".format = ''<span style="italic">{}</span>'';
       idle_inhibitor = {
         format = "{icon}";
         format-icons = {
-          "activated" = "󰔫";
-          "deactivated" = "󰔫";
+          "activated" = "󰈈";
+          "deactivated" = "󰈉";
         };
         tooltip = false;
       };
@@ -278,7 +333,7 @@ in {
       network = {
         # interface = "wlan0";
         tooltip-format = ''
-          {essid}
+          {essid} ({signalStrength}%)
           {ipaddr}'';
         # format-wifi = " {bandwidthDownBits}";
         format-wifi = "󰖩 {bandwidthDownBits}";
@@ -286,7 +341,7 @@ in {
         # format-linked = " No IP";
         format-disconnected = "OFFLINE";
         tooltip = true;
-        on-click = "iwmenu -m fuzzel";
+        on-click = "iwmenu -m rofi";
       };
 
       "custom/vpn" = {
@@ -304,45 +359,9 @@ in {
     style = config.lib.meta.mkMutableSymlink ./waybar.css;
   };
 
-  # Link to the wal-generated mako config.
-  xdg.configFile."wal/templates/mako.conf".source =
-    config.lib.meta.mkMutableSymlink ./mako.conf;
-  # FIXME figure out how to remove the absolute path from here.
-  xdg.configFile."mako/config".source =
-    config.lib.file.mkOutOfStoreSymlink "/home/snead/.cache/wal/mako.conf";
-  services.mako = {
-    enable = false;
-    font = "monospace 11";
-    backgroundColor = theme.dark.special.background;
-    borderColor = theme.dark.colors.color4;
-    borderRadius = 3;
-    borderSize = 1;
-    defaultTimeout = 4000;
-    extraConfig = ''
-      text-color=${theme.dark.special.foreground}
-      progress-color=over ${theme.dark.colors.color4}
-
-      [category=overlay]
-      default-timeout=1000
-      ignore-timeout=1
-      history=0
-      anchor=center
-      layer=overlay
-      text-color=${theme.dark.special.background}
-
-      [anchor=center]
-      max-visible=1
-
-      [body~="Battery charging"]
-      invisible=1
-
-      [body~="Battery discharging"]
-      invisible=1
-
-      [body~="Battery pending charge"]
-      invisible=1
-    '';
-  };
+  # Link to the generated mako config.
+  xdg.configFile."mako/config".source = config.lib.file.mkOutOfStoreSymlink
+    "${config.home.homeDirectory}/.cache/colors/mako.conf";
 
   # Enables power status notifications when using Sway.
   # services.poweralertd.enable = true;
@@ -370,81 +389,28 @@ in {
     };
   };
 
-  xdg.configFile."wal/templates/zsh-fsh.ini".source = ./themes/zsh-fsh.ini;
-  xdg.configFile."wal/templates/base16-sequences".text =
-    "]4;0;{color0}\\]4;1;{color8}\\]4;2;{color11}\\]4;3;{color10}\\]4;4;{color13}\\]4;5;{color14}\\]4;6;{color12}\\]4;7;{color5}\\]4;8;{color3}\\]4;9;{color8}\\]4;10;{color11}\\]4;11;{color10}\\]4;12;{color13}\\]4;13;{color14}\\]4;14;{color12}\\]4;15;{color7}\\]4;16;{color9}\\]4;17;{color15}\\]4;18;{color1}\\]4;19;{color2}\\]4;20;{color4}\\]4;21;{color6}\\]10;{foreground}\\]11;{background}\\]12;{cursor}\\]13;{foreground}\\]17;{foreground}\\]19;{background}\\]4;232;{background}\\]4;256;{foreground}\\]708;{background}\\";
-  xdg.configFile."wal/templates/colors-waybar.css".text = ''
-    @define-color foreground {foreground};
-    @define-color background {background};
-    @define-color cursor {cursor};
-
-    @define-color color0 {color0};
-    @define-color color1 {color1};
-    @define-color color2 {color2};
-    @define-color color3 {color3};
-    @define-color color4 {color4};
-    @define-color color5 {color5};
-    @define-color color6 {color6};
-    @define-color color7 {color7};
-    @define-color color8 {color8};
-    @define-color color9 {color9};
-    @define-color color10 {color10};
-    @define-color color11 {color11};
-    @define-color color12 {color12};
-    @define-color color13 {color13};
-    @define-color color14 {color14};
-    @define-color color15 {color15};
-  '';
-  xdg.configFile."wal/templates/fuzzel.ini".text = ''
-    [colors]
-    background={background.strip}ff
-    text={foreground.strip}ff
-    selection={color7.strip}ff
-    selection-text={color1.strip}ff
-    selection-match={background.strip}ff
-    match={color6.strip}ff
-    border={color10.strip}ff
-  '';
-
-  # Change color theme to light or dark based on time of day.
-  # xdg.configFile."gammastep/hooks/daynight-desktop" = {
-  #   executable = true;
-  #   text = let
-  #     lightTheme = builtins.toFile "light.json" (builtins.toJSON theme.light);
-  #     darkTheme = builtins.toFile "dark.json" (builtins.toJSON theme.dark);
-  #   in ''
-  #     #!/usr/bin/env bash
-  #     PATH=${pkgs.pywal}/bin:${pkgs.glib}/bin:${config.programs.emacs.package}/bin:${pkgs.coreutils}/bin:${pkgs.mako}/bin:$PATH
-  #     if [ "$1" = period-changed ]; then
-  #       case $3 in
-  #         daytime)
-  #           gsettings set org.gnome.desktop.interface color-scheme prefer-light
-  #           wal -n -s -f ${lightTheme} &> /dev/null
-  #           cat ~/.cache/wal/base16-sequences | tee /dev/pts/[0-9]* > /dev/null
-  #           makoctl reload
-  #           emacsclient --eval "(+snead/load-theme 'daytime)" || true;;
-  #         night)
-  #           gsettings set org.gnome.desktop.interface color-scheme prefer-dark
-  #           wal -n -s -f ${darkTheme} &> /dev/null
-  #           cat ~/.cache/wal/base16-sequences | tee /dev/pts/[0-9]* > /dev/null
-  #           makoctl reload
-  #           emacsclient --eval "(+snead/load-theme 'night)" || true;;
-  #       esac
-  #     fi
-  #   '';
-  # };
+  xdg.configFile."colors/templates".source =
+    config.lib.meta.mkMutableSymlink ./templates;
 
   # Start wallpaper daemon with sway.
   systemd.user.services.swww = {
     Install.WantedBy = [ "graphical-session.target" ];
-    Service.Type = "forking";
-    Service.ExecStart = let
-      script = pkgs.writeShellApplication {
-        name = "swww-init";
-        text = "swww init";
-        runtimeInputs = with pkgs; [ swww ];
-      };
-    in "${script}/bin/swww-init";
+    Unit = {
+      After = [ "graphical-session.target" ];
+      StartLimitIntervalSec = 200;
+      StartLimitBurst = 5;
+    };
+    Service = {
+      Restart = "on-failure";
+      RestartSec = 2;
+      ExecStart = let
+        script = pkgs.writeShellApplication {
+          name = "swww-init";
+          text = "swww-daemon";
+          runtimeInputs = with pkgs; [ swww ];
+        };
+      in "${script}/bin/swww-init";
+    };
   };
 
   # Set the wallpaper based on the angle of the sun where I live.
@@ -458,59 +424,55 @@ in {
         text = builtins.readFile ./scripts/dynamic-wallpaper.sh;
         runtimeInputs = with pkgs; [
           swww
-          coreutils-full
+          coreutils
           findutils
           sunwait
-          pywal
-          glib
-          config.programs.emacs.package
           coreutils
-          mako
+          generate-theme-files
         ];
       };
-      lightTheme = builtins.toFile "light.json" (builtins.toJSON theme.light);
-      darkTheme = builtins.toFile "dark.json" (builtins.toJSON theme.dark);
     in "${script}/bin/dynamic-wallpaper ${
       toString systemConfig.location.latitude
     }N ${
       toString (-systemConfig.location.longitude)
-    }W '${systemConfig.lib.meta.dynamicBgRepo}/Dynamic_Wallpapers/Mojave/mojave_dynamic_' '${lightTheme}' '${darkTheme}'";
+    }W '${systemConfig.lib.meta.dynamicBgRepo}/Dynamic_Wallpapers/Mojave/mojave_dynamic_'";
   };
 
-  # Update the dynamic wallpaper hourly.
+  # Check for wallpaper updates every 15m.
   systemd.user.timers.dynamic-wallpaper = {
-    Install.WantedBy = [ "timers.target" ];
+    Install.WantedBy = [ "timers.target" "post-resume.target" ];
     Unit.PartOf = [ "swww.service" ];
     Timer = {
       Unit = "dynamic-wallpaper.service";
       OnStartupSec = "2s";
-      OnCalendar = "*/15 * * * *";
+      OnCalendar = "*:00,15,30,45:00";
     };
   };
 
   services.swayidle = {
     enable = true;
     systemdTarget = "graphical-session.target";
-    timeouts = [
-      {
-        timeout = 240;
-        command = "${pkgs.sway} output '*' dpms off";
-      }
-      {
-        timeout = 360;
-        command = "${config.programs.swaylock.package}/bin/swaylock -fF";
-      }
-    ];
-    events = [
-      {
-        event = "before-sleep";
-        command = "${config.programs.swaylock.package}/bin/swaylock -fF";
-      }
-      {
-        event = "after-resume";
-        command = "${pkgs.sway}/bin/swaymsg output '*' dpms on";
-      }
-    ];
+    timeouts = [{
+      timeout = 240;
+      command = "${pkgs.sway}/bin/swaymsg output '*' power off";
+      resumeCommand = "${pkgs.sway}/bin/swaymsg output '*' power on";
+    }
+    # {
+    #   timeout = 360;
+    #   command = "${config.programs.swaylock.package}/bin/swaylock -fF";
+    # }
+      ];
+    events = [{
+      event = "before-sleep";
+      command = "${config.programs.swaylock.package}/bin/swaylock -fF";
+    }
+    # Restarting kanshi after resume to make sure the screen configuration is
+    # all set. Also fixes the bad font rendering issue!
+    # {
+    #   event = "after-resume";
+    #   command = "${pkgs.systemd}/bin/systemctl --user restart kanshi";
+    # }
+      ];
     extraArgs = [ "idlehint" "360" ];
   };
 
@@ -528,50 +490,44 @@ in {
   xdg.configFile."keyd/app.conf".source = ../keyboard/apps.conf;
 
   # Idle screen locker
+  xdg.configFile."swaylock/config".source = config.lib.file.mkOutOfStoreSymlink
+    "${config.home.homeDirectory}/.cache/colors/swaylock.config";
+  xdg.configFile."rofi-rbw.rc".source =
+    config.lib.meta.mkMutableSymlink ./rofi-rbw.rc;
   programs.swaylock = {
     enable = true;
     package = pkgs.swaylock-effects;
-    settings = {
-      # Use the current dynamic background.
-      # image = "~/.wallpaper";
-      # scaling = "fill";
-      screenshots = true;
-      effect-blur = "6x3";
-      font = "sans";
-      # font-size = 40;
-      # Use theme colors for lock screen
-      # TODO use wal template
-      bs-hl-color = dropHash theme.light.colors.color6;
-      key-hl-color = dropHash theme.light.colors.color5;
-      layout-text-color = dropHash theme.light.special.foreground;
-      ring-color = dropHash theme.light.colors.color7;
-      ring-clear-color = dropHash theme.light.colors.color6;
-      ring-ver-color = dropHash theme.light.colors.color13;
-      ring-wrong-color = dropHash theme.light.colors.color14;
-      text-color = dropHash theme.light.special.foreground;
-      text-clear-color = dropHash theme.light.colors.color6;
-      text-ver-color = dropHash theme.light.colors.color13;
-      text-wrong-color = dropHash theme.light.colors.color14;
-      inside-color = dropHash theme.light.special.background;
-      inside-clear-color = dropHash theme.light.special.background;
-      inside-ver-color = dropHash theme.light.special.background;
-      inside-wrong-color = dropHash theme.light.special.background;
-      separator-color = "00000000";
-      line-color = "00000000";
-      line-clear-color = "00000000";
-      line-ver-color = "00000000";
-      line-wrong-color = "00000000";
-    };
-  };
-
-  programs.hyprlock = {
-    enable = false;
-    package = pkgs.unstable.hyprlock;
-    extraConfig = ''
-      general {
-        disable_loading_bar = true
-      }
-    '';
+    # settings = {
+    #   # Use the current dynamic background.
+    #   # image = "~/.wallpaper";
+    #   # scaling = "fill";
+    #   screenshots = true;
+    #   effect-blur = "6x3";
+    #   font = "sans";
+    #   # font-size = 40;
+    #   # Use theme colors for lock screen
+    #   # TODO use wal template
+    #   bs-hl-color = dropHash theme.light.colors.color6;
+    #   key-hl-color = dropHash theme.light.colors.color5;
+    #   layout-text-color = dropHash theme.light.special.foreground;
+    #   ring-color = dropHash theme.light.colors.color7;
+    #   ring-clear-color = dropHash theme.light.colors.color6;
+    #   ring-ver-color = dropHash theme.light.colors.color13;
+    #   ring-wrong-color = dropHash theme.light.colors.color14;
+    #   text-color = dropHash theme.light.special.foreground;
+    #   text-clear-color = dropHash theme.light.colors.color6;
+    #   text-ver-color = dropHash theme.light.colors.color13;
+    #   text-wrong-color = dropHash theme.light.colors.color14;
+    #   inside-color = dropHash theme.light.special.background;
+    #   inside-clear-color = dropHash theme.light.special.background;
+    #   inside-ver-color = dropHash theme.light.special.background;
+    #   inside-wrong-color = dropHash theme.light.special.background;
+    #   separator-color = "00000000";
+    #   line-color = "00000000";
+    #   line-clear-color = "00000000";
+    #   line-ver-color = "00000000";
+    #   line-wrong-color = "00000000";
+    # };
   };
 
   programs.foot = {
@@ -579,8 +535,14 @@ in {
     settings = {
       main.dpi-aware = false;
       main.font = "monospace:size=11";
-      colors.alpha = 0.8;
       main.pad = "6x6";
+      main.workers = 4;
+      colors.alpha = 0.8;
+      key-bindings = {
+        scrollback-up-page = "Shift+Up";
+        scrollback-down-page = "Shift+Down";
+        search-start = "Control+f";
+      };
     };
   };
 
@@ -594,4 +556,28 @@ in {
       };
     };
   };
+
+  home.file.".local/share/icons/system".source =
+    "${config.gtk.iconTheme.package}/share/icons/${config.gtk.iconTheme.name}";
+
+  # Automatically switch the power profile on plug and unplug iff I'm using PPD
+  systemd.user.services.auto-power-profile = {
+    Install.WantedBy = [ "default.target" ];
+    Service.ExecStart = let
+      script = pkgs.writeShellApplication {
+        name = "auto-power-profile";
+        text = builtins.readFile ./scripts/auto-power-profile.sh;
+        runtimeInputs = with pkgs; [
+          inotify-tools
+          power-profiles-daemon
+          coreutils
+        ];
+      };
+    in "${script}/bin/auto-power-profile";
+  };
+
+  xdg.configFile."rofi/config.rasi".source =
+    config.lib.meta.mkMutableSymlink ./rofi-config.rasi;
+  xdg.configFile."rofi/theme.rasi".source =
+    config.lib.meta.mkMutableSymlink ./rofi-theme.rasi;
 }

@@ -45,6 +45,7 @@
     '';
   };
   home.file."bin/light-notify".source = ./scripts/light-notify.sh;
+  home.file."bin/power-menu".source = ./scripts/power-menu.sh;
 
   home.packages = with pkgs; [ gparted gnome.simple-scan ];
 
@@ -100,8 +101,8 @@
     };
   };
 
-  xdg.configFile."mimeapps.list".source =
-    config.lib.meta.mkMutableSymlink ./mimeapps.list;
+  # xdg.configFile."mimeapps.list".source =
+  #   config.lib.meta.mkMutableSymlink ./mimeapps.list;
   xdg = {
     enable = true;
     mime.enable = lib.mkDefault false;

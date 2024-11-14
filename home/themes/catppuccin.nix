@@ -26,6 +26,7 @@
       color15 = "#dd7878"; # flamingo
     };
   in { # catppuccin latte
+    emacs = "(+snead/load-theme 'daytime)";
     alpha = "100";
     special = {
       background = "#eff1f5";
@@ -54,6 +55,7 @@
   };
 
   dark = { # catppuccin macchiato
+    emacs = "(+snead/load-theme 'night)";
     alpha = "100";
     special = {
       background = "#24273a";
