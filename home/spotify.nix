@@ -5,15 +5,16 @@
   programs.spicetify =
     let spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.system};
     in {
-      enable = true;
+      # Suddenly stopped working after resuming from suspend...?
+      enable = false;
       theme = spicePkgs.themes.dracula;
-      enabledExtensions = with spicePkgs.extensions; [ keyboardShortcuts ];
+      # enabledExtensions = with spicePkgs.extensions; [ keyboardShortcuts ];
       customColorScheme = let
         theme = config.lib.meta.theme.dark;
         dropHash = x: builtins.substring 1 10 x;
       in {
-        text = dropHash theme.special.foreground;
-        subtext = dropHash theme.colors.comment;
+        text = dropHash theme.colors.brightwhite;
+        subtext = dropHash theme.special.foreground;
         extratext = dropHash theme.colors.magenta;
         main = dropHash theme.special.background;
         sidebar = dropHash theme.colors.surface1;
@@ -33,4 +34,6 @@
         misc = dropHash theme.colors.green;
       };
     };
+  # Fallback to unspiced spotify
+  home.packages = lib.mkIf (!config.programs.spicetify.enable) [ pkgs.spotify ];
 }

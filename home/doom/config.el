@@ -33,9 +33,6 @@
 
 (use-package! gsettings)
 
-(defvar +snead/theme-night 'ewal-doom-vibrant)
-(defvar +snead/theme-day 'modus-operandi)
-
 (defun +snead/load-theme (timesym)
   (setq catppuccin-flavor (if (eq timesym 'night) 'macchiato 'latte))
   (catppuccin-reload))
@@ -50,7 +47,66 @@
            'macchiato
          'latte))
 
-(setq doom-theme 'catppuccin)
+(use-package! modus-themes
+  :after json
+  :init
+  (defvar +snead/light (json-read-file "~/.cache/colors/light.json"))
+  (defvar +snead/dark (json-read-file "~/.cache/colors/dark.json"))
+  (setq! modus-themes-italic-constructs t
+         modus-operandi-palette-overrides
+         `((bg-main ,(alist-get 'background +snead/light))
+           (bg-dim ,(alist-get 'surface1 +snead/light))
+           ;; Extra contrast by using pure black for text.
+           (fg-main ,(alist-get 'brightwhite +snead/light))
+           (fg-dim ,(alist-get 'comment +snead/light))
+           (fg-alt ,(alist-get 'foreground +snead/light))
+           (border ,(alist-get 'focus +snead/light))
+           (red ,(alist-get 'red +snead/light))
+           (red-intense ,(alist-get 'brightred +snead/light))
+           (green ,(alist-get 'green +snead/light))
+           (green-intense ,(alist-get 'brightgreen +snead/light))
+           (yellow ,(alist-get 'yellow +snead/light))
+           (yellow-intense ,(alist-get 'brightyellow +snead/light))
+           (blue ,(alist-get 'blue +snead/light))
+           (blue-cooler ,(alist-get 'blue +snead/light))
+           (blue-intense ,(alist-get 'brightblue +snead/light))
+           (magenta ,(alist-get 'magenta +snead/light))
+           (magenta-intense ,(alist-get 'brightmagenta +snead/light))
+           (cyan ,(alist-get 'cyan +snead/light))
+           (cyan-intense ,(alist-get 'brightcyan +snead/light))
+           (pink ,(alist-get 'magenta +snead/light)))
+         modus-vivendi-tinted-palette-overrides
+         `((bg-main ,(alist-get 'background +snead/dark))
+           (bg-dim ,(alist-get 'surface1 +snead/dark))
+           (fg-main ,(alist-get 'brightwhite +snead/dark))
+           (fg-dim ,(alist-get 'comment +snead/dark))
+           (fg-alt ,(alist-get 'foreground +snead/dark))
+           (border ,(alist-get 'focus +snead/dark))
+           (red ,(alist-get 'red +snead/dark))
+           (red-intense ,(alist-get 'brightred +snead/dark))
+           (green ,(alist-get 'green +snead/dark))
+           (green-cooler ,(alist-get 'brightgreen +snead/dark))
+           (green-intense ,(alist-get 'brightgreen +snead/dark))
+           (yellow ,(alist-get 'yellow +snead/dark))
+           (yellow-intense ,(alist-get 'brightyellow +snead/dark))
+           (blue ,(alist-get 'blue +snead/dark))
+           (blue-cooler ,(alist-get 'blue +snead/dark))
+           (blue-intense ,(alist-get 'brightblue +snead/dark))
+           (magenta ,(alist-get 'magenta +snead/dark))
+           (magenta-intense ,(alist-get 'brightmagenta +snead/dark))
+           (cyan ,(alist-get 'cyan +snead/dark))
+           (cyan-intense ,(alist-get 'brightcyan +snead/dark))
+           (pink ,(alist-get 'magenta +snead/dark))
+           (string yellow-intense)
+           (type green)
+           (builtin magenta)
+           (comment yellow))))
+
+(setq doom-theme (if (and (gsettings-available?)
+                          (string= "prefer-dark"
+                                   (gsettings-get "org.gnome.desktop.interface" "color-scheme")))
+                     'modus-vivendi-tinted
+                   'modus-operandi))
 
 (setq doom-gruvbox-brighter-comments nil
       doom-peacock-brighter-comments t
@@ -1454,3 +1510,6 @@ Position is calculated base on WIDTH and HEIGHT of childframe text window"
 (setq! mouse-wheel-scroll-amount '(1 ((shift) . hscroll))
        pixel-scroll-precision-interpolation-factor 1.5)
 ;; (pixel-scroll-precision-mode)
+
+(after! corfu
+  (setq-default corfu-auto-delay 0.15))

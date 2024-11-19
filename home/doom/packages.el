@@ -42,6 +42,7 @@
 ;; (package! flycheck-popup-tip :disable t)
 
 (package! casual)
+(package! modus-themes)
 
 ;; (package! valign
 ;;   :disable t

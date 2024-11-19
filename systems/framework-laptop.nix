@@ -307,7 +307,6 @@
     mate.atril # pdf viewer
     # mate.mate-tweak
     mate.mate-system-monitor
-    xfce.xfce4-power-manager
     xfce.xfburn
 
     # Try some file managers

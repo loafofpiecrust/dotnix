@@ -14,6 +14,8 @@ THEME_FILE=$([[ "$SET_THEME" = "dark" ]] && echo "$DARK_THEME" || echo "$LIGHT_T
 mkdir -p ~/.config/colors/templates
 mkdir -p ~/.cache/colors
 ln -sf "$THEME_FILE" ~/.cache/colors/colors.json
+ln -sf "$LIGHT_THEME" ~/.cache/colors/light.json
+ln -sf "$DARK_THEME" ~/.cache/colors/dark.json
 for TEMPLATE in ~/.config/colors/templates/*; do
     mustache "$THEME_FILE" "$TEMPLATE" >"$HOME/.cache/colors/$(basename "$TEMPLATE")"
 done
@@ -22,6 +24,9 @@ done
 # GTK light/dark
 GTK_PREFER_SCHEME=$([[ "$SET_THEME" = "dark" ]] && echo prefer-dark || echo prefer-light)
 gsettings set org.gnome.desktop.interface color-scheme "$GTK_PREFER_SCHEME"
+# TODO Ideally pass this GTK theme from the system config.
+GTK_NEW_THEME=$([[ "$SET_THEME" = "dark" ]] && echo Adwaita-dark || echo Arc)
+gsettings set org.gnome.desktop.interface gtk-theme "$GTK_NEW_THEME"
 # Terminals
 tee /dev/pts/[0-9]* <~/.cache/colors/sequences >/dev/null
 # Window manager: sway

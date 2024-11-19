@@ -128,9 +128,9 @@ in {
               status = "enable";
             })
             {
-              # criteria = "Acer Technologies XV272U 0x1210BFCC";
-              criteria = "DP-4";
+              criteria = "Acer Technologies XV272U 0x1210BFCC";
               position = "1410,0";
+              # mode = "2256x1440@143.999Hz";
             }
           ];
           exec = [ "${pkgs.systemd}/bin/systemctl --user restart swww" ];
@@ -147,6 +147,7 @@ in {
             {
               criteria = "Acer Technologies XV272U 0x1210BFCC";
               position = "1440,500";
+              # mode = "2256x1440@143.999Hz";
             }
             {
               criteria = "Dell Inc. DELL U2717D";
@@ -289,7 +290,7 @@ in {
         states.warning = 30;
         states.critical = 10;
         design-capacity = false;
-        full-at = 80;
+        # full-at = 90;
         format = "{icon}";
         format-charging = "{icon}";
         format-plugged = "{icon}";
@@ -362,6 +363,9 @@ in {
   # Link to the generated mako config.
   xdg.configFile."mako/config".source = config.lib.file.mkOutOfStoreSymlink
     "${config.home.homeDirectory}/.cache/colors/mako.conf";
+  xdg.configFile."gtk-4.0/gtk-light.css".source =
+    config.lib.file.mkOutOfStoreSymlink
+    "${config.home.homeDirectory}/.cache/colors/gtk4-light.css";
 
   # Enables power status notifications when using Sway.
   # services.poweralertd.enable = true;
@@ -378,6 +382,7 @@ in {
   };
   services.blueman-applet.enable = true;
 
+  # Automatically change screen color temperature throughout the day.
   services.gammastep = {
     enable = true;
     provider = "manual";
@@ -392,7 +397,7 @@ in {
   xdg.configFile."colors/templates".source =
     config.lib.meta.mkMutableSymlink ./templates;
 
-  # Start wallpaper daemon with sway.
+  # Start wallpaper daemon with sway or hyprland.
   systemd.user.services.swww = {
     Install.WantedBy = [ "graphical-session.target" ];
     Unit = {
@@ -453,9 +458,11 @@ in {
     enable = true;
     systemdTarget = "graphical-session.target";
     timeouts = [{
-      timeout = 240;
-      command = "${pkgs.sway}/bin/swaymsg output '*' power off";
-      resumeCommand = "${pkgs.sway}/bin/swaymsg output '*' power on";
+      timeout = 300;
+      command =
+        "${systemConfig.programs.sway.package}/bin/swaymsg output '*' power off";
+      resumeCommand =
+        "${systemConfig.programs.sway.package}/bin/swaymsg output '*' power on";
     }
     # {
     #   timeout = 360;
@@ -473,7 +480,7 @@ in {
     #   command = "${pkgs.systemd}/bin/systemctl --user restart kanshi";
     # }
       ];
-    extraArgs = [ "idlehint" "360" ];
+    extraArgs = [ "idlehint" "420" ];
   };
 
   systemd.user.services.keyd-application-mapper = {
@@ -487,13 +494,12 @@ in {
       };
     in "${script}/bin/keyd-application-mapper";
   };
-  xdg.configFile."keyd/app.conf".source = ../keyboard/apps.conf;
+  xdg.configFile."keyd/app.conf".source =
+    config.lib.meta.mkMutableSymlink ../keyboard/apps.conf;
 
   # Idle screen locker
   xdg.configFile."swaylock/config".source = config.lib.file.mkOutOfStoreSymlink
     "${config.home.homeDirectory}/.cache/colors/swaylock.config";
-  xdg.configFile."rofi-rbw.rc".source =
-    config.lib.meta.mkMutableSymlink ./rofi-rbw.rc;
   programs.swaylock = {
     enable = true;
     package = pkgs.swaylock-effects;
@@ -547,7 +553,7 @@ in {
   };
 
   programs.fuzzel = {
-    enable = true;
+    enable = false;
     package = pkgs.unstable.fuzzel;
     settings = {
       main = {
@@ -557,10 +563,7 @@ in {
     };
   };
 
-  home.file.".local/share/icons/system".source =
-    "${config.gtk.iconTheme.package}/share/icons/${config.gtk.iconTheme.name}";
-
-  # Automatically switch the power profile on plug and unplug iff I'm using PPD
+  # Automatically switch the power profile on plug and unplug if I'm using PPD
   systemd.user.services.auto-power-profile = {
     Install.WantedBy = [ "default.target" ];
     Service.ExecStart = let
@@ -580,4 +583,6 @@ in {
     config.lib.meta.mkMutableSymlink ./rofi-config.rasi;
   xdg.configFile."rofi/theme.rasi".source =
     config.lib.meta.mkMutableSymlink ./rofi-theme.rasi;
+  xdg.configFile."rofi-rbw.rc".source =
+    config.lib.meta.mkMutableSymlink ./rofi-rbw.rc;
 }
