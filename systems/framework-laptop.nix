@@ -2,7 +2,7 @@
 # it seems that disabling PS/2 mouse emulation in BIOS fixed the problem.
 { config, lib, pkgs, inputs, ... }: {
   imports = [
-    inputs.nixos-hardware.nixosModules.framework-11th-gen-intel
+    inputs.nixos-hardware.nixosModules.framework-13-7040-amd
     ../laptop.nix
     ../vpn.nix
     ../dev.nix
@@ -31,6 +31,7 @@
     # Use the latest LTS kernel because those keep getting patch updates for 2+ years.
     # Let's try the latest version...
     kernelPackages = pkgs.linuxKernel.packages.linux_6_11;
+    extraModulePackages = with config.boot.kernelPackages; [ ddcci-driver ];
     initrd.availableKernelModules = [
       "xhci_pci"
       "thunderbolt"
@@ -40,18 +41,20 @@
       "btusb"
       "btintel"
     ];
-    kernelModules = [ "kvm-intel" ];
+    kernelModules = [
+      "kvm-amd"
+      # Support updating external monitor brightness
+      "i2c-dev"
+      "ddcci"
+      "ddcci_backlight"
+    ];
     # blacklistedKernelModules = [ "i2c-designware-pci" ];
 
     # kernel options
     kernelParams = [
       "pcie_aspm.policy=powersave"
-      "i915.enable_fbc=1"
-      "nvme.noacpi=1" # Apparently good for battery life
-      "i915.enable_psr=1"
-      "i915.enable_guc=3"
-      "i915.disable_power_well=0"
-      "mem_sleep_default=deep"
+      # "nvme.noacpi=1" # Apparently good for battery life but BREAKS suspend on AMD.
+      # "mem_sleep_default=deep" # AMD only has s2idle
       "snd-hda-intel.power_save=1"
       "iwlwifi.power_save=1"
       "iwlmvm.power_scheme=3"
@@ -65,12 +68,9 @@
       "usbcore.autosuspend=10"
       # Ask the arch wiki
       ''acpi_osi="!Windows 2020"''
-      "irqaffinity=0,1"
+      # "irqaffinity=0,1"
     ];
-    kernel.sysctl = {
-      "kernel.nmi_watchdog" = 0;
-      "dev.i915.perf_stream_paranoid" = 0;
-    };
+    kernel.sysctl = { "kernel.nmi_watchdog" = 0; };
 
     # Make the font as large as possible.
     loader.systemd-boot.consoleMode = "max";
@@ -80,28 +80,6 @@
       options iwlwifi disable_11ax=Y
     '';
   };
-
-  # Recommended for battery life
-  services.tlp.settings = {
-    CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
-    # PLATFORM_PROFILE_ON_BAT = "low-power";
-    PCIE_ASPM_ON_BAT = "powersupersave";
-    # START_CHARGE_THRESH_BAT1 = 80;
-    # STOP_CHARGE_THRESH_BAT1 = 95;
-    # CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_performance";
-    # Disable auto-suspend on the Logitech unifying receiver
-    # USB_DENYLIST = "046d:c52b";
-    # Give a little more power while plugged in, because it's usually at my desk.
-    CPU_SCALING_GOVERNOR_ON_AC = "performance";
-    INTEL_GPU_MIN_FREQ_ON_AC = 300;
-    DISK_DEVICES = "nvme0n1";
-    DISK_IOSCHED = "mq-deadline";
-  };
-
-  hardware.graphics.extraPackages = with pkgs; [
-    intel-media-driver
-    intel-gpu-tools
-  ];
 
   # Do a monthly scrub of the btrfs volume.
   services.btrfs.autoScrub.enable = true;
@@ -132,6 +110,7 @@
   swapDevices = [{ device = "/dev/disk/by-partlabel/swap"; }];
 
   networking.interfaces.wlan0.useDHCP = true;
+  # networking.interfaces.wlan1.useDHCP = true;
   # This device is for wired tethering with my phone, but now halts my boot for
   # over a minute while it looks for my phone.
   # networking.interfaces.enp0s20f0u1.useDHCP = true;
@@ -156,10 +135,12 @@
       "libvirtd"
       "keyd"
       "plugdev"
+      "dialout"
       "input"
       "uinput"
       "cdrom"
       "vboxusers"
+      "i2c"
     ];
   in {
     snead = {
@@ -230,7 +211,7 @@
     dpi = 200;
     # Use LightDM instead of GDM because the latter is super fucking slow.
     # displayManager.lightdm.enable = lib.mkForce false;
-    videoDrivers = [ "intel" "modesetting" "fbdev" ]; # TODO: Pick gpu drivers
+    videoDrivers = [ "amdgpu" "modesetting" "fbdev" ]; # TODO: Pick gpu drivers
 
     desktopManager = {
       xterm.enable = false;
@@ -323,6 +304,7 @@
 
     beets
   ];
+  programs.fish.enable = false;
   # Let mate-panel find applets
   environment.sessionVariables."MATE_PANEL_APPLETS_DIR" =
     "${config.system.path}/share/mate-panel/applets";
@@ -361,15 +343,45 @@
   programs.partition-manager.enable = true;
 
   # Userspace workaround for high power usage by touchpad
-  systemd.services.touchpad-smp-affinity = {
-    wantedBy = [ "basic.target" ];
-    script =
-      "/bin/sh -c 'echo 2-2 > /proc/irq/$(grep designware.2 /proc/interrupts | cut -d \":\" -f1 | xargs)/smp_affinity_list'";
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = "yes";
-      ExecStop =
-        "/bin/sh -c 'echo \"0-$(nproc --all --ignore=1)\" > /proc/irq/$(grep designware.2 /proc/interrupts | cut -d \":\" -f1 | xargs)/smp_affinity_list'";
-    };
+  # systemd.services.touchpad-smp-affinity = {
+  #   wantedBy = [ "basic.target" ];
+  #   script =
+  #     "/bin/sh -c 'echo 2-2 > /proc/irq/$(grep designware.2 /proc/interrupts | cut -d \":\" -f1 | xargs)/smp_affinity_list'";
+  #   serviceConfig = {
+  #     Type = "oneshot";
+  #     RemainAfterExit = "yes";
+  #     ExecStop =
+  #       "/bin/sh -c 'echo \"0-$(nproc --all --ignore=1)\" > /proc/irq/$(grep designware.2 /proc/interrupts | cut -d \":\" -f1 | xargs)/smp_affinity_list'";
+  #   };
+  # };
+
+  services.udev.extraRules = ''
+    SUBSYSTEM=="i2c-dev", ACTION=="add",\
+        ATTR{name}=="AMDGPU*",\
+        TAG+="ddcci",\
+        TAG+="systemd",\
+        ENV{SYSTEMD_WANTS}+="ddcci@$kernel.service"
+  '';
+
+  systemd.services."ddcci@" = {
+    scriptArgs = "%i";
+    script = ''
+      echo Trying to attach ddcci to $1
+      i=0
+      id=$(echo $1 | cut -d "-" -f 2)
+      if ${pkgs.ddcutil}/bin/ddcutil getvcp 10 -b $id; then
+        echo ddcci 0x37 > /sys/bus/i2c/devices/$1/new_device
+      fi
+    '';
+    serviceConfig.Type = "oneshot";
   };
+
+  hardware.cpu.amd.updateMicrocode = true;
+
+  powerManagement.powertop.enable = false;
+
+  # This thing has an ambient light sensor?!
+  # hardware.sensor.iio.enable = true;
+
+  services.power-profiles-daemon.package = pkgs.unstable.power-profiles-daemon;
 }

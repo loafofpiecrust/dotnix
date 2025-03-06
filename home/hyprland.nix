@@ -3,7 +3,7 @@
   wayland.windowManager.hyprland = {
     enable = true;
     package = systemConfig.programs.hyprland.package;
-    systemd.enable = true;
+    # systemd.enable = true;
     extraConfig = let
       gsettings = {
         gtk-theme = config.gtk.theme.name;
@@ -17,8 +17,6 @@
           "exec = gsettings set org.gnome.desktop.interface ${key} '${value}'")
         gsettings);
     in ''
-      exec-once = ${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1
-      ${gsettingsString}
       source = ${config.lib.meta.mkMutableSymlink ./hyprland.conf}
     '';
   };

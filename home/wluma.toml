@@ -1,0 +1,12 @@
+[[output.backlight]]
+name = "eDP-1"
+path = "/sys/class/backlight/amdgpu_bl1"
+capturer = "wayland"
+
+[als.iio]
+path = "/sys/bus/iio/devices"
+thresholds = { 0 = "night", 20 = "dark", 80 = "dim", 250 = "normal", 500 = "bright", 800 = "outdoors" }
+
+[[keyboard]]
+name = "keyboard-framework"
+path = "/sys/bus/platform/devices/framework_laptop/leds/framework_laptop::kbd_backlight"

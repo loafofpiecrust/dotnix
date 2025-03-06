@@ -123,16 +123,23 @@
     playerctl
     pulseaudio
     calc
+    unison # file sync
   ];
 
-  # Allow OTA firmware updates from the testing channel.
+  # Don't allow OTA firmware updates from the testing channel.
+  # This was necessary for the framework 11th gen intel, but not for the AMD version.
   services.fwupd.enable = lib.mkDefault true;
-  environment.etc."fwupd/remotes.d/lvfs-testing.conf" = {
-    source = ./fwupd-lvfs-testing.conf;
-  };
+  # environment.etc."fwupd/remotes.d/lvfs-testing.conf" = {
+  #   source = ./fwupd-lvfs-testing.conf;
+  # };
   environment.etc."fwupd/uefi_capsule.conf".source =
     lib.mkForce ./fwupd-uefi-capsule.conf;
 
   # TODO Figure out what the hell package uses python 2.7 still.
   nixpkgs.config.permittedInsecurePackages = [ "python-2.7.18.6" ];
+
+  # Allow control of mediatek devices over USB (for SP Flash Tool / Jelly Star)
+  services.udev.extraRules = ''
+    ATTRS{idVendor}=="0e8d", ENV{ID_MM_DEVICE_IGNORE}="1"
+  '';
 }

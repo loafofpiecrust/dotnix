@@ -58,9 +58,11 @@ in {
     wl-clipboard
     hyprpicker
     generate-theme-files
-    swaylock-effects
+    config.programs.swaylock.package
     dotool
+    sway-audio-idle-inhibit
     zbar # scan QR codes
+    wluma
     # (pkgs.writeShellScriptBin "set-backlight" ''
     #   light $@
     #   LIGHT=$(light -G)
@@ -113,7 +115,9 @@ in {
         profile.name = "undocked";
         profile.outputs = [
           (laptop-screen // {
-            scale = 1.301038;
+            scale = 1.25;
+            # Tried out text scaling instead but it has limited support...
+            # scale = 1.0;
             status = "enable";
           })
         ];
@@ -179,8 +183,9 @@ in {
         # "custom/player"
         "tray"
         # "custom/wallpaper"
-        "custom/color-scheme"
+        "custom/audio-idle-inhibitor"
         "idle_inhibitor"
+        "custom/color-scheme"
         # "custom/vpn"
         "network"
         "cpu"
@@ -190,6 +195,18 @@ in {
         "battery"
         "clock"
       ];
+      "custom/audio-idle-inhibitor" = {
+        format = " {icon} ";
+        exec = "sway-audio-idle-inhibit --dry-print-both-waybar";
+        exec-if = "which sway-audio-idle-inhibit";
+        return-type = "json";
+        format-icons = {
+          output = "";
+          input = "";
+          output-input = " ";
+          none = "";
+        };
+      };
       "custom/power" = {
         format = "󰐥";
         on-click = "power-menu";
@@ -397,6 +414,26 @@ in {
   xdg.configFile."colors/templates".source =
     config.lib.meta.mkMutableSymlink ./templates;
 
+  xdg.configFile."wluma/config.toml".source =
+    config.lib.meta.mkMutableSymlink ./wluma.toml;
+
+  # systemd.user.services.wluma = {
+  #   Install.WantedBy = [ "graphical-session.target" ];
+  #   Unit = {
+  #     Description =
+  #       "Adjusting screen brightness based on screen contents and amount of ambient light";
+  #     PartOf = [ "graphical-session.target" ];
+  #     After = [ "graphical-session.target" ];
+  #   };
+  #   Service = {
+  #     ExecStart = "${pkgs.wluma}/bin/wluma";
+  #     Restart = "always";
+  #     EnvironmentFile = "-%E/wluma/service.conf";
+  #     PrivateNetwork = true;
+  #     PrivateMounts = false;
+  #   };
+  # };
+
   # Start wallpaper daemon with sway or hyprland.
   systemd.user.services.swww = {
     Install.WantedBy = [ "graphical-session.target" ];
@@ -502,7 +539,7 @@ in {
     "${config.home.homeDirectory}/.cache/colors/swaylock.config";
   programs.swaylock = {
     enable = true;
-    package = pkgs.swaylock-effects;
+    # package = pkgs.swaylock-effects;
     # settings = {
     #   # Use the current dynamic background.
     #   # image = "~/.wallpaper";
@@ -567,13 +604,14 @@ in {
   # Automatically switch the power profile on plug and unplug if I'm using PPD
   systemd.user.services.auto-power-profile = {
     Install.WantedBy = [ "default.target" ];
+    Service.Restart = "Always";
     Service.ExecStart = let
       script = pkgs.writeShellApplication {
         name = "auto-power-profile";
         text = builtins.readFile ./scripts/auto-power-profile.sh;
         runtimeInputs = with pkgs; [
           inotify-tools
-          power-profiles-daemon
+          unstable.power-profiles-daemon
           coreutils
         ];
       };

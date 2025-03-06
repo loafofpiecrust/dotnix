@@ -37,15 +37,17 @@
 
     pomodoro-gtk
     obsidian # note taking
+    # darktable # photo editing
   ];
 
-  programs.foot.server.enable = true;
-  systemd.user.services.foot = {
-    Service = {
-      Restart = lib.mkForce "always";
-      RestartSec = 2;
-    };
-  };
+  # Don't use the server because it'll keep programs running after I close their window!
+  # programs.foot.server.enable = true;
+  # systemd.user.services.foot = {
+  #   Service = {
+  #     Restart = lib.mkForce "always";
+  #     RestartSec = 2;
+  #   };
+  # };
 
   xdg.configFile."easyeffects/output/fw13-easy-effects.json".source =
     ../fw13-easy-effects.json;

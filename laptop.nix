@@ -16,7 +16,7 @@
   services.auto-cpufreq.enable = false;
   # Optimizes I/O on battery power.
   powerManagement.enable = true;
-  powerManagement.powertop.enable = false;
+  powerManagement.powertop.enable = lib.mkDefault false;
   # Enables screen dimming and session locking.
   services.upower.enable = true;
   services.upower.criticalPowerAction = "Hibernate";
@@ -31,18 +31,18 @@
 
   services.logind = {
     # killUserProcesses = true;
-    lidSwitch = "suspend-then-hibernate";
+    lidSwitch = "suspend";
     lidSwitchExternalPower = config.services.logind.lidSwitch;
-    powerKey = "hibernate";
+    powerKey = "poweroff";
     powerKeyLongPress = "poweroff";
     extraConfig = ''
-      IdleAction=suspend-then-hibernate
+      IdleAction=suspend
       IdleActionSec=600
     '';
   };
-  systemd.sleep.extraConfig = ''
-    HibernateDelaySec=1h
-  '';
+  # systemd.sleep.extraConfig = ''
+  #   HibernateDelaySec=1h
+  # '';
 
   # Don't wait for networking to come on to finish booting, because for laptops
   # with WiFi this is often >5s. Let it happen while I type in my password.

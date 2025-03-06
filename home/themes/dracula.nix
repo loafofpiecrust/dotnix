@@ -8,7 +8,7 @@ let
     (colorizer.lighten (colorizer.hexToOklch color) percent);
 in rec {
   dark = rec {
-    commands = { emacs = "(load-theme 'doom-dracula)"; };
+    commands = { emacs = "(load-theme 'modus-vivendi-tinted)"; };
     alpha = "100";
     # Theme-specific color names?
     # Pulled all the values from the Dracula spec: https://spec.draculatheme.com/
