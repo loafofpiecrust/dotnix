@@ -155,6 +155,8 @@
 
 (package! phscroll :recipe (:host github :repo "misohena/phscroll"))
 
+(package! obsidian :recipe (:host github :repo "licht1stein/obsidian.el"))
+
 ;;(package! daemons)
 
 ;; To install a package directly from a remote git repo, you must specify a

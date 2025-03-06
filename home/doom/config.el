@@ -53,6 +53,7 @@
   (defvar +snead/light (json-read-file "~/.cache/colors/light.json"))
   (defvar +snead/dark (json-read-file "~/.cache/colors/dark.json"))
   (setq! modus-themes-italic-constructs t
+         modus-themes-mixed-fonts t
          modus-operandi-palette-overrides
          `((bg-main ,(alist-get 'background +snead/light))
            (bg-dim ,(alist-get 'surface1 +snead/light))
@@ -116,6 +117,7 @@
       doom-dracula-brighter-comments nil)
 
 
+
 ;; Doom exposes five (optional) variables for controlling fonts in Doom. Here
 ;; are the three important ones:
 ;;
@@ -128,7 +130,7 @@
 (setq doom-font (if (eq system-type 'darwin)
                     (font-spec :family "Fira Code" :size 14)
                   (font-spec :family "Hack Nerd Font FC Ligatured CCG" :size 15))
-      doom-variable-pitch-font (font-spec :family "sans-serif" :size 15)
+      doom-variable-pitch-font (font-spec :family "sans" :size 18)
       doom-unicode-font doom-font
       ;; doom-unicode-font (font-spec :family "Symbola monospacified for Source Code Pro" :size 15)
       ;; These fonts were fucking up display of math symbols! Remove them!
@@ -245,17 +247,20 @@
        browse-url-browser-function #'browse-url-generic)
 
 (custom-set-faces!
-  '(org-document-title :weight extra-bold :height 1.5)
-  '(outline-1 :weight extra-bold :height 1.3)
-  '(outline-2 :weight bold :height 1.2)
-  '(outline-3 :weight bold :height 1.1)
-  '(outline-4 :weight semi-bold :height 1.08)
-  '(outline-5 :weight semi-bold :height 1.06)
-  '(outline-6 :weight semi-bold :height 1.03)
+  `(mixed-pitch-variable-pitch :family "sans" :height 1.2)
+  `(fringe :background ,nil)
+  `(olivetti-fringe :background ,nil)
+  '(org-document-title :weight extra-bold :height 1.7)
+  '(outline-1 :weight extra-bold :height 1.7)
+  '(outline-2 :weight bold :height 1.4)
+  '(outline-3 :weight bold :height 1.2)
+  '(outline-4 :weight semi-bold :height 1.1)
+  '(outline-5 :weight semi-bold :height 1.05)
+  '(outline-6 :weight semi-bold :height 1.0)
   '((outline-7 outline-8 outline-9) :weight semi-bold)
   ;; Style markdown headers the same way.
-  '(markdown-header-face-1 :inherit outline-1)
-  '(markdown-header-face-2 :inherit outline-2 :underline (:style line :color "grey"))
+  '(markdown-header-face-1 :inherit outline-1 :underline (:style line :color "grey"))
+  '(markdown-header-face-2 :inherit outline-2)
   '(markdown-header-face-3 :inherit outline-3)
   '(markdown-header-face-4 :inherit outline-4)
   '(markdown-header-face-5 :inherit outline-5)
@@ -271,6 +276,8 @@
   ;; Emacs 28 adds this new face with a different font for comments.
   ;; I want to retain the same font as normal code for now.
   `(fixed-pitch-serif :family ,nil)
+  `(org-block-background :family ,doom-font)
+  `(org-table :family ,doom-font)
   ;; Disable background color for highlighted parens
   ;; '(show-paren-match :background nil)
   ;; `(minibuffer-prompt :family ,nil)
@@ -522,8 +529,8 @@ Use `treemacs-select-window' command for old functionality."
   ;;   (appendq! company-box-doc-frame-parameters '((parent-frame . nil))))
   ;; TODO Fix this so we can indent instead of completing all the time!
   (map! :map company-active-map
-        "<tab>" 'company-complete-selection
-        "TAB" 'company-complete-selection
+        ;; "<tab>" 'company-complete-selection
+        ;; "TAB" 'company-complete-selection
         "RET" nil
         [return] nil))
 
@@ -694,7 +701,7 @@ are ineffectual otherwise."
        (mu4e-trash-folder . "/personal/Trash")
        (mu4e-refile-folder . "/personal/Archive")
        (mu4e-spam-folder . "/personal/Junk")
-       (user-mail-address . "taylor@snead.xyz")
+       (user-mail-address . "shelby@snead.xyz")
        (+mu4e-context-gmail . ,nil)
        (message-yank-prefix . "> ")
        (message-yank-cited-prefix . "> ")
@@ -830,30 +837,13 @@ are ineffectual otherwise."
 (add-hook! '(pdf-outline-buffer-mode-hook)
            #'disable-line-numbers)
 
-(use-package! mixed-pitch
-  :config
-  (map! :leader "tm" #'mixed-pitch-mode)
-  (add-hook! '(org-mode-hook markdown-mode-hook) #'mixed-pitch-mode)
-  (setq mixed-pitch-set-height t)
-  (delete 'org-indent mixed-pitch-fixed-pitch-faces)
-  (dolist (e '(org-date
-               org-special-keyword
-               org-drawer
-               font-lock-comment-face
-               markdown-markup-face))
-    (add-to-list 'mixed-pitch-fixed-pitch-faces e)))
-
 (use-package! olivetti
   :hook ((org-mode markdown-mode magit-status-mode forge-topic-mode gnus-article-mode-hook) . olivetti-mode)
   :bind (:map doom-leader-map
               ("tz" . olivetti-mode))
   :config
   (add-hook! '(olivetti-mode-hook org-mode-hook markdown-mode-hook) #'disable-line-numbers)
-  (defun mixed-pitch-set-text-scale ()
-    (text-scale-set (if mixed-pitch-mode 1 0)))
-  (add-hook! 'mixed-pitch-mode-hook #'mixed-pitch-set-text-scale)
-  (setq-default olivetti-body-width 100
-                olivetti--min-margins '(8 . 8)))
+  (setq-default olivetti-body-width 100))
 
 (setq-default ;;x-underline-at-descent-line t
  underline-minimum-offset 2)
@@ -943,7 +933,34 @@ are ineffectual otherwise."
 
 (after! markdown-mode
   (set-ligatures! 'markdown-mode
-    :src_block "```"))
+    :src_block "```")
+  (setq! markdown-header-scaling t
+         markdown-enable-wiki-links t)
+  (add-hook! 'markdown-mode-hook #'variable-pitch-mode)
+
+  ;; (add-hook! 'markdown-mode-hook #'prettify-symbols-mode)
+  ;; (setq-hook! 'markdown-mode-hook
+  ;;   prettify-symbols-alist
+  ;;   `(("# " . ,9673)
+  ;;     ("## " . ,9675)
+  ;;     ("### " . ,10040)
+  ;;     ("#### " . ,10047)))
+  )
+
+(use-package! obsidian
+  :after markdown-mode
+  :config
+  (setq! obsidian-directory "~/documents/notes/Personal"
+         obsidian-inbox-directory nil)
+  (global-obsidian-mode t)
+  (obsidian-backlinks-mode t)
+  (map! :map obsidian-mode-map
+        :n "gd" #'obsidian-follow-link-at-point
+        :n "gj" #'obsidian-jump
+        :n "gb" #'obsidian-backlink-jump
+        :n "gt" #'obsidian-find-tag
+        :n "gT" #'obsidian-insert-tag))
+
 
 ;; (after! web-mode
 ;;   (setq web-mode-prettify-symbols-alist nil))
@@ -1129,6 +1146,9 @@ are ineffectual otherwise."
             mu4e-compose-mode
             md-msg-edit-mode
             message-mode))
+
+(after! apheleia
+  (add-to-list 'apheleia-mode-alist '(markdown-mode . prettier-markdown)))
 
 (after! vterm
   (setq vterm-buffer-name-string "vterm %s"))
