@@ -21,10 +21,13 @@
   services.emacs = {
     enable = true;
     client.enable = true;
+    defaultEditor = true;
     package = config.programs.emacs.finalPackage;
     # socketActivation.enable = true;
   };
 
+  # The service option doesn't seem to be working.
+  home.sessionVariables = { EDITOR = lib.mkForce "emacsclient -r"; };
   # programs.doom-emacs = {
   #   enable = false;
   #   doomPrivateDir = ./doom;

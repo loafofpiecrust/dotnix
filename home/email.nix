@@ -38,6 +38,10 @@ in {
     settings = {
       "privacy.donottrackheader.enabled" = true;
       "mail.openMessageBehavior" = 1;
+      "mailnews.wraplength" = 80;
+      # Don't add hard line breaks to my emails please!
+      "mail.wrap_long_lines" = false;
+      "plain_text.wrap_long_lines" = false;
     };
   };
 
