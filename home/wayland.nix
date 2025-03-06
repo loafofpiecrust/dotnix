@@ -290,7 +290,7 @@ in {
         states.warning = 30;
         states.critical = 10;
         design-capacity = false;
-        # full-at = 90;
+        full-at = 95;
         format = "{icon}";
         format-charging = "{icon}";
         format-plugged = "{icon}";
@@ -544,6 +544,7 @@ in {
       main.pad = "6x6";
       main.workers = 4;
       colors.alpha = 0.8;
+      scrollback.lines = 3000;
       key-bindings = {
         scrollback-up-page = "Shift+Up";
         scrollback-down-page = "Shift+Down";

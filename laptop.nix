@@ -1,9 +1,6 @@
 { config, lib, pkgs, inputs, ... }: {
-  imports = [
-    ./desktop.nix
-    inputs.nixos-hardware.nixosModules.common-pc-laptop
-    inputs.nixos-hardware.nixosModules.common-pc-laptop-acpi_call
-  ];
+  imports =
+    [ ./desktop.nix inputs.nixos-hardware.nixosModules.common-pc-laptop ];
 
   # Auto-mount plugged in disks
   services.udisks2.enable = true;

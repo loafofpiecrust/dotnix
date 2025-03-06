@@ -6,7 +6,9 @@
     # working iwd support. Saves battery and more reliable.
     wireless.iwd.enable = lib.mkDefault true;
     # Cloudflare DNS!
-    nameservers = [ "1.1.1.1" "1.0.0.1" ];
+    # nameservers = [ "1.1.1.1" "1.0.0.1" ];
+    # AdGuard DNS!
+    nameservers = [ "94.140.14.14" "94.140.15.15" ];
 
     # Use better DNS resolution service, networkd + resolved.
     # useNetworkd = true;

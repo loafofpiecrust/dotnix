@@ -98,7 +98,7 @@
     DISK_IOSCHED = "mq-deadline";
   };
 
-  hardware.opengl.extraPackages = with pkgs; [
+  hardware.graphics.extraPackages = with pkgs; [
     intel-media-driver
     intel-gpu-tools
   ];
@@ -214,10 +214,10 @@
     enable = true;
     cageArgs = [ "-s" "-m" "last" ];
     settings = {
-      GTK.cursor_theme_name = "Bibata-Modern-Classic";
-      GTK.font_name = "sans 12";
-      GTK.theme_name = "Arc";
-      GTK.icon_theme_name = "Numix";
+      GTK.cursor_theme_name = lib.mkForce "Bibata-Modern-Classic";
+      GTK.font_name = lib.mkForce "sans 12";
+      GTK.theme_name = lib.mkForce "Arc";
+      GTK.icon_theme_name = lib.mkForce "Numix";
       background.path = config.lib.meta.dynamicBg "1";
       background.fit = "Cover";
     };
@@ -250,7 +250,7 @@
       export MOZ_ENABLE_WAYLAND=0
       export SDL_VIDEODRIVER=x11
       xrdb ~/.Xdefaults
-      ${pkgs.gnome3.gnome-settings-daemon}/libexec/gnome-settings-daemon &
+      ${pkgs.gnome-settings-daemon}/libexec/gnome-settings-daemon &
       EMACS_EXWM=t ${pkgs.dbus}/bin/dbus-launch --exit-with-session ${pkgs.emacsCustom}/bin/emacs -mm
     '';
   };
@@ -286,6 +286,7 @@
     to = 10512;
   }];
   networking.firewall.allowedUDPPorts = [ 123 1990 2021 ];
+  services.gvfs.enable = true;
 
   # Install some applications!
   environment.systemPackages = with pkgs; [
@@ -313,14 +314,14 @@
     # pcmanfm
     # spaceFM
     ranger-plus
-    cinnamon.nemo
+    nemo
     # gnome.nautilus
 
     libreoffice
     # virt-manager
     # pynitrokey
 
-    unstable.beets
+    beets
   ];
   # Let mate-panel find applets
   environment.sessionVariables."MATE_PANEL_APPLETS_DIR" =
@@ -346,9 +347,6 @@
   # seems to be power hungry even when it's down.
   services.tailscale = { enable = true; };
   systemd.services.tailscaled.enable = false;
-
-  # Let me rip and burn CDs on this laptop.
-  programs.k3b.enable = true;
 
   # Make slack a wayland app
   environment.sessionVariables.NIXOS_OZONE_WL = "1";

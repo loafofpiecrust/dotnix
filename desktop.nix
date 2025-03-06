@@ -60,9 +60,9 @@
   hardware.logitech.wireless.enable = true;
   hardware.logitech.wireless.enableGraphical = true;
 
-  services.thermald.enable = true;
+  # services.thermald.enable = true;
 
-  hardware.steam-hardware.enable = true;
+  # hardware.steam-hardware.enable = true;
 
   programs.java.enable = true;
   programs.dconf.enable = true;

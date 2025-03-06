@@ -13,12 +13,12 @@
   ];
   home.packages = with pkgs; [
     unstable.zoom-us
-    unstable.discord
+    discord
     # teams
     krita
     slack
     # deluge
-    transmission-gtk
+    transmission_4-gtk
     zotero
     calibre # ebook manager
     rclone

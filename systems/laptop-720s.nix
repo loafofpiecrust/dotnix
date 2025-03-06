@@ -194,7 +194,7 @@
       export MOZ_ENABLE_WAYLAND=0
       export SDL_VIDEODRIVER=x11
       xrdb ~/.Xdefaults
-      ${pkgs.gnome3.gnome-settings-daemon}/libexec/gnome-settings-daemon &
+      ${pkgs.gnome-settings-daemon}/libexec/gnome-settings-daemon &
       EMACS_EXWM=t ${pkgs.dbus}/bin/dbus-launch --exit-with-session ${pkgs.emacsCustom}/bin/emacs -mm
     '';
   };
@@ -231,7 +231,7 @@
     brightnessctl
 
     # apps
-    gnome3.gnome-settings-daemon
+    gnome-settings-daemon
     mate.atril # pdf viewer
     #xfce.parole # video player
     font-manager
@@ -249,7 +249,7 @@
     teams
 
     # music
-    unstable.spotify
+    spotify
     libreoffice
 
     # misc
@@ -299,7 +299,7 @@
   # nixpkgs.config.packageOverrides = pkgs: {
   # vaapiIntel = pkgs.vaapiIntel.override { enableHydridCodec = true; };
   # };
-  hardware.opengl = {
+  hardware.graphics = {
     enable = true;
     driSupport = true;
     extraPackages = with pkgs; [

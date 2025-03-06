@@ -1,7 +1,6 @@
 { config, lib, pkgs, inputs, ... }:
 
 {
-  imports = [ inputs.kmonad.nixosModules.default ];
   environment.systemPackages = with pkgs; [ keyd moused via vial ];
   services.udev.packages = with pkgs; [ via ];
   services.udev.extraRules = ''

@@ -62,9 +62,20 @@
     zstd # compression for emacs session files
     pinentry-emacs
     sqlite
+
+    git-repo # for android dev
   ];
 
-  fonts.packages = with pkgs; [ nerdfonts ];
+  fonts.packages = with pkgs.unstable.nerd-fonts; [
+    hack
+    overpass
+    ubuntu
+    ubuntu-mono
+    jetbrains-mono
+    fantasque-sans-mono
+    fira-code
+    hasklug
+  ];
 
   nixpkgs.overlays = [
     (self: super: {
@@ -74,6 +85,17 @@
         # withWebP = true;
         withNativeCompilation = true;
       };
+      beets = (super.beets.override {
+        # Must bump the version whenever config changes to actually apply the new
+        # build in the system config.
+        pluginOverrides = {
+          alternatives = {
+            enable = true;
+            # WARNING: MAKE SURE TO SPELL PROPAGATED CORRECTLY! THIS IS NOT TYPE-CHECKED!
+            propagatedBuildInputs = [ super.beetsPackages.alternatives ];
+          };
+        };
+      });
     })
   ];
 

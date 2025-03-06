@@ -13,6 +13,7 @@ import:
   languages: en
   incremental: yes
   incremental_skip_later: no
+  write: yes
 match:
   preferred:
     countries: ["US", "GB|UK", "JP"]
@@ -34,7 +35,7 @@ item_fields:
   # MF Doom is something special, with all of his alternate names
   subartist: albumartist_credit if not comp and albumartist.lower() != albumartist_credit.lower() else ''
   realyear: original_year if original_year != 0 and original_year < year else year
-plugins: the albumtypes rewrite inline alternatives fetchart convert fromfilename badfiles lastgenre replaygain info types zero
+plugins: the albumtypes rewrite inline alternatives fetchart convert fromfilename badfiles lastgenre replaygain info types zero unimported lyrics
 aunique:
   keys: albumartist album year albumtype
   disambiguators: albumdisambig media country label catalognum
@@ -71,7 +72,7 @@ fetchart:
   cautious: yes
   cover_names: cover front folder album art
   minwidth: 300
-  maxwidth: 1200
+  maxwidth: 2000
   enforce_ratio: 3%
   sources: filesystem coverart itunes
   high_resolution: yes
@@ -153,3 +154,9 @@ lastgenre:
 replaygain:
   backend: ffmpeg
   auto: yes
+unimported:
+  ignore_extensions: jpg png jpeg gif pdf JPG cue
+  ignore_subdirectories: Artwork Art Covers
+lyrics:
+  auto: yes
+  synced: yes

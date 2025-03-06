@@ -1,7 +1,7 @@
 clear-after=120
 typing-key-delay=4
 typer=dotool
-action=type
+action=copy
 target=password
 keybindings=Control+Return:type:username:tab:delay:password,Shift+Return::menu,Control+t:type:totp
 menu-keybindings=Control+c:copy

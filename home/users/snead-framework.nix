@@ -21,7 +21,6 @@
 
     # game dev
     godot_4
-    gdtoolkit
     # aseprite-unfree
 
     # custom keyboards
@@ -37,6 +36,7 @@
     fontforge-gtk
 
     pomodoro-gtk
+    obsidian # note taking
   ];
 
   programs.foot.server.enable = true;

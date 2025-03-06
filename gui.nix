@@ -4,16 +4,22 @@
   # imports = [ inputs.hyprland.nixosModules.default ];
   programs.hyprland = {
     enable = true;
-    package = inputs.hyprland.packages.${pkgs.system}.hyprland;
-    portalPackage =
-      inputs.hyprland.packages.${pkgs.system}.xdg-desktop-portal-hyprland;
+    # package = pkgs.unstable.hyprland;
+    # portalPackage = pkgs.unstable.xdg-desktop-portal-hyprland;
+    withUWSM = true;
+    # package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+    # portalPackage =
+    #   inputs.hyprland.packages.${pkgs.system}.xdg-desktop-portal-hyprland;
   };
+  programs.uwsm.enable = true;
   environment.systemPackages = with pkgs; [
-    gnome3.file-roller # provides all archive formats
+    file-roller # provides all archive formats
+    p7zip
     pavucontrol
     ffmpeg
     xdg-utils
     glib
+    ddcutil
 
     # desktop environment
     # gnome3.gtk
@@ -39,8 +45,9 @@
 
   fonts.enableDefaultPackages = true;
   fonts.packages = with pkgs; [
+    overpass
     noto-fonts
-    noto-fonts-cjk
+    noto-fonts-cjk-sans
     noto-fonts-emoji
     noto-fonts-extra
     google-fonts
@@ -83,12 +90,14 @@
         # "Material Design Icons"
       ];
       sansSerif = [
-        "Ubuntu Nerd Font"
+        "Overpass"
+        # "Overpass Nerd Font Propo"
         "Noto Sans"
         "FreeSans"
         # "Material Design Icons"
       ];
       serif = [ "Merriweather" "Liberation Serif" ];
+      emoji = [ "Noto Color Emoji" ];
     };
     # hinting.style = "slight";
     # hinting.enable = false;
@@ -274,7 +283,7 @@
   nixpkgs.config.chromium.proprietaryCodecs = true;
   nixpkgs.config.ungoogled-chromium.enableWideVine = true;
   nixpkgs.config.ungoogled-chromium.proprietaryCodecs = true;
-  hardware.opengl = {
+  hardware.graphics = {
     enable = true;
     # driSupport = true;
     extraPackages = with pkgs; [

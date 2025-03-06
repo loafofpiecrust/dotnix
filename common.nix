@@ -28,7 +28,7 @@
     # Import my local package definitions.
     (import ./pkgs)
     (import inputs.emacs-overlay)
-    inputs.nur.overlay
+    inputs.nur.overlays.default
     # Provide nixpkgs-unstable for just a few packages.
     (self: super: {
       unstable = import inputs.nixpkgs-unstable {

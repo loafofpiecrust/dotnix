@@ -47,7 +47,7 @@
   home.file."bin/light-notify".source = ./scripts/light-notify.sh;
   home.file."bin/power-menu".source = ./scripts/power-menu.sh;
 
-  home.packages = with pkgs; [ gparted gnome.simple-scan ];
+  home.packages = with pkgs; [ simple-scan ];
 
   # GPG agent handles locked files and SSH keys.
   services.gpg-agent = {
@@ -92,11 +92,11 @@
   # Manage my passwords with Bitwarden + rbw.
   programs.rbw = {
     enable = true;
-    package = pkgs.rbw;
+    package = pkgs.unstable.rbw;
     settings = {
-      email = "taylor@snead.xyz";
-      # Keep the vault open for 6 hours.
-      lock_timeout = 60 * 60 * 6;
+      email = "shelby@snead.xyz";
+      # Keep the vault open for 3 hours, making me login 2-3 times per day.
+      lock_timeout = 60 * 60 * 3;
       pinentry = pkgs.pinentry-gnome3;
     };
   };
@@ -143,7 +143,7 @@
   programs.git = {
     enable = true;
     userName = "loafofpiecrust";
-    userEmail = "taylor@snead.xyz";
+    userEmail = "shelby@snead.xyz";
     delta.enable = true;
     lfs.enable = true;
     # signing = {
@@ -156,6 +156,11 @@
       core.editor = "emacsclient";
       core.askPass = "";
       github.user = "loafofpiecrust";
+      # easy sign commits with ssh key
+      gpg.format = "ssh";
+      user.signingkey = "~/.ssh/id_ed25519.pub";
+      gpg.ssh.allowedSignersFile = "~/.ssh/allowed_signers";
+      commit.gpgsign = true;
     };
   };
 }
