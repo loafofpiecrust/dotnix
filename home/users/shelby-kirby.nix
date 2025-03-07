@@ -1,6 +1,6 @@
 { config, lib, pkgs, ... }: {
-  imports = [ ../common.nix ../firefox.nix ];
-  home.packages = with pkgs; [ transgui rclone ];
+  imports = [ ../common.nix ];
+  home.packages = with pkgs; [ transgui rclone librewolf ];
 
   programs.alacritty = {
     enable = true;

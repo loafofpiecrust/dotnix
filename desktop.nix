@@ -6,7 +6,6 @@
     ./gui.nix
     ./wifi.nix
     ./bluetooth.nix
-    ./keyboard.nix
     inputs.nixos-hardware.nixosModules.common-pc
     # All of my desktop systems use SSD
     inputs.nixos-hardware.nixosModules.common-pc-ssd
@@ -52,13 +51,6 @@
       to = 61000;
     }];
   };
-
-  # Scanning
-  hardware.sane.enable = true;
-  hardware.sane.extraBackends = [ pkgs.hplip ];
-
-  hardware.logitech.wireless.enable = true;
-  hardware.logitech.wireless.enableGraphical = true;
 
   # services.thermald.enable = true;
 

@@ -47,8 +47,6 @@
   home.file."bin/light-notify".source = ./scripts/light-notify.sh;
   home.file."bin/power-menu".source = ./scripts/power-menu.sh;
 
-  home.packages = with pkgs; [ simple-scan ];
-
   # GPG agent handles locked files and SSH keys.
   services.gpg-agent = {
     enable = true;

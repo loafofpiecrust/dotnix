@@ -50,4 +50,12 @@
 
   # Allow loading a color profile for my specific monitor.
   services.colord.enable = true;
+
+  hardware.logitech.wireless.enable = true;
+  hardware.logitech.wireless.enableGraphical = true;
+
+  # Allow control of mediatek devices over USB (for SP Flash Tool / Jelly Star)
+  services.udev.extraRules = ''
+    ATTRS{idVendor}=="0e8d", ENV{ID_MM_DEVICE_IGNORE}="1"
+  '';
 }

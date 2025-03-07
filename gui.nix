@@ -2,16 +2,16 @@
 
 {
   # imports = [ inputs.hyprland.nixosModules.default ];
-  programs.hyprland = {
-    enable = true;
-    # package = pkgs.unstable.hyprland;
-    # portalPackage = pkgs.unstable.xdg-desktop-portal-hyprland;
-    withUWSM = true;
-    # package = inputs.hyprland.packages.${pkgs.system}.hyprland;
-    # portalPackage =
-    #   inputs.hyprland.packages.${pkgs.system}.xdg-desktop-portal-hyprland;
-  };
-  programs.uwsm.enable = true;
+  # programs.hyprland = {
+  #   enable = false;
+  #   # package = pkgs.unstable.hyprland;
+  #   # portalPackage = pkgs.unstable.xdg-desktop-portal-hyprland;
+  #   withUWSM = true;
+  #   # package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+  #   # portalPackage =
+  #   #   inputs.hyprland.packages.${pkgs.system}.xdg-desktop-portal-hyprland;
+  # };
+  # programs.uwsm.enable = false;
   environment.systemPackages = with pkgs; [
     file-roller # provides all archive formats
     p7zip
@@ -54,8 +54,8 @@
     merriweather
     liberation_ttf
     ubuntu_font_family
-    migu
-    dejavu_fonts
+    # migu
+    # dejavu_fonts
 
     # Multilingual and IPA fonts
     charis-sil
@@ -105,7 +105,6 @@
 
   nixpkgs.overlays = [
     (self: super: {
-      pywal = super.unstable.pywal16;
       # Latest has some fixes I need!! In particular, a fix for OrcaSlicer dropdowns.
       # hyprland = super.unstable.hyprland;
       # Add extra dependencies for ranger to have improved file previews.
@@ -145,33 +144,33 @@
       #   proprietaryCodecs = true;
       # };
 
-      swhkd = pkgs.rustPlatform.buildRustPackage rec {
-        pname = "swhkd";
-        version = "1.3.0";
-        src = pkgs.fetchFromGitHub {
-          owner = "waycrate";
-          repo = pname;
-          rev = "3b19fc33b32efde88311579152a1078a8004397c";
-          sha256 = "245Y3UicW33hrQ6Mtf07I9vsWSpuijIEoEhxIKtjVQE=";
-        };
-        cargoLock = { lockFile = "${src}/Cargo.lock"; };
-        nativeBuildInputs = with pkgs; [ pkg-config makeWrapper ];
-        buildInputs = with pkgs; [ gnumake polkit ];
-        postInstall = ''
-          mkdir -p $out/share/polkit-1/actions
-          ./scripts/build-polkit-policy.sh --policy-path=com.github.swhkd.pkexec.policy --swhkd-path=$out/bin/swhkd
-          install -Dm 644 ./com.github.swhkd.pkexec.policy -t $out/share/polkit-1/actions
-        '';
-        postFixup = ''
-          wrapProgram $out/bin/swhkd --prefix PATH : ${
-            lib.makeBinPath [ pkgs.polkit ]
-          }
-          wrapProgram $out/bin/swhks --prefix PATH : ${
-            lib.makeBinPath [ pkgs.polkit ]
-          }
-        '';
-        doCheck = false;
-      };
+      # swhkd = pkgs.rustPlatform.buildRustPackage rec {
+      #   pname = "swhkd";
+      #   version = "1.3.0";
+      #   src = pkgs.fetchFromGitHub {
+      #     owner = "waycrate";
+      #     repo = pname;
+      #     rev = "3b19fc33b32efde88311579152a1078a8004397c";
+      #     sha256 = "245Y3UicW33hrQ6Mtf07I9vsWSpuijIEoEhxIKtjVQE=";
+      #   };
+      #   cargoLock = { lockFile = "${src}/Cargo.lock"; };
+      #   nativeBuildInputs = with pkgs; [ pkg-config makeWrapper ];
+      #   buildInputs = with pkgs; [ gnumake polkit ];
+      #   postInstall = ''
+      #     mkdir -p $out/share/polkit-1/actions
+      #     ./scripts/build-polkit-policy.sh --policy-path=com.github.swhkd.pkexec.policy --swhkd-path=$out/bin/swhkd
+      #     install -Dm 644 ./com.github.swhkd.pkexec.policy -t $out/share/polkit-1/actions
+      #   '';
+      #   postFixup = ''
+      #     wrapProgram $out/bin/swhkd --prefix PATH : ${
+      #       lib.makeBinPath [ pkgs.polkit ]
+      #     }
+      #     wrapProgram $out/bin/swhks --prefix PATH : ${
+      #       lib.makeBinPath [ pkgs.polkit ]
+      #     }
+      #   '';
+      #   doCheck = false;
+      # };
     })
   ];
 
@@ -279,10 +278,14 @@
   nixpkgs.config.packageOverrides = pkgs: {
     vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
   };
-  nixpkgs.config.chromium.enableWideVine = true;
-  nixpkgs.config.chromium.proprietaryCodecs = true;
-  nixpkgs.config.ungoogled-chromium.enableWideVine = true;
-  nixpkgs.config.ungoogled-chromium.proprietaryCodecs = true;
+  nixpkgs.config.chromium.enableWideVine =
+    lib.mkIf config.programs.chromium.enable;
+  nixpkgs.config.chromium.proprietaryCodecs =
+    lib.mkIf config.programs.chromium.enable;
+  nixpkgs.config.ungoogled-chromium.enableWideVine =
+    lib.mkIf config.programs.chromium.enable;
+  nixpkgs.config.ungoogled-chromium.proprietaryCodecs =
+    lib.mkIf config.programs.chromium.enable;
   hardware.graphics = {
     enable = true;
     # driSupport = true;

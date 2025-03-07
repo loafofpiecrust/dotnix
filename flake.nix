@@ -52,111 +52,30 @@
       url = "github:Gerg-L/spicetify-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nixpkgs-beets = {
-      url = "github:nixos/nixpkgs/88195a94f390381c6afcdaa933c2f6ff93959cb4";
+    # Jovian relies on the latest unstable version of NixOS. I don't love this
+    # but it means Kirby relies on that too, unless I backtrack to an old
+    # version of steam.
+    jovian = {
+      url = "github:Jovian-Experiments/Jovian-NixOS";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
   };
 
-  outputs = { self, nixpkgs, darwin, emacs-overlay, nixpkgs-unstable
-    , nixpkgs-beets, nur, ... }@inputs:
+  outputs =
+    { self, nixpkgs, darwin, emacs-overlay, nixpkgs-unstable, nur, ... }@inputs:
     let
       specialArgs = { inherit inputs; };
-      sharedModule = host: {
+      sharedModule = host: nixpkgs: {
         nix.registry = {
-          nixpkgs.flake = nixpkgs;
+          # nixpkgs.flake = inputs.nixpkgs;
           nixos-hardware.flake = inputs.nixos-hardware;
           nixpkgs-unstable.flake = inputs.nixpkgs-unstable;
-          # nixpkgs-old.flake = inputs.nixpkgs-old;
           nur.flake = inputs.nur;
         };
         nixpkgs.overlays = [
-          # Import my local package definitions.
-          (import ./pkgs)
           (import emacs-overlay)
           # Provide nixpkgs-unstable for just a few packages.
           (self: super: {
-            custom-beets = import nixpkgs-beets {
-              system = super.system;
-              config = super.config;
-              overlays = [
-                # (self: super: {
-                #   beets = with super;
-                #     beets-unstable.override {
-                #       version = "2.0.0-240807";
-                #       # extraNativeBuildInputs = [ self.unstable.python3Packages.setuptools ];
-                #       pluginOverrides = {
-                #         copyartifacts = {
-                #           enable = true;
-                #           propogatedBuildInputs =
-                #             [ beetsPackages.copyartifacts ];
-                #         };
-                #         # extrafiles = {
-                #         #   enable = true;
-                #         #   propagatedBuildInputs = [ self.unstable.beetsPackages.extrafiles ];
-                #         # };
-                #         alternatives = {
-                #           enable = true;
-                #           propagatedBuildInputs = [
-                #             (python3Packages.buildPythonApplication rec {
-                #               pname = "beets-alternatives";
-                #               version = "unstable-2024-08-07";
-                #               format = "pyproject";
-
-                #               # Use the branch that fixes FAT32 usage
-                #               src = fetchFromGitHub {
-                #                 repo = "beets-alternatives";
-                #                 owner = "loafofpiecrust";
-                #                 rev =
-                #                   "f6260da3081ecec1bd4f13acbdf45a20c1e863ea";
-                #                 sha256 =
-                #                   "sha256-OyMefC+Qua5rn5jZWk8Zt07vMcnlhfqoLUrgxNfqorg=";
-                #               };
-
-                #               postPatch = ''
-                #                 substituteInPlace pyproject.toml \
-                #                   --replace 'addopts = "--cov --cov-report=term --cov-report=html"' ""
-                #               '';
-                #               preCheck = ''
-                #                 export HOME=$(mktemp -d)
-                #               '';
-
-                #               nativeBuildInputs = [ beets-unstable poetry ]
-                #                 ++ (with python3Packages; [
-                #                   poetry-core
-                #                   typeguard
-                #                 ]);
-
-                #               nativeCheckInputs = with python3Packages; [
-                #                 pytestCheckHook
-                #                 mock
-                #                 typeguard
-                #                 poetry-core
-                #               ];
-                #             })
-                #           ];
-                #         };
-                #         # I have to manually enable some new plugins
-                #         limit = {
-                #           enable = true;
-                #           builtin = true;
-                #         };
-                #         substitute = {
-                #           enable = true;
-                #           builtin = true;
-                #         };
-                #         autobpm = {
-                #           enable = true;
-                #           builtin = true;
-                #         };
-                #         advancedrewrite = {
-                #           enable = true;
-                #           builtin = true;
-                #         };
-                #       };
-                #     };
-                # })
-              ];
-            };
             unstable = import nixpkgs-unstable {
               # required to inherit from top-level nixpkgs.
               system = super.system;
@@ -172,16 +91,17 @@
         ];
         networking.hostName = host;
       };
-      mkSystem = fn: system: host: path: {
+      mkSystem = fn: nixpkgs: system: host: path: {
         "${host}" = fn {
           inherit system specialArgs;
           # inherit (nixpkgs) lib;
-          modules = [ (sharedModule host) path ];
+          modules = [ (sharedModule host nixpkgs) path ];
         };
       };
-      mkLinux = mkSystem nixpkgs.lib.nixosSystem;
-      mkUnstableLinux = mkSystem nixpkgs-unstable.lib.nixosSystem;
-      mkDarwin = mkSystem darwin.lib.darwinSystem;
+      mkLinux = mkSystem nixpkgs.lib.nixosSystem nixpkgs;
+      mkUnstableLinux =
+        mkSystem nixpkgs-unstable.lib.nixosSystem nixpkgs-unstable;
+      mkDarwin = mkSystem darwin.lib.darwinSystem nixpkgs;
     in rec {
       # When you first setup a new machine, the hostname won't match yet.
       # $ darwin-rebuild switch --flake .#darwinConfigurations.careerbot13.system
@@ -192,7 +112,7 @@
 
       nixosConfigurations = (mkLinux "x86_64-linux" "portable-spudger"
         ./systems/framework-laptop.nix)
-        // (mkLinux "x86_64-linux" "kirby" ./systems/kirby.nix);
+        // (mkUnstableLinux "x86_64-linux" "kirby" ./systems/kirby.nix);
 
     };
 }

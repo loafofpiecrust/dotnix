@@ -54,26 +54,17 @@
   # services.openssh.enable = true;
   # Remember ssh passwords for a few hours.
 
-  # Allow easy discovery of network devices (like printers).
-  services = {
-    avahi.enable = true;
-    avahi.nssmdns4 = true;
-    avahi.openFirewall = true;
-    printing.enable = lib.mkDefault true;
-    printing.drivers = with pkgs; [ hplip gutenprint ];
-  };
-
   # Add ~/bin to PATH for all users.
   environment.homeBinInPath = true;
 
   programs = {
     # Use fish for my shell.
-    fish.enable = lib.mkDefault true;
+    fish.enable = lib.mkDefault false;
     # seahorse.enable = true; # GUI to manage keyring passwords.
   };
 
   programs.zsh = {
-    enable = lib.mkDefault false;
+    enable = lib.mkDefault true;
     # Leave pretty much everything up to home-manager.
     # Enable completion here to get bash completions and ensure it's kosher with
     # installed packages.
@@ -110,7 +101,6 @@
     # xfce.gvfs
     gnupg
     ncdu # disk usage analyzer
-    parted
     tree
     killall
     jmtpfs
@@ -121,9 +111,8 @@
 
     # user tools
     playerctl
-    pulseaudio
     calc
-    unison # file sync
+    # unison # file sync
   ];
 
   # Don't allow OTA firmware updates from the testing channel.
@@ -137,9 +126,4 @@
 
   # TODO Figure out what the hell package uses python 2.7 still.
   nixpkgs.config.permittedInsecurePackages = [ "python-2.7.18.6" ];
-
-  # Allow control of mediatek devices over USB (for SP Flash Tool / Jelly Star)
-  services.udev.extraRules = ''
-    ATTRS{idVendor}=="0e8d", ENV{ID_MM_DEVICE_IGNORE}="1"
-  '';
 }
