@@ -1,6 +1,6 @@
 { config, lib, pkgs, ... }: {
   imports = [ ../common.nix ];
-  home.packages = with pkgs; [ transgui rclone librewolf ];
+  home.packages = with pkgs; [ transgui rclone librewolf-bin ];
 
   programs.alacritty = {
     enable = true;
