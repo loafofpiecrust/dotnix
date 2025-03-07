@@ -1,8 +1,8 @@
 { config, lib, pkgs, ... }: {
   # GUI control center for bluetooth, if enabled.
-  services.blueman.enable = true;
+  services.blueman.enable = lib.mkDefault true;
 
-  hardware.bluetooth.disabledPlugins = [ "sap" ];
+  # hardware.bluetooth.disabledPlugins = [ "sap" ];
 
   # systemd.services.bluetooth.serviceConfig = {
   #   ConfigurationDirectoryMode = "0755";

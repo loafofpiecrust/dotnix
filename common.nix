@@ -25,8 +25,6 @@
 
   nixpkgs.overlays = [
     (self: super: { ripgrep = super.ripgrep.override { withPCRE2 = true; }; })
-    # Import my local package definitions.
-    (import ./pkgs)
     (import inputs.emacs-overlay)
     inputs.nur.overlays.default
     # Provide nixpkgs-unstable for just a few packages.
@@ -37,12 +35,6 @@
         config.allowUnfree = true;
         overlays = [ (import inputs.emacs-overlay) ];
       };
-      fwupd = super.fwupd.overrideAttrs (old: {
-        passthru.defaultDisabledPlugins = [ ];
-        passthru.filesInstalledToEtc =
-          lib.remove "fwupd/remotes.d/lvfs-testing.conf"
-          old.passthru.filesInstalledToEtc;
-      });
     })
   ];
 

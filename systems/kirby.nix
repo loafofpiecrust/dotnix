@@ -40,7 +40,7 @@
   powerManagement.powertop.enable = false;
 
   hardware.bluetooth.enable = true;
-  # services.blueman.enable = true;
+  services.blueman.enable = false;
   # Steam network management requires network-manager, so I'm fine with using
   # that on this system instead of IWD.
   networking.wireless.iwd.enable = false;
