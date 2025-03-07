@@ -4,8 +4,10 @@
   imports = [
     inputs.nixos-hardware.nixosModules.framework-13-7040-amd
     ../laptop.nix
+    ../keyboard.nix
     ../vpn.nix
     ../dev.nix
+    ../printing.nix
     # ../erasure.nix
   ];
 
