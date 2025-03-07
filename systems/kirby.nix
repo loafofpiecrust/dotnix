@@ -295,6 +295,11 @@
       mountPoint = "/media/hdd";
       hostPath = "/media/hdd";
     };
+    bindMounts.pool = {
+      isReadOnly = false;
+      mountPoint = "/media/pool";
+      hostPath = "/media/pool";
+    };
     forwardPorts = [
       {
         protocol = "tcp";
@@ -326,7 +331,7 @@
         # Allow transmission to more easily write to my bound home directory.
         # This is okay because we're already inside a container, isolating us
         # from the host system.
-        BindPaths = [ "/home/shelby" "/media/hdd" ];
+        BindPaths = [ "/home/shelby" "/media/hdd" "/media/pool" ];
         PrivateMounts = lib.mkForce false;
         PrivateUsers = lib.mkForce false;
         ProtectHome = lib.mkForce false;
