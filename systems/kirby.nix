@@ -30,10 +30,10 @@
   hardware.bluetooth.settings.Policy.AutoEnable = "true";
   # hardware.bluetooth.settings.General.ClassicBondedOnly = "false";
 
-  # Make Steam use the full size of my 1440p monitor.
+  # Make Steam use the full size of my 4K TV.
   environment.variables = {
-    GAMESCOPE_WIDTH = "2560";
-    GAMESCOPE_HEIGHT = "1440";
+    GAMESCOPE_WIDTH = "3840";
+    GAMESCOPE_HEIGHT = "2160";
   };
 
   # TODO Let powertop automatically reduce power consumption since I'm using this like a server.
