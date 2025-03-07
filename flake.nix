@@ -3,6 +3,9 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
     nixpkgs-bitwig.url = "github:nixos/nixpkgs/nixos-23.11";
     # nixpkgs-old.url = "github:nixos/nixpkgs/nixos-23.05";
+    # Make sure the commit used here matches the one from jovian-nixos to ensure
+    # a good build for Kirby, and avoiding using a too-new commit that has no
+    # cached derivations yet.
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-wayland = {
       url = "github:nix-community/nixpkgs-wayland";
