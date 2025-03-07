@@ -48,7 +48,7 @@
     overpass
     noto-fonts
     noto-fonts-cjk-sans
-    noto-fonts-emoji
+    # noto-fonts-emoji
     noto-fonts-extra
     google-fonts
     merriweather
@@ -97,7 +97,7 @@
         # "Material Design Icons"
       ];
       serif = [ "Merriweather" "Liberation Serif" ];
-      emoji = [ "Noto Color Emoji" ];
+      # emoji = [ "Noto Color Emoji" ];
     };
     # hinting.style = "slight";
     # hinting.enable = false;
@@ -278,14 +278,10 @@
   nixpkgs.config.packageOverrides = pkgs: {
     vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
   };
-  nixpkgs.config.chromium.enableWideVine =
-    lib.mkIf config.programs.chromium.enable;
-  nixpkgs.config.chromium.proprietaryCodecs =
-    lib.mkIf config.programs.chromium.enable;
-  nixpkgs.config.ungoogled-chromium.enableWideVine =
-    lib.mkIf config.programs.chromium.enable;
-  nixpkgs.config.ungoogled-chromium.proprietaryCodecs =
-    lib.mkIf config.programs.chromium.enable;
+  nixpkgs.config.chromium.enableWideVine = true;
+  nixpkgs.config.chromium.proprietaryCodecs = true;
+  nixpkgs.config.ungoogled-chromium.enableWideVine = true;
+  nixpkgs.config.ungoogled-chromium.proprietaryCodecs = true;
   hardware.graphics = {
     enable = true;
     # driSupport = true;
