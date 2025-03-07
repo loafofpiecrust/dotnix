@@ -20,7 +20,7 @@
   jovian.steam.enable = true;
   jovian.steam.autoStart = true;
   jovian.hardware.has.amd.gpu = true;
-  jovian.steam.desktopSession = "gnome";
+  jovian.steam.desktopSession = "mate";
   jovian.steam.user = "shelby";
   jovian.steamos.useSteamOSConfig = true;
   # jovian.steamos.enableBluetoothConfig = false;
@@ -198,7 +198,7 @@
     "/media/hdd" = {
       device = hdd;
       fsType = "btrfs";
-      options = [ "compress=zstd" "noatime" ];
+      options = [ "compress=zstd" "noatime" "nofail" ];
     };
     "/media/rear-nvme" = {
       device = rear-nvme;
@@ -208,7 +208,7 @@
     "/media/sata-ssd" = {
       device = sata-ssd;
       fsType = "ntfs";
-      options = [ "noatime" ];
+      options = [ "noatime" "nofail" ];
     };
 
     "/boot/efi" = {
@@ -216,12 +216,11 @@
       fsType = "vfat";
     };
 
-    # "/media/nas" = {
-    #   fsType = "zfs";
-    #   device = "nas"; # check name from zpool status
-    #   # options = [ "noatime" "zfsutil" ];
-    # };
-
+    "/media/pool" = {
+      fsType = "zfs";
+      device = "nas"; # check name from zpool status
+      options = [ "nofail" ];
+    };
   };
   swapDevices = [{ device = "/dev/disk/by-label/swap"; }];
 
@@ -256,7 +255,7 @@
     displayManager.gdm.enable = false;
     displayManager.gdm.wayland = true;
     displayManager.defaultSession = "gamescope-wayland";
-    desktopManager.gnome.enable = true;
+    desktopManager.mate.enable = true;
     desktopManager.kodi.enable = false;
     desktopManager.kodi.package = pkgs.kodi;
     layout = "us";
@@ -361,7 +360,7 @@
           watch-dir = "/home/shelby/torrents";
           incomplete-dir-enabled = false;
           trash-original-torrent-files = true;
-          preallocation = 2;
+          preallocation = 0;
           download-queue-size = 6;
           speed-limit-down-enabled = true;
           speed-limit-down = 4096;
