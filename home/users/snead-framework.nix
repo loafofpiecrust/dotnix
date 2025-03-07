@@ -49,10 +49,12 @@
   #   };
   # };
 
+  # No longer necessary with AMD board, they tweaked the speaker config!
+  # It now amplifies loud enough and with better EQ.
   xdg.configFile."easyeffects/output/fw13-easy-effects.json".source =
     ../fw13-easy-effects.json;
   services.easyeffects = {
-    enable = true;
+    enable = false;
     # preset = "fw13-easy-effects";
   };
 }
