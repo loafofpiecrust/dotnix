@@ -121,6 +121,31 @@
     };
   };
 
+  systemd.user.services.mount-nas = {
+    Unit = {
+      After = [ "network-online.target" ];
+      Wants = [ "network-online.target" ];
+      Description = "NAS mounted as encrypted drive";
+    };
+    Install.WantedBy = [ "multi-user.target" ];
+    Service = let
+      home = config.home.homeDirectory;
+      mountDir = "${home}/nas";
+    in {
+      Type = "notify";
+      ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p ${mountDir}";
+      ExecStart =
+        "${pkgs.rclone}/bin/rclone mount --config=${home}/.config/rclone/rclone.conf --vfs-cache-mode writes --vfs-read-chunk-streams 8 --vfs-read-chunk-size 64M --buffer-size 32M --vfs-cache-max-size 5G --transfers 8 nas-secret: ${mountDir}";
+      ExecStop = "/run/wrappers/bin/fusermount -u ${mountDir}";
+      Environment = [
+        "PATH=/run/wrappers/bin/:$PATH"
+        "SSH_AUTH_SOCK=/run/user/1000/gnupg/S.gpg-agent.ssh"
+      ];
+      # Restart = "always";
+      # RestartSec = "60";
+    };
+  };
+
   # Sync notes folder every 30m and when local changes are made, debounced to
   # sync every 2m at most.
   systemd.user.services.sync-notes = {

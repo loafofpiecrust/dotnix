@@ -1,6 +1,6 @@
 # Specific to snead user, only on framework laptop
 { config, lib, pkgs, ... }: {
-  imports = [ ./snead.nix ../midi.nix ];
+  imports = [ ./snead.nix ../midi.nix ../music.nix ];
 
   xdg.mime.enable = true;
   xdg.mimeApps.enable = false;
@@ -38,6 +38,7 @@
     pomodoro-gtk
     obsidian # note taking
     # darktable # photo editing
+    unison
   ];
 
   # Don't use the server because it'll keep programs running after I close their window!
