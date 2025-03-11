@@ -424,6 +424,7 @@
       PasswordAuthentication = false;
       KbdInteractiveAuthentication = false;
       PermitRootLogin = "no";
+      UseDns = true;
     };
   };
 
