@@ -178,6 +178,17 @@
   # Do a monthly scrub of the btrfs volume.
   services.btrfs.autoScrub.enable = true;
   services.btrfs.autoScrub.fileSystems = [ "/" "/drives/hdd" ];
+  services.zfs = {
+    # Periodically scrub my ZFS pool to do self-healing, avoiding bitrot.
+    autoScrub.enable = true;
+    autoScrub.pools = [ "nas" ];
+
+    # Since I got BIG BOI drives, automatically take plenty of snapshots.
+    autoSnapshot.enable = true;
+    # Name snapshots with UTC to avoid daylight savings issues.
+    autoSnapshot.flags = "-k -p --utc";
+  };
+
   boot.supportedFilesystems.zfs = true;
   # This identifies the owner machine for the ZFS pool. Keep the host ID even if
   # the desktop dies, as long as it's an x86_64 linux machine. (currently all AMD)

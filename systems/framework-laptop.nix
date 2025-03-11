@@ -87,7 +87,8 @@
   services.btrfs.autoScrub.enable = true;
   services.btrfs.autoScrub.fileSystems = [ "/" ];
   # Support ZFS in case I ever need to manually hook up my DAS.
-  boot.supportedFilesystems.zfs = true;
+  # TODO set a host ID for this laptop
+  # boot.supportedFilesystems.zfs = true;
 
   # Setup root, boot, home, and swap partitions.
   boot.initrd.luks.devices."enc".device =

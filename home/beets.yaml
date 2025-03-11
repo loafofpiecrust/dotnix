@@ -1,4 +1,4 @@
-directory: /run/media/snead/icepack/music
+directory: /mnt/music
 library: ~/music/beets-library.db
 original_date: yes
 format_album: $albumartist/[$year] $album ($release_year, $country, $label, $media)
