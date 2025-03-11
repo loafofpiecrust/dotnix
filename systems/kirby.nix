@@ -249,10 +249,6 @@
       "plugdev"
       "input"
     ];
-    openssh.authorizedKeys.keys = [
-      # Personal Laptop
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOVldsHCxoEpdN9K+cr9EKxS5dhvUBuCuhyLht3+8CJ2 snead@loafofpiecrust"
-    ];
   };
   home-manager.users.shelby = ../home/users/shelby-kirby.nix;
 
@@ -423,6 +419,7 @@
   services.openssh = {
     enable = true;
     allowSFTP = true;
+    authorizedKeysInHomedir = true;
     settings = {
       PasswordAuthentication = false;
       KbdInteractiveAuthentication = false;
