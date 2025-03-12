@@ -16,7 +16,6 @@
     file-roller # provides all archive formats
     p7zip
     pavucontrol
-    ffmpeg
     xdg-utils
     glib
     ddcutil
