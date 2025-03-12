@@ -127,7 +127,7 @@
       Wants = [ "network-online.target" ];
       Description = "NAS mounted as encrypted drive";
     };
-    Install.WantedBy = [ "multi-user.target" ];
+    Install.WantedBy = [ "default.target" ];
     Service = let
       home = config.home.homeDirectory;
       mountDir = "${home}/nas";
@@ -135,7 +135,7 @@
       Type = "notify";
       ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p ${mountDir}";
       ExecStart =
-        "${pkgs.rclone}/bin/rclone mount --config=${home}/.config/rclone/rclone.conf --vfs-cache-mode writes --vfs-read-chunk-streams 8 --vfs-read-chunk-size 64M --buffer-size 32M --vfs-cache-max-size 5G --transfers 8 nas-secret: ${mountDir}";
+        "${pkgs.rclone}/bin/rclone mount --config=${home}/.config/rclone/rclone.conf --vfs-cache-mode writes --vfs-read-chunk-streams 8 --vfs-read-chunk-size 64M --buffer-size 32M --vfs-cache-max-size 5G --transfers 8 --file-perms=0777 nas-secret: ${mountDir}";
       ExecStop = "/run/wrappers/bin/fusermount -u ${mountDir}";
       Environment = [
         "PATH=/run/wrappers/bin/:$PATH"

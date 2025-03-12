@@ -35,7 +35,7 @@ item_fields:
   # MF Doom is something special, with all of his alternate names
   subartist: albumartist_credit if not comp and albumartist.lower() != albumartist_credit.lower() else ''
   realyear: original_year if original_year != 0 and original_year < year else year
-plugins: the albumtypes rewrite inline alternatives fetchart convert fromfilename badfiles lastgenre replaygain info types zero unimported lyrics
+plugins: the albumtypes rewrite inline alternatives fetchart convert fromfilename badfiles lastgenre replaygain info types zero unimported lyrics random
 aunique:
   keys: albumartist album year albumtype
   disambiguators: albumdisambig media country label catalognum
