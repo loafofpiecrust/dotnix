@@ -91,7 +91,7 @@
     sublime4
     # jellyfin
     # jellyfin-web
-    # jellyfin-ffmpeg
+    jellyfin-ffmpeg
     python
     gnome.gvfs
     # kodi

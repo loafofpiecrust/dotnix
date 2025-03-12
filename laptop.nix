@@ -27,6 +27,7 @@
     # power-profiles-daemon
     powertop
     ppp # Needed for NUwave network setup
+    ffmpeg
   ];
 
   services.logind = {
