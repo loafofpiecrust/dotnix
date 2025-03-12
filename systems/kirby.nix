@@ -187,6 +187,7 @@
     autoSnapshot.enable = true;
     # Name snapshots with UTC to avoid daylight savings issues.
     autoSnapshot.flags = "-k -p --utc";
+    autoSnapshot.monthly = 6;
   };
 
   boot.supportedFilesystems.zfs = true;
