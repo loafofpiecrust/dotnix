@@ -17,6 +17,8 @@
     unstable.rmpc
     mediainfo
     ffmpegthumbnailer
+    # GTK player focused on album covers
+    plattenalbum
   ];
 
   # Default port should be localhost:6600

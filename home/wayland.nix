@@ -44,6 +44,7 @@ in {
     clipman
     rofi-wayland
     rofi-rbw-wayland
+    bitwarden
     nwg-wrapper
     swaynotificationcenter
     pamixer
