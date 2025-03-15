@@ -25,8 +25,13 @@ done
 GTK_PREFER_SCHEME=$([[ "$SET_THEME" = "dark" ]] && echo prefer-dark || echo prefer-light)
 gsettings set org.gnome.desktop.interface color-scheme "$GTK_PREFER_SCHEME"
 # TODO Ideally pass this GTK theme from the system config.
-GTK_NEW_THEME=$([[ "$SET_THEME" = "dark" ]] && echo Adwaita-dark || echo Arc)
+# sleep 5s
+GTK_NEW_THEME=$([[ "$SET_THEME" = "dark" ]] && echo WhiteSur-Dark || echo WhiteSur-Light)
 gsettings set org.gnome.desktop.interface gtk-theme "$GTK_NEW_THEME"
+
+GTK_NEW_ICONS=$([[ "$SET_THEME" = "dark" ]] && echo WhiteSur-dark || echo WhiteSur-light)
+gsettings set org.gnome.desktop.interface icon-theme "$GTK_NEW_ICONS"
+
 # Terminals
 tee /dev/pts/[0-9]* <~/.cache/colors/sequences >/dev/null
 # Window manager: sway
