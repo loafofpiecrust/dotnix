@@ -32,8 +32,15 @@
     mp3val
     flac
     filezilla
+    qimgv
 
     fontforge-gtk
+    transmission-remote-gtk
+    transgui
+    whitesur-gtk-theme
+    whitesur-cursors
+    whitesur-icon-theme
+    unstable.nwg-look
 
     pomodoro-gtk
     obsidian # note taking
@@ -57,5 +64,18 @@
   services.easyeffects = {
     enable = false;
     # preset = "fw13-easy-effects";
+  };
+
+  programs.git = {
+    userName = "loafofpiecrust";
+    userEmail = "shelby@snead.xyz";
+    extraConfig = {
+      github.user = "loafofpiecrust";
+      # easy sign commits with ssh key
+      gpg.format = "ssh";
+      user.signingkey = "~/.ssh/id_ed25519.pub";
+      gpg.ssh.allowedSignersFile = "~/.ssh/allowed_signers";
+      commit.gpgsign = true;
+    };
   };
 }

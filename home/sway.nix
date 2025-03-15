@@ -20,7 +20,7 @@
         gsettings);
     in ''
       set $gnome-schema org.gnome.desktop.interface
-      exec_always {
+      exec {
           ${gsettingsString}
       }
       seat seat0 xcursor_theme ${config.home.pointerCursor.name} ${

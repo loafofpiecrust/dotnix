@@ -18,7 +18,7 @@
     krita
     slack
     # deluge
-    transmission_4-gtk
+    # transmission_4-gtk
     zotero
     calibre # ebook manager
     rclone
@@ -57,9 +57,11 @@
 
   programs.kitty = {
     enable = true;
-    shellIntegration.enableFishIntegration = true;
+    font.name = "monospace";
+    shellIntegration.enableZshIntegration = true;
     shellIntegration.mode = "no-cursor";
     settings = {
+      scrollback_lines = 3000;
       window_padding_width = 4;
       cursor_shape = "block";
       background_opacity = "0.8";
@@ -67,7 +69,7 @@
   };
 
   programs.alacritty = {
-    enable = true;
+    enable = false;
     settings = {
       font.normal.family = "monospace";
       font.size = 11;
@@ -166,7 +168,7 @@
           runtimeInputs = with pkgs; [ rclone inotify-tools coreutils ];
           text = let
             doSync =
-              "rclone bisync pcloud-secret:notes ${notes} --config ${home}/.config/rclone/rclone.conf --compare size,modtime,checksum --slow-hash-sync-only --resilient -MP --track-renames --conflict-resolve newer";
+              "rclone bisync pcloud-secret:notes ${notes} --config ${home}/.config/rclone/rclone.conf --compare size,modtime,checksum --recover -MP --track-renames --conflict-resolve newer";
           in ''
             ${doSync}
             inotifywait -q -m -t 1800 --format "%w%f" ${notes} |\

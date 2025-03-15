@@ -19,7 +19,8 @@
     };
     emacs-overlay = {
       url = "github:nix-community/emacs-overlay";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.nixpkgs-stable.follows = "nixpkgs";
     };
     nix-doom-emacs = {
       url = "github:vlaci/nix-doom-emacs";

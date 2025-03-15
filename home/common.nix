@@ -115,19 +115,19 @@
     font.name = "sans";
     font.size = 13;
     theme = {
-      package = pkgs.arc-theme;
-      name = "Arc";
+      package = pkgs.whitesur-gtk-theme;
+      name = "WhiteSur-Light";
     };
     iconTheme = {
-      package = pkgs.numix-icon-theme;
-      name = "Numix";
+      package = pkgs.whitesur-icon-theme;
+      name = "WhiteSur-light";
     };
   };
 
   # Make QT match the GTK theme.
   qt = {
     enable = true;
-    platformTheme.name = "gtk";
+    platformTheme.name = "gtk3";
   };
 
   home.pointerCursor = {
@@ -140,25 +140,13 @@
 
   programs.git = {
     enable = true;
-    userName = "loafofpiecrust";
-    userEmail = "shelby@snead.xyz";
     delta.enable = true;
     lfs.enable = true;
-    # signing = {
-    #   key = null;
-    #   signByDefault = true;
-    # };
     extraConfig = {
       pull.rebase = true;
       init.defaultBranch = "main";
-      core.editor = "emacsclient";
+      core.editor = "emacsclient -r";
       core.askPass = "";
-      github.user = "loafofpiecrust";
-      # easy sign commits with ssh key
-      gpg.format = "ssh";
-      user.signingkey = "~/.ssh/id_ed25519.pub";
-      gpg.ssh.allowedSignersFile = "~/.ssh/allowed_signers";
-      commit.gpgsign = true;
     };
   };
 }

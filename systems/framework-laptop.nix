@@ -202,8 +202,8 @@
     settings = {
       GTK.cursor_theme_name = lib.mkForce "Bibata-Modern-Classic";
       GTK.font_name = lib.mkForce "sans 12";
-      GTK.theme_name = lib.mkForce "Arc";
-      GTK.icon_theme_name = lib.mkForce "Numix";
+      GTK.theme_name = lib.mkForce "WhiteSur-Light";
+      GTK.icon_theme_name = lib.mkForce "WhiteSur-light";
       background.path = config.lib.meta.dynamicBg "1";
       background.fit = "Cover";
     };

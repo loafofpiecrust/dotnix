@@ -35,7 +35,7 @@ item_fields:
   # MF Doom is something special, with all of his alternate names
   subartist: albumartist_credit if not comp and albumartist.lower() != albumartist_credit.lower() else ''
   realyear: original_year if original_year != 0 and original_year < year else year
-plugins: the albumtypes rewrite inline alternatives fetchart convert fromfilename badfiles lastgenre replaygain info types zero unimported lyrics random
+plugins: the albumtypes rewrite inline alternatives fetchart convert fromfilename badfiles lastgenre replaygain info types zero unimported lyrics random edit
 aunique:
   keys: albumartist album year albumtype
   disambiguators: albumdisambig media country label catalognum
@@ -72,9 +72,9 @@ fetchart:
   cautious: yes
   cover_names: cover front folder album art
   minwidth: 300
-  maxwidth: 2000
   enforce_ratio: 3%
-  sources: filesystem coverart itunes
+  sources: filesystem coverart itunes spotify
+  art_filename: cover.jpg
   high_resolution: yes
   deinterlace: yes
 albumtypes:
@@ -114,10 +114,12 @@ alternatives:
     directory: /run/media/snead/SHELBY_S IP/Music
     query: "onplayer:true"
     removable: true
+    albumart_maxwidth: 216
   amelies_ipod:
     directory: /run/media/snead/AD IPOD/Music
     query: "ABBA , Beta Band , Beijing to Boston , Brave Irene , Buzzcocks , Chicano Batman , Freyr , Deltron 3030 , Dolly Parton , Hiatus Kaiyote , albumartist:Javelin , LCD Soundsystem , Lou Reed , MF DOOM , albumartist:Queen , Soft Hair , albumartist:'PJ Harvey' , Justin Timberlake album:Justified , Medscool , CZARFACE , Tatsuro Yamashita album:'For You' , Sibylle Baier , The Strokes , The Clash , Metallica"
     removable: true
+    albumart_maxwidth: 216
 # Replace regular slashes with the fraction slash! A trick to keep slashes in file names!! :)
 path_sep_replace: "⁄"
 replace:

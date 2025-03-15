@@ -45,6 +45,7 @@
   fonts.enableDefaultPackages = true;
   fonts.packages = with pkgs; [
     overpass
+    inter
     noto-fonts
     noto-fonts-cjk-sans
     # noto-fonts-emoji
@@ -170,6 +171,13 @@
       #   '';
       #   doCheck = false;
       # };
+
+      whitesur-gtk-theme = super.whitesur-gtk-theme.override {
+        themeVariants = [ "default" "pink" "orange" ];
+      };
+      whitesur-icon-theme = super.whitesur-icon-theme.override {
+        themeVariants = [ "default" "pink" "orange" ];
+      };
     })
   ];
 
