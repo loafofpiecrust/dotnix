@@ -9,7 +9,7 @@
 (package! ewal-evil-cursors)
 (package! catppuccin-theme)
 
-(package! common-header-mode-line :recipe (:local-repo "common-header-mode-line-0.5.6"))
+;;(package! common-header-mode-line :recipe (:local-repo "common-header-mode-line-0.5.6"))
 
 ;; Utilities
 (package! string-inflection)

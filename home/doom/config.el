@@ -50,6 +50,7 @@
 (use-package! modus-themes
   :after json
   :init
+(unless (eq system-type 'darwin)
   (defvar +snead/light (json-read-file "~/.cache/colors/light.json"))
   (defvar +snead/dark (json-read-file "~/.cache/colors/dark.json"))
   (setq! modus-themes-italic-constructs t
@@ -101,7 +102,7 @@
            (string yellow-intense)
            (type green)
            (builtin magenta)
-           (comment yellow))))
+           (comment yellow)))))
 
 (setq doom-theme (if (and (gsettings-available?)
                           (string= "prefer-dark"
@@ -128,9 +129,9 @@
 ;;
 ;; Symbol test: _ -> => , . `' "" O0l1*#
 (setq doom-font (if (eq system-type 'darwin)
-                    (font-spec :family "Fira Code" :size 14)
+                    (font-spec :family "Fira Code" :size 13)
                   (font-spec :family "Hack Nerd Font FC Ligatured CCG" :size 15))
-      doom-variable-pitch-font (font-spec :family "sans" :size 18)
+      doom-variable-pitch-font (if (eq system-type 'darwin) (font-spec :family "Overpass" :size 16) (font-spec :family "sans" :size 18))
       doom-unicode-font doom-font
       ;; doom-unicode-font (font-spec :family "Symbola monospacified for Source Code Pro" :size 15)
       ;; These fonts were fucking up display of math symbols! Remove them!
