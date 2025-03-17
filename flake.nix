@@ -34,10 +34,12 @@
       url = "github:hlissner/doom-emacs/develop";
       flake = false;
     };
-    darwin = {
-      url = "github:lnl7/nix-darwin/master";
+    nix-darwin = {
+      url = "github:lnl7/nix-darwin/nix-darwin-24.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    mac-app-util.url = "github:hraban/mac-app-util";
+    mac-app-util.inputs.nixpkgs.follows = "nixpkgs";
     # hyprland = {
     #   url = "github:hyprwm/Hyprland";
     #   inputs.nixpkgs.follows = "nixpkgs-unstable";
@@ -65,7 +67,7 @@
   };
 
   outputs =
-    { self, nixpkgs, darwin, emacs-overlay, nixpkgs-unstable, nur, ... }@inputs:
+    { self, nixpkgs, nix-darwin, mac-app-util, emacs-overlay, nixpkgs-unstable, nur, ... }@inputs:
     let
       specialArgs = { inherit inputs; };
       sharedModule = host: nixpkgs: {
@@ -101,17 +103,24 @@
           modules = [ (sharedModule host nixpkgs) path ];
         };
       };
+      mkDarwinSystem = fn: nixpkgs: system: host: path: {
+        "${host}" = fn {
+          inherit system specialArgs;
+          # inherit (nixpkgs) lib;
+          modules = [ (sharedModule host nixpkgs) path mac-app-util.darwinModules.default ];
+        };
+      };
       mkLinux = mkSystem nixpkgs.lib.nixosSystem nixpkgs;
       mkUnstableLinux =
         mkSystem nixpkgs-unstable.lib.nixosSystem nixpkgs-unstable;
-      mkDarwin = mkSystem darwin.lib.darwinSystem nixpkgs;
+      mkDarwin = mkSystem nix-darwin.lib.darwinSystem nixpkgs;
     in rec {
       # When you first setup a new machine, the hostname won't match yet.
       # $ darwin-rebuild switch --flake .#darwinConfigurations.careerbot13.system
       # After that:
       # $ darwin-rebuild switch --flake .
-      darwinConfigurations = (mkDarwin "x86_64-darwin" "careerbot13"
-        ./systems/laptop-outschool-macos.nix);
+      darwinConfigurations = (mkDarwin "aarch64-darwin" "PE-NTWDXW2TJW"
+        ./systems/laptop-panorama-macos.nix);
 
       nixosConfigurations = (mkLinux "x86_64-linux" "portable-spudger"
         ./systems/framework-laptop.nix)
