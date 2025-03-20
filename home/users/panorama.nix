@@ -113,7 +113,7 @@
     enable = true;
     darwinLaunchOptions = [ "--single-instance" ];
     font.name = config.lib.meta.monospaceFont;
-    font.size = 12;
+    font.size = 13;
     shellIntegration.enableZshIntegration = true;
   };
 
@@ -129,6 +129,7 @@
     nix-direnv = { enable = true; };
   };
 
-  home.file.".aerospace.toml".source = config.lib.meta.mkMutableSymlink ../aerospace.toml;
+  home.file.".aerospace.toml".source =
+    config.lib.meta.mkMutableSymlink ../aerospace.toml;
 
 }

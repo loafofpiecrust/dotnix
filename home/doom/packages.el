@@ -4,6 +4,7 @@
 (package! benchmark-init)
 
 
+(package! auto-dark)
 (package! ewal)
 (package! ewal-doom-themes)
 (package! ewal-evil-cursors)

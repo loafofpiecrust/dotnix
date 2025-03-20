@@ -40,75 +40,78 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq! catppuccin-flavor
-       (if (and (gsettings-available?)
-                (string= "prefer-dark"
-                         (gsettings-get "org.gnome.desktop.interface" "color-scheme")))
-           'macchiato
-         'latte))
+;;(setq! catppuccin-flavor
+;;(if (and (gsettings-available?)
+;;(string= "prefer-dark"
+;;(gsettings-get "org.gnome.desktop.interface" "color-scheme")))
+;;'macchiato
+;;'latte))
 
 (use-package! modus-themes
   :after json
   :init
-(unless (eq system-type 'darwin)
-  (defvar +snead/light (json-read-file "~/.cache/colors/light.json"))
-  (defvar +snead/dark (json-read-file "~/.cache/colors/dark.json"))
-  (setq! modus-themes-italic-constructs t
-         modus-themes-mixed-fonts t
-         modus-operandi-palette-overrides
-         `((bg-main ,(alist-get 'background +snead/light))
-           (bg-dim ,(alist-get 'surface1 +snead/light))
-           ;; Extra contrast by using pure black for text.
-           (fg-main ,(alist-get 'brightwhite +snead/light))
-           (fg-dim ,(alist-get 'comment +snead/light))
-           (fg-alt ,(alist-get 'foreground +snead/light))
-           (border ,(alist-get 'focus +snead/light))
-           (red ,(alist-get 'red +snead/light))
-           (red-intense ,(alist-get 'brightred +snead/light))
-           (green ,(alist-get 'green +snead/light))
-           (green-intense ,(alist-get 'brightgreen +snead/light))
-           (yellow ,(alist-get 'yellow +snead/light))
-           (yellow-intense ,(alist-get 'brightyellow +snead/light))
-           (blue ,(alist-get 'blue +snead/light))
-           (blue-cooler ,(alist-get 'blue +snead/light))
-           (blue-intense ,(alist-get 'brightblue +snead/light))
-           (magenta ,(alist-get 'magenta +snead/light))
-           (magenta-intense ,(alist-get 'brightmagenta +snead/light))
-           (cyan ,(alist-get 'cyan +snead/light))
-           (cyan-intense ,(alist-get 'brightcyan +snead/light))
-           (pink ,(alist-get 'magenta +snead/light)))
-         modus-vivendi-tinted-palette-overrides
-         `((bg-main ,(alist-get 'background +snead/dark))
-           (bg-dim ,(alist-get 'surface1 +snead/dark))
-           (fg-main ,(alist-get 'brightwhite +snead/dark))
-           (fg-dim ,(alist-get 'comment +snead/dark))
-           (fg-alt ,(alist-get 'foreground +snead/dark))
-           (border ,(alist-get 'focus +snead/dark))
-           (red ,(alist-get 'red +snead/dark))
-           (red-intense ,(alist-get 'brightred +snead/dark))
-           (green ,(alist-get 'green +snead/dark))
-           (green-cooler ,(alist-get 'brightgreen +snead/dark))
-           (green-intense ,(alist-get 'brightgreen +snead/dark))
-           (yellow ,(alist-get 'yellow +snead/dark))
-           (yellow-intense ,(alist-get 'brightyellow +snead/dark))
-           (blue ,(alist-get 'blue +snead/dark))
-           (blue-cooler ,(alist-get 'blue +snead/dark))
-           (blue-intense ,(alist-get 'brightblue +snead/dark))
-           (magenta ,(alist-get 'magenta +snead/dark))
-           (magenta-intense ,(alist-get 'brightmagenta +snead/dark))
-           (cyan ,(alist-get 'cyan +snead/dark))
-           (cyan-intense ,(alist-get 'brightcyan +snead/dark))
-           (pink ,(alist-get 'magenta +snead/dark))
-           (string yellow-intense)
-           (type green)
-           (builtin magenta)
-           (comment yellow)))))
+  (unless (eq system-type 'darwin)
+    (defvar +snead/light (json-read-file "~/.cache/colors/light.json"))
+    (defvar +snead/dark (json-read-file "~/.cache/colors/dark.json"))
+    (setq! modus-themes-italic-constructs t
+           modus-themes-mixed-fonts t
+           modus-operandi-palette-overrides
+           `((bg-main ,(alist-get 'background +snead/light))
+             (bg-dim ,(alist-get 'surface1 +snead/light))
+             ;; Extra contrast by using pure black for text.
+             (fg-main ,(alist-get 'brightwhite +snead/light))
+             (fg-dim ,(alist-get 'comment +snead/light))
+             (fg-alt ,(alist-get 'foreground +snead/light))
+             (border ,(alist-get 'focus +snead/light))
+             (red ,(alist-get 'red +snead/light))
+             (red-intense ,(alist-get 'brightred +snead/light))
+             (green ,(alist-get 'green +snead/light))
+             (green-intense ,(alist-get 'brightgreen +snead/light))
+             (yellow ,(alist-get 'yellow +snead/light))
+             (yellow-intense ,(alist-get 'brightyellow +snead/light))
+             (blue ,(alist-get 'blue +snead/light))
+             (blue-cooler ,(alist-get 'blue +snead/light))
+             (blue-intense ,(alist-get 'brightblue +snead/light))
+             (magenta ,(alist-get 'magenta +snead/light))
+             (magenta-intense ,(alist-get 'brightmagenta +snead/light))
+             (cyan ,(alist-get 'cyan +snead/light))
+             (cyan-intense ,(alist-get 'brightcyan +snead/light))
+             (pink ,(alist-get 'magenta +snead/light)))
+           modus-vivendi-tinted-palette-overrides
+           `((bg-main ,(alist-get 'background +snead/dark))
+             (bg-dim ,(alist-get 'surface1 +snead/dark))
+             (fg-main ,(alist-get 'brightwhite +snead/dark))
+             (fg-dim ,(alist-get 'comment +snead/dark))
+             (fg-alt ,(alist-get 'foreground +snead/dark))
+             (border ,(alist-get 'focus +snead/dark))
+             (red ,(alist-get 'red +snead/dark))
+             (red-intense ,(alist-get 'brightred +snead/dark))
+             (green ,(alist-get 'green +snead/dark))
+             (green-cooler ,(alist-get 'brightgreen +snead/dark))
+             (green-intense ,(alist-get 'brightgreen +snead/dark))
+             (yellow ,(alist-get 'yellow +snead/dark))
+             (yellow-intense ,(alist-get 'brightyellow +snead/dark))
+             (blue ,(alist-get 'blue +snead/dark))
+             (blue-cooler ,(alist-get 'blue +snead/dark))
+             (blue-intense ,(alist-get 'brightblue +snead/dark))
+             (magenta ,(alist-get 'magenta +snead/dark))
+             (magenta-intense ,(alist-get 'brightmagenta +snead/dark))
+             (cyan ,(alist-get 'cyan +snead/dark))
+             (cyan-intense ,(alist-get 'brightcyan +snead/dark))
+             (pink ,(alist-get 'magenta +snead/dark))
+             (string yellow-intense)
+             (type green)
+             (builtin magenta)
+             (comment yellow)))))
 
-(setq doom-theme (if (and (gsettings-available?)
-                          (string= "prefer-dark"
-                                   (gsettings-get "org.gnome.desktop.interface" "color-scheme")))
-                     'modus-vivendi-tinted
-                   'modus-operandi))
+(setq! doom-theme 'modus-operandi-tinted
+custom-safe-themes t)
+
+(use-package! auto-dark
+  :after doom-ui
+  :config
+  (setq! auto-dark-themes '((modus-vivendi-tinted) (modus-operandi-tinted)))
+  (auto-dark-mode))
 
 (setq doom-gruvbox-brighter-comments nil
       doom-peacock-brighter-comments t
@@ -129,7 +132,7 @@
 ;;
 ;; Symbol test: _ -> => , . `' "" O0l1*#
 (setq doom-font (if (eq system-type 'darwin)
-                    (font-spec :family "Fira Code" :size 13)
+                    (font-spec :family "Hack Nerd Font" :size 14)
                   (font-spec :family "Hack Nerd Font FC Ligatured CCG" :size 15))
       doom-variable-pitch-font (if (eq system-type 'darwin) (font-spec :family "Overpass" :size 16) (font-spec :family "sans" :size 18))
       doom-unicode-font doom-font
@@ -137,6 +140,10 @@
       ;; These fonts were fucking up display of math symbols! Remove them!
       ;; doom-unicode-extra-fonts nil
       )
+
+;; Avoid extra tall title bar on mac
+(when (eq system-type 'darwin)
+  (add-hook 'doom-after-init-hook (lambda () (tool-bar-mode 1) (tool-bar-mode 0))))
 
 ;; Use org mode for the scratch buffer.
 (setq-default doom-scratch-initial-major-mode 'org-mode)
@@ -1511,6 +1518,7 @@ Position is calculated base on WIDTH and HEIGHT of childframe text window"
 
 (use-package! eglot-booster
   :after eglot
+  :disabled (eq system-type 'darwin)
   :config (eglot-booster-mode))
 
 (defun snead/chmod-this-file (mode)
@@ -1534,3 +1542,5 @@ Position is calculated base on WIDTH and HEIGHT of childframe text window"
 
 (after! corfu
   (setq-default corfu-auto-delay 0.15))
+
+(setq! mac-command-modifier 'control)
