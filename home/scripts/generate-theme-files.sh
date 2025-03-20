@@ -33,6 +33,7 @@ tee /dev/pts/[0-9]* <~/.cache/colors/sequences >/dev/null
 (swaymsg reload &)
 # Notifications: mako
 (makoctl reload &)
+# Actually, now using auto-dark in emacs to detect system theme
 # Run the custom emacs command from the theme
-EMACS_COMMAND=$(jq -rc '.commands.emacs' "$THEME_FILE")
-emacsclient --eval "$EMACS_COMMAND" || true
+# EMACS_COMMAND=$(jq -rc '.commands.emacs' "$THEME_FILE")
+# emacsclient --eval "$EMACS_COMMAND" || true
