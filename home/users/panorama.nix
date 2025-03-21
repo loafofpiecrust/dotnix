@@ -104,6 +104,11 @@
       init.defaultBranch = "main";
       core.editor = "emacsclient -r";
       github.user = "loafofpiecrust";
+      # easy sign commits with ssh key
+      gpg.format = "ssh";
+      user.signingkey = "~/.ssh/id_ed25519.pub";
+      gpg.ssh.allowedSignersFile = "~/.ssh/allowed_signers";
+      commit.gpgsign = true;
       # url."git@github.com:".insteadOf = "https://github.com/";
       # url."git@gitlab.com:".insteadOf = "https://gitlab.com/";
     };
