@@ -156,7 +156,7 @@
 
   homebrew = {
     enable = true;
-    casks = [ "lunar" "macdroid" ];
+    casks = [ "lunar" "macdroid" "bitwarden" ];
   };
 
   # services.tailscale.enable = true;
