@@ -382,7 +382,7 @@
           speed-limit-down-enabled = true;
           speed-limit-down = 4096;
           speed-limit-up-enabled = true;
-          speed-limit-up = 200;
+          speed-limit-up = 90;
           rpc-bind-address = "0.0.0.0";
           rpc-whitelist-enabled = true;
           rpc-whitelist = "192.168.*.*,127.0.0.1";
