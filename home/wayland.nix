@@ -175,11 +175,7 @@ in {
       position = "top";
       layer = "top";
       height = 30;
-      modules-left = [
-        "custom/power"
-        # "hyprland/workspaces"
-        "sway/workspaces"
-      ];
+      modules-left = [ "custom/power" "hyprland/workspaces" "sway/workspaces" ];
       modules-right = [
         # "custom/player"
         "tray"
