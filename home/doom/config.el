@@ -105,7 +105,7 @@
              (comment yellow)))))
 
 (setq! doom-theme 'modus-operandi-tinted
-custom-safe-themes t)
+       custom-safe-themes t)
 
 (use-package! auto-dark
   :after doom-ui

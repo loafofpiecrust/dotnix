@@ -45,7 +45,7 @@
 
        :completion
        ;; (company +childframe)           ; the ultimate code completion backend
-       (corfu +icons)
+       (corfu +icons +orderless)
        ;;ido               ; the other *other* search engine...
        ;;(ivy +prescient +icons)               ; a search engine for love and life
        ;;(selectrum +prescient)

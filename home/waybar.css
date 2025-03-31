@@ -205,7 +205,7 @@ label:focus {
 #tray {
   padding: 0 4px;
   margin: 0 4px;
-  background-color: alpha(@cyan, 0.5);
+  /* background-color: alpha(@cyan, 0.5); */
 }
 
 #idle_inhibitor,

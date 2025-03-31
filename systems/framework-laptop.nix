@@ -389,4 +389,15 @@
   # hardware.sensor.iio.enable = true;
 
   services.power-profiles-daemon.package = pkgs.unstable.power-profiles-daemon;
+
+  programs.hyprland = {
+    enable = true;
+    # package = pkgs.unstable.hyprland;
+    # portalPackage = pkgs.unstable.xdg-desktop-portal-hyprland;
+    # withUWSM = true;
+    # package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+    # portalPackage =
+    #   inputs.hyprland.packages.${pkgs.system}.xdg-desktop-portal-hyprland;
+  };
+  # programs.uwsm.enable = true;
 }

@@ -168,13 +168,13 @@ in {
 
   programs.waybar = {
     enable = true;
-    # systemd.enable = true;
+    systemd.enable = true;
     settings = [{
       id = "1";
       ipc = true;
       position = "top";
       layer = "top";
-      height = 30;
+      height = 28;
       modules-left = [ "custom/power" "hyprland/workspaces" "sway/workspaces" ];
       modules-right = [
         # "custom/player"
@@ -193,14 +193,14 @@ in {
         "clock"
       ];
       "custom/audio-idle-inhibitor" = {
-        format = " {icon} ";
+        format = "  {icon}  ";
         exec = "sway-audio-idle-inhibit --dry-print-both-waybar";
         exec-if = "which sway-audio-idle-inhibit";
         return-type = "json";
         format-icons = {
           output = "";
           input = "";
-          output-input = " ";
+          output-input = "  ";
           none = "";
         };
       };
@@ -304,7 +304,7 @@ in {
         states.warning = 30;
         states.critical = 10;
         design-capacity = false;
-        full-at = 95;
+        # full-at = 95;
         format = "{icon}";
         format-charging = "{icon}";
         format-plugged = "{icon}";
