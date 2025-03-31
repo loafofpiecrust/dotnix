@@ -50,7 +50,7 @@
   # GPG agent handles locked files and SSH keys.
   services.gpg-agent = {
     enable = true;
-    enableSshSupport = true;
+    enableSshSupport = lib.mkDefault true;
     defaultCacheTtl = 60 * 60;
     defaultCacheTtlSsh = 60 * 60;
     pinentryPackage = pkgs.pinentry-gnome3;

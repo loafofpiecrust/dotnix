@@ -1,5 +1,5 @@
 directory: /mnt/music
-library: ~/music/beets-library.db
+library: /mnt/music/beets-library.db
 original_date: yes
 format_album: $albumartist/[$year] $album ($release_year, $country, $label, $media)
 format_item: $artist - $album - $disc.$track. $title
@@ -24,14 +24,13 @@ musicbrainz:
 paths:
   albumtype:soundtrack: "0. Soundtracks/[$realyear] $album/%if{$multidisc,Disc %right{$disc,1}/}$track. $title"
   albumtype:single: %the{$albumartist}/Singles/[$realyear]%if{$subartist,[$subartist]} $album/$track. $title
-  comp: "0. %first{$genre}/[$realyear]%if{$subartist,[$subartist]} $album%ifdef{atypes, $atypes}/%if{$multidisc,%if{$grouping,$grouplabel,$disclabel}/,%if{$grouping,$grouping/}}$track. $title"
-  default: %the{$albumartist}/[$realyear]%if{$subartist,[$subartist]} $album%ifdef{atypes, $atypes}/%if{$multidisc,%if{$grouping,$grouplabel,$disclabel}/,%if{$grouping,$grouping/}}$track. $title
+  comp: "0. %first{$genre}/[$realyear]%if{$subartist,[$subartist]} $album%ifdef{atypes, $atypes}/%if{$multidisc,$disclabel/,%if{$grouping,$grouping/}}$track. $title"
+  default: %the{$albumartist}/[$realyear]%if{$subartist,[$subartist]} $album%ifdef{atypes, $atypes}/%if{$multidisc,$disclabel/,%if{$grouping,$grouping/}}$track. $title
 item_fields:
   mono: 1 if channels == 1 else 0
   multidisc: 1 if disctotal > 1 else 0
   # Vinyl records are usually split up into lettered sides, rather than numbered discs.
-  disclabel: ('Disc ' + str(disc))
-  grouplabel: ('Disc ' + str(disc) + '. ' + grouping)
+  disclabel: ('Disc ' + str(disc)) + ('. ' + grouping if grouping else '. ' + disctitle if disctitle else '')
   # MF Doom is something special, with all of his alternate names
   subartist: albumartist_credit if not comp and albumartist.lower() != albumartist_credit.lower() else ''
   realyear: original_year if original_year != 0 and original_year < year else year
@@ -43,7 +42,7 @@ aunique:
 types:
   release_year: int
 zero:
-  fields: images acoustid_id acoustid_fingerprint asin script barcode comments
+  fields: images comments
   comments:
     [
       "^Exact ?Audio ?Copy",
