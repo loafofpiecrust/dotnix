@@ -36,6 +36,7 @@ gsettings set org.gnome.desktop.interface icon-theme "$GTK_NEW_ICONS"
 tee /dev/pts/[0-9]* <~/.cache/colors/sequences >/dev/null
 # Window manager: sway
 (swaymsg reload &)
+(hyprctl reload &)
 # Notifications: mako
 (makoctl reload &)
 # Actually, now using auto-dark in emacs to detect system theme

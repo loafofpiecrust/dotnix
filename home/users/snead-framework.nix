@@ -36,7 +36,7 @@
 
     fontforge-gtk
     transmission-remote-gtk
-    transgui
+
     whitesur-gtk-theme
     whitesur-cursors
     whitesur-icon-theme

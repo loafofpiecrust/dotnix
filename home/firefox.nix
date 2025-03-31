@@ -2,7 +2,6 @@
 
 {
   # Install firefox for migration purposes as I try alternative browsers.
-  # home.packages = [ pkgs.firefox ];
   # TODO use the color values from my catpuccin nix file if possible, so that
   # the theme follows my system even if it's not catpuccin spec.
   # TODO use the CSS light-dark() function to make this theme adaptive to
