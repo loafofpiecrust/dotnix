@@ -120,6 +120,11 @@
     font.name = config.lib.meta.monospaceFont;
     font.size = 13;
     shellIntegration.enableZshIntegration = true;
+    settings = {
+      update_check_interval = 0;
+      notify_on_cmd_finish = "unfocused";
+      confirm_os_window_close = 0;
+    };
   };
 
   programs.emacs = {

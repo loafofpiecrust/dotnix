@@ -187,6 +187,7 @@
   (setq-default user-full-name "Shelby Snead"
                 user-mail-address "shelby@snead.xyz"
                 confirm-kill-processes nil
+                confirm-kill-emacs nil
                 truncate-lines nil
                 scroll-margin 2
                 ;; Inhibit auto-save messages because they're mostly distracting.
