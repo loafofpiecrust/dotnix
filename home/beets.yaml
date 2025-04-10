@@ -111,7 +111,7 @@ rewrite:
 alternatives:
   ipod:
     directory: /run/media/snead/SHELBY_S IP/Music
-    query: "onplayer:true"
+    query: "^onplayer:false"
     removable: true
     albumart_maxwidth: 216
   amelies_ipod:

@@ -108,6 +108,7 @@
     moreutils
     gnutls
     sshfs
+    sysstat
 
     # user tools
     playerctl
