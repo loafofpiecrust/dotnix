@@ -168,7 +168,7 @@ in {
 
   programs.waybar = {
     enable = true;
-    systemd.enable = true;
+    systemd.enable = false;
     settings = [{
       id = "1";
       ipc = true;
