@@ -44,6 +44,9 @@
     network = { listenAddress = "${config.services.mpd.dataDir}/socket"; };
   };
 
+  systemd.user.services.mpd.Unit.After = [ "mount-nas.service" ];
+  systemd.user.services.mpd.Unit.Requires = [ "mount-nas.service" ];
+
   # Support standard system media controls for the MPD server
   services.mpd-mpris = {
     enable = true;

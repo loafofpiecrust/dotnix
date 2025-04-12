@@ -192,7 +192,7 @@
   programs.xwayland.enable = true;
   # Configure sway if I happen to want it in my setup.
   programs.sway = {
-    package = pkgs.swayfx;
+    package = pkgs.unstable.swayfx;
     # package = pkgs.unstable.sway;
     # enable = true;
     extraPackages = with pkgs; [

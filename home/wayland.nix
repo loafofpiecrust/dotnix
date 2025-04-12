@@ -503,17 +503,23 @@ in {
     #   command = "${config.programs.swaylock.package}/bin/swaylock -fF";
     # }
       ];
-    events = [{
-      event = "before-sleep";
-      command = "${config.programs.swaylock.package}/bin/swaylock -fF";
-    }
-    # Restarting kanshi after resume to make sure the screen configuration is
-    # all set. Also fixes the bad font rendering issue!
-    # {
-    #   event = "after-resume";
-    #   command = "${pkgs.systemd}/bin/systemctl --user restart kanshi";
-    # }
-      ];
+    events = [
+      {
+        event = "before-sleep";
+        command = "${config.programs.swaylock.package}/bin/swaylock -fF";
+      }
+      {
+        event = "after-resume";
+        command =
+          "${systemConfig.programs.sway.package}/bin/swaymsg output '*' power on";
+      }
+      # Restarting kanshi after resume to make sure the screen configuration is
+      # all set. Also fixes the bad font rendering issue!
+      # {
+      #   event = "after-resume";
+      #   command = "${pkgs.systemd}/bin/systemctl --user restart kanshi";
+      # }
+    ];
     extraArgs = [ "idlehint" "420" ];
   };
 

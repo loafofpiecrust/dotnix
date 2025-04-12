@@ -49,10 +49,6 @@
       url = "github:e-tho/iwmenu";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    swayfx = {
-      url = "github:WillPower3309/swayfx";
-      # inputs.nixpkgs.follows = "nixpkgs";
-    };
     nix-colorizer.url = "github:nutsalhan87/nix-colorizer";
     spicetify-nix = {
       url = "github:Gerg-L/spicetify-nix";
@@ -67,8 +63,8 @@
     };
   };
 
-  outputs =
-    { self, nixpkgs, nix-darwin, mac-app-util, emacs-overlay, nixpkgs-unstable, nur, ... }@inputs:
+  outputs = { self, nixpkgs, nix-darwin, mac-app-util, emacs-overlay
+    , nixpkgs-unstable, nur, ... }@inputs:
     let
       specialArgs = { inherit inputs; };
       sharedModule = host: nixpkgs: {
@@ -108,7 +104,11 @@
         "${host}" = fn {
           inherit system specialArgs;
           # inherit (nixpkgs) lib;
-          modules = [ (sharedModule host nixpkgs) path mac-app-util.darwinModules.default ];
+          modules = [
+            (sharedModule host nixpkgs)
+            path
+            mac-app-util.darwinModules.default
+          ];
         };
       };
       mkLinux = mkSystem nixpkgs.lib.nixosSystem nixpkgs;
