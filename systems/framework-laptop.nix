@@ -32,7 +32,7 @@
     plymouth.enable = false;
     # Use the latest LTS kernel because those keep getting patch updates for 2+ years.
     # Let's try the latest version...
-    kernelPackages = pkgs.linuxKernel.packages.linux_6_11;
+    kernelPackages = pkgs.linuxKernel.packages.linux_6_12;
     extraModulePackages = with config.boot.kernelPackages; [ ddcci-driver ];
     initrd.availableKernelModules = [
       "xhci_pci"
@@ -209,7 +209,7 @@
     };
   };
 
-  services.displayManager.defaultSession = "SwayFX";
+  services.displayManager.defaultSession = "Sway";
 
   services.xserver = {
     enable = false;
