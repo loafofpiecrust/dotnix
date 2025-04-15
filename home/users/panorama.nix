@@ -94,7 +94,7 @@
   programs.git = {
     enable = true;
     userName = "Shelby Snead";
-    userEmail = "shelby@snead.xyz";
+    userEmail = "shelby.snead@panoramaed.com";
     lfs.enable = true;
     delta.enable = true;
     #signing.key = "DAC12D13ED25377B7B1AE44C311B93DA14853F49";

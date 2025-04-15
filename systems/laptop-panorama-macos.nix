@@ -35,6 +35,7 @@
     nodePackages.typescript-language-server
     sqls
     (aspellWithDicts (dicts: with dicts; [ en en-computers en-science ]))
+    gh
   ];
   nixpkgs.config.allowUnsupportedSystem = true;
   nixpkgs.config.allowUnfree = true;
