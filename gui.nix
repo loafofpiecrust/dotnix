@@ -75,7 +75,6 @@
     mononoki
     cascadia-code
     hack-font
-    maple-mono-NF
 
     # Add user fonts to ~/.local/share/fonts
   ];
