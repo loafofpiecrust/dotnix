@@ -434,5 +434,9 @@
   };
 
   # Basic blocking of malicious entry or DDOS attacks.
-  services.fail2ban.enable = true;
+  services.fail2ban = {
+    enable = true;
+    ignoreIP = [ "192.168.0.0/16" ];
+    maxretry = 10;
+  };
 }
