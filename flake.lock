@@ -322,7 +322,7 @@
       "inputs": {
         "nix-github-actions": "nix-github-actions",
         "nixpkgs": [
-          "nixpkgs-unstable"
+          "nixpkgs-kirby"
         ]
       },
       "locked": {
@@ -544,6 +544,22 @@
         "owner": "nixos",
         "ref": "nixos-23.11",
         "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs-kirby": {
+      "locked": {
+        "lastModified": 1743583204,
+        "narHash": "sha256-F7n4+KOIfWrwoQjXrL2wD9RhFYLs2/GGe/MQY1sSdlE=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "2c8d3f48d33929642c1c12cd243df4cc7d2ce434",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "2c8d3f48d33929642c1c12cd243df4cc7d2ce434",
         "type": "github"
       }
     },
@@ -778,6 +794,7 @@
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-bitwig": "nixpkgs-bitwig",
+        "nixpkgs-kirby": "nixpkgs-kirby",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "nixpkgs-wayland": "nixpkgs-wayland",
         "nur": "nur",
