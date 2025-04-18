@@ -125,9 +125,12 @@
 
   systemd.user.services.mount-nas = {
     Unit = {
-      After = [ "network-online.target" ];
+      After = [ "network-online.target" "ssh-agent.service" ];
+      Requires = [ "ssh-agent.service" ];
       Wants = [ "network-online.target" ];
-      Description = "NAS mounted as encrypted drive";
+      Description = "NAS mounted as an encrypted drive";
+      StartLimitBurst = "5";
+      StartLimitIntervalSec = "10";
     };
     Install.WantedBy = [ "default.target" ];
     Service = let
@@ -137,14 +140,14 @@
       Type = "notify";
       ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p ${mountDir}";
       ExecStart =
-        "${pkgs.rclone}/bin/rclone mount --config=${home}/.config/rclone/rclone.conf --vfs-cache-mode writes --vfs-read-chunk-streams 8 --vfs-read-chunk-size 64M --buffer-size 32M --vfs-cache-max-size 5G --transfers 8 --file-perms=0777 nas-secret: ${mountDir}";
+        "${pkgs.rclone}/bin/rclone mount --config=${home}/.config/rclone/rclone.conf --vfs-cache-mode writes --vfs-read-chunk-streams 8 --vfs-read-chunk-size 64M --buffer-size 32M --vfs-cache-max-size 5G --transfers 8 --file-perms=0777  nas-combined: ${mountDir}";
       ExecStop = "/run/wrappers/bin/fusermount -u ${mountDir}";
       Environment = [
         "PATH=/run/wrappers/bin/:$PATH"
-        "SSH_AUTH_SOCK=/run/user/1000/gnupg/S.gpg-agent.ssh"
+        "SSH_AUTH_SOCK=/run/user/1000/ssh-agent"
       ];
-      # Restart = "always";
-      # RestartSec = "60";
+      Restart = "on-failure";
+      RestartSec = "2";
     };
   };
 
