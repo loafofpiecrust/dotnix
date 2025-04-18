@@ -6,6 +6,8 @@
     # Make sure the commit used here matches the one from jovian-nixos to ensure
     # a good build for Kirby, and avoiding using a too-new commit that has no
     # cached derivations yet.
+    nixpkgs-kirby.url =
+      "github:nixos/nixpkgs/2c8d3f48d33929642c1c12cd243df4cc7d2ce434";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-wayland = {
       url = "github:nix-community/nixpkgs-wayland";
@@ -59,12 +61,12 @@
     # version of steam.
     jovian = {
       url = "github:Jovian-Experiments/Jovian-NixOS";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.nixpkgs.follows = "nixpkgs-kirby";
     };
   };
 
   outputs = { self, nixpkgs, nix-darwin, mac-app-util, emacs-overlay
-    , nixpkgs-unstable, nur, ... }@inputs:
+    , nixpkgs-unstable, nixpkgs-kirby, nur, ... }@inputs:
     let
       specialArgs = { inherit inputs; };
       sharedModule = host: nixpkgs: {
@@ -111,9 +113,7 @@
           ];
         };
       };
-      mkLinux = mkSystem nixpkgs.lib.nixosSystem nixpkgs;
-      mkUnstableLinux =
-        mkSystem nixpkgs-unstable.lib.nixosSystem nixpkgs-unstable;
+      mkLinux = nixpkgs: mkSystem nixpkgs.lib.nixosSystem nixpkgs;
       mkDarwin = mkSystem nix-darwin.lib.darwinSystem nixpkgs;
     in rec {
       # When you first setup a new machine, the hostname won't match yet.
@@ -123,9 +123,9 @@
       darwinConfigurations = (mkDarwin "aarch64-darwin" "PE-NTWDXW2TJW"
         ./systems/laptop-panorama-macos.nix);
 
-      nixosConfigurations = (mkLinux "x86_64-linux" "portable-spudger"
+      nixosConfigurations = ((mkLinux nixpkgs) "x86_64-linux" "portable-spudger"
         ./systems/framework-laptop.nix)
-        // (mkUnstableLinux "x86_64-linux" "kirby" ./systems/kirby.nix);
+        // ((mkLinux nixpkgs-kirby) "x86_64-linux" "kirby" ./systems/kirby.nix);
 
     };
 }
