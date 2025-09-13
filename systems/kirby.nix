@@ -182,6 +182,7 @@
     # Periodically scrub my ZFS pool to do self-healing, avoiding bitrot.
     autoScrub.enable = true;
     autoScrub.pools = [ "nas" ];
+    autoScrub.interval = "weekly";
 
     # Since I got BIG BOI drives, automatically take plenty of snapshots.
     autoSnapshot.enable = true;
