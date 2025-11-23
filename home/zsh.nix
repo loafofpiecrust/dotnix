@@ -61,7 +61,7 @@
       autoload -U compinit && compinit
       autoload -U bashcompinit && bashcompinit
     '';
-    initExtra = ''
+    initContent = ''
       (cat ~/.cache/colors/sequences &)
       bindkey ";3C" forward-word
       bindkey ";3D" backward-word

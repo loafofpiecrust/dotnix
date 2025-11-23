@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
     nixpkgs-bitwig.url = "github:nixos/nixpkgs/nixos-23.11";
     # nixpkgs-old.url = "github:nixos/nixpkgs/nixos-23.05";
     # Make sure the commit used here matches the one from jovian-nixos to ensure
@@ -16,7 +16,7 @@
     nixos-hardware.url = "github:nixos/nixos-hardware/master";
     nur.url = "github:nix-community/nur";
     home-manager = {
-      url = "github:nix-community/home-manager/release-24.11";
+      url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     emacs-overlay = {
@@ -24,21 +24,8 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
       inputs.nixpkgs-stable.follows = "nixpkgs";
     };
-    nix-doom-emacs = {
-      url = "github:vlaci/nix-doom-emacs";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.emacs-overlay.follows = "emacs-overlay";
-      # inputs.straight.follows = "straight";
-      inputs.doom-emacs.follows = "doom-emacs";
-    };
-    straight.url = "github:raxod502/straight.el";
-    straight.flake = false;
-    doom-emacs = {
-      url = "github:hlissner/doom-emacs/develop";
-      flake = false;
-    };
     nix-darwin = {
-      url = "github:lnl7/nix-darwin/nix-darwin-24.11";
+      url = "github:lnl7/nix-darwin/nix-darwin-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     mac-app-util.url = "github:hraban/mac-app-util";

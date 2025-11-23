@@ -1,3 +1,27 @@
+# Album fields:
+# - year: original release year of the album, not the pressing
+# - release_year: year of this specific pressing
+# - onplayer: whether to sync to iPod, assumed true
+# - bought_media (Vinyl, CD, Cassette, Digital Media): What media I bought this album on, if any
+# - media: What media this recording came from (e.g. 12" Vinyl, 8-track tape, CD)
+# - format: Digital encoding (e.g. FLAC, MP3)
+# - source: Where did I get the files from? (e.g. Rutracker, Bandcamp, Qobuz, Self)
+#
+# For example, I might have this album:
+# - year: 1977
+#   release_year: 2016
+#   bought_media: Vinyl (say I own a 1980s pressing in rough shape)
+#   media: CD (these files came from a CD)
+#   format: FLAC
+#   source: Rutracker (I downloaded a high quality CD rip instead of ripping my vinyl)
+#
+# Or, for an album I ripped myself:
+# - year: 1994
+#   release_year: 1994
+#   bought_media: CD (I own an original pressing CD)
+#   media: CD (these files came from a CD)
+#   format: FLAC
+#   source: Self (I ripped these files from my own media)
 directory: /mnt/music
 library: /mnt/music/beets-library.db
 original_date: yes
@@ -34,7 +58,7 @@ item_fields:
   # MF Doom is something special, with all of his alternate names
   subartist: albumartist_credit if not comp and albumartist.lower() != albumartist_credit.lower() else ''
   realyear: original_year if original_year != 0 and original_year < year else year
-plugins: the albumtypes rewrite inline alternatives fetchart convert fromfilename badfiles lastgenre replaygain info types zero unimported lyrics random edit
+plugins: the albumtypes rewrite inline alternatives fetchart convert fromfilename badfiles lastgenre replaygain info types zero unimported lyrics random edit smartplaylist dynamicrange
 aunique:
   keys: albumartist album year albumtype
   disambiguators: albumdisambig media country label catalognum
@@ -161,3 +185,12 @@ unimported:
 lyrics:
   auto: yes
   synced: yes
+smartplaylist:
+  relative_to: /mnt/music
+  playlist_dir: /mnt/music
+  forward_slash: no
+  playlists:
+    - name: ipod.m3u
+      query: "^onplayer:false"
+dynamicrange:
+  auto: no

@@ -63,7 +63,7 @@
     andika
 
     # symbols
-    symbola
+    # symbola
     emacs-all-the-icons-fonts
     font-awesome
 
@@ -111,6 +111,15 @@
         propagatedBuildInputs = old.propagatedBuildInputs
           ++ (with super; [ ueberzugpp mediainfo poppler_utils bat ]);
       });
+
+      xfce.xfburn = super.xfce.xfburn.overrideAttrs (old: {
+        buildInputs = old.buildInputs ++ (with super; [
+          gst_all_1.gst-plugins-good
+          gst_all_1.gst-plugins-bad
+          gst_all_1.gst-plugins-ugly
+        ]);
+      });
+
       # Patch libnotify to support replacing existing notifications.
       # libnotify = super.libnotify.overrideAttrs (old: {
       #   src = builtins.fetchGit {
