@@ -59,7 +59,7 @@
     plymouth.enable = false;
     loader.timeout = 1;
     loader.efi.efiSysMountPoint = "/boot/efi";
-    kernelPackages = pkgs.linuxKernel.packages.linux_6_6;
+    kernelPackages = pkgs.linuxKernel.packages.linux_6_12;
     kernelModules =
       [ "kvm-amd" "mt7921e" "hid-playstation" "btusb" "bluetooth" "btmtk" ];
     initrd.kernelModules = [ "amdgpu" "usbhid" "btmtk" "bluetooth" "btusb" ];
