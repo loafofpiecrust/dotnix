@@ -53,7 +53,7 @@
     enableSshSupport = lib.mkDefault true;
     defaultCacheTtl = 60 * 60;
     defaultCacheTtlSsh = 60 * 60;
-    pinentryPackage = pkgs.pinentry-gnome3;
+    pinentry.package = pkgs.pinentry-gnome3;
     extraConfig = ''
       display :0
     '';

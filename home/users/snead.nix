@@ -130,7 +130,7 @@
       Wants = [ "network-online.target" ];
       Description = "NAS mounted as an encrypted drive";
       StartLimitBurst = "5";
-      StartLimitIntervalSec = "10";
+      StartLimitIntervalSec = "60";
     };
     Install.WantedBy = [ "default.target" ];
     Service = let
@@ -140,14 +140,14 @@
       Type = "notify";
       ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p ${mountDir}";
       ExecStart =
-        "${pkgs.rclone}/bin/rclone mount --config=${home}/.config/rclone/rclone.conf --vfs-cache-mode writes --vfs-read-chunk-streams 8 --vfs-read-chunk-size 64M --buffer-size 32M --vfs-cache-max-size 5G --transfers 8 --file-perms=0777  nas-combined: ${mountDir}";
+        "${pkgs.rclone}/bin/rclone mount --config=${home}/.config/rclone/rclone.conf --vfs-cache-mode full --vfs-read-chunk-streams 8 --vfs-read-chunk-size 64M --buffer-size 32M --vfs-cache-max-size 5G --transfers 8 --checkers 10 --file-perms=0777 --dir-cache-time 1m nas-combined: ${mountDir}";
       ExecStop = "/run/wrappers/bin/fusermount -u ${mountDir}";
       Environment = [
         "PATH=/run/wrappers/bin/:$PATH"
         "SSH_AUTH_SOCK=/run/user/1000/ssh-agent"
       ];
       Restart = "on-failure";
-      RestartSec = "2";
+      RestartSec = "20";
     };
   };
 

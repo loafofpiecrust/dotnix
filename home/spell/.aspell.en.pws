@@ -1,4 +1,4 @@
-personal_ws-1.1 en 56
+personal_ws-1.1 en 57
 CERN
 Deserialize
 Extracurriculars
@@ -39,6 +39,7 @@ localhost
 microsd
 monomorphemic
 openssh
+outsole
 parsers
 repo
 schemas
