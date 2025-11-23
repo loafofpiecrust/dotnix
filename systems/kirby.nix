@@ -409,9 +409,7 @@
   # Switch back to sudo for this build to maximize compatibility.
   security.sudo.wheelNeedsPassword = false;
 
-  services.logind.extraConfig = ''
-    HandlePowerKey=poweroff
-  '';
+  services.logind.settings.Login = { HandlePowerKey = "poweroff"; };
 
   services.jellyfin = {
     enable = true;
