@@ -7,7 +7,7 @@
     # a good build for Kirby, and avoiding using a too-new commit that has no
     # cached derivations yet.
     nixpkgs-kirby.url =
-      "github:nixos/nixpkgs/2c8d3f48d33929642c1c12cd243df4cc7d2ce434";
+      "github:nixos/nixpkgs/b3d51a0365f6695e7dd5cdf3e180604530ed33b4";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-wayland = {
       url = "github:nix-community/nixpkgs-wayland";
@@ -47,7 +47,8 @@
     # but it means Kirby relies on that too, unless I backtrack to an old
     # version of steam.
     jovian = {
-      url = "github:Jovian-Experiments/Jovian-NixOS";
+      url =
+        "github:Jovian-Experiments/Jovian-NixOS/6178d787ee61b8586fdb0ccb8644fbfd5317d0f3";
       inputs.nixpkgs.follows = "nixpkgs-kirby";
     };
   };
