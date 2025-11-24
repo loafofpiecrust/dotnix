@@ -19,7 +19,7 @@
     nativeMessagingHosts = [ pkgs.tridactyl-native pkgs.fx-cast-bridge ];
     # package = pkgs.firefox-bin;
     profiles.default = {
-      extensions = with pkgs.nur.repos.rycee.firefox-addons; [
+      extensions.packages = with pkgs.nur.repos.rycee.firefox-addons; [
         # bitwarden
         ublock-origin
         # tridactyl
@@ -198,7 +198,7 @@
     nativeMessagingHosts = [ pkgs.tridactyl-native pkgs.fx-cast-bridge ];
     # package = pkgs.firefox-bin;
     profiles.default = {
-      extensions = with pkgs.nur.repos.rycee.firefox-addons; [
+      extensions.packages = with pkgs.nur.repos.rycee.firefox-addons; [
         # bitwarden
         ublock-origin
         # tridactyl
@@ -207,34 +207,34 @@
         #adsum-notabs
       ];
       isDefault = true;
-      search.default = "Kagi";
+      search.default = "kagi";
       search.engines = {
-        "Brave" = {
+        "brave" = {
           urls =
             [{ template = "https://search.brave.com/search?q={searchTerms}"; }];
         };
-        "Kagi" = {
+        "kagi" = {
           urls = [{ template = "https://kagi.com/search?q={searchTerms}"; }];
         };
-        "GitHub" = {
+        "github" = {
           urls = [{
             template =
               "https://github.com/search?q={searchTerms}&type=repositories";
           }];
           definedAliases = [ "!gh" ];
         };
-        "Amazon" = {
+        "amazon" = {
           urls = [{ template = "https://www.amazon.com/s?k={searchTerms}"; }];
           definedAliases = [ "!a" ];
         };
-        "YouTube" = {
+        "youtube" = {
           urls = [{
             template =
               "https://www.youtube.com/results?search_query={searchTerms}";
           }];
           definedAliases = [ "!y" ];
         };
-        "Wikipedia" = {
+        "wikipedia" = {
           urls = [{
             template =
               "https://en.wikipedia.org/wiki/Special:Search?go=Go&search={searchTerms}&ns0=1";
@@ -247,7 +247,7 @@
           }];
           definedAliases = [ "!so" ];
         };
-        "Google".metaData.alias = "!g";
+        "google".metaData.alias = "!g";
       };
       settings = {
         # Disable search suggestions
@@ -316,29 +316,29 @@
 
       # Tweak the Firefox controls themselves to save space and match my system
       # color scheme.
-      userChrome = let
-        light = config.lib.meta.theme.light;
-        dark = config.lib.meta.theme.dark;
-      in ''
-        :root {
-          --toolbar-field-focus-background-color: light-dark(${light.colors.surface2}, ${dark.colors.surface2}) !important;
-          --tab-selected-bgcolor: light-dark(${light.colors.surface2}, ${dark.colors.surface2}) !important;
-          --tab-block-margin: 3px !important;
-          --color-accent-primary: light-dark(${light.colors.focus}, ${dark.colors.focus}) !important;
-        }
-        #navigator-toolbox {
-          background-color: light-dark(${light.special.background}, ${dark.special.background}) !important;
-          color: light-dark(${light.special.foreground}, ${dark.special.foreground}) !important;
-          /* Hide the thin line between the tabs and the main viewport. */
-          border-bottom: none !important;
-        }
-        #nav-bar {
-          background-color: light-dark(${light.colors.surface1}, ${dark.colors.surface1}) !important;
-        }
-        .tab-label-container {
-          height: 2.2em !important;
-        }
-      '';
+      # userChrome = let
+      #   light = config.lib.meta.theme.light;
+      #   dark = config.lib.meta.theme.dark;
+      # in ''
+      #   :root {
+      #     --toolbar-field-focus-background-color: light-dark(${light.colors.surface2}, ${dark.colors.surface2}) !important;
+      #     --tab-selected-bgcolor: light-dark(${light.colors.surface2}, ${dark.colors.surface2}) !important;
+      #     --tab-block-margin: 3px !important;
+      #     --color-accent-primary: light-dark(${light.colors.focus}, ${dark.colors.focus}) !important;
+      #   }
+      #   #navigator-toolbox {
+      #     background-color: light-dark(${light.special.background}, ${dark.special.background}) !important;
+      #     color: light-dark(${light.special.foreground}, ${dark.special.foreground}) !important;
+      #     /* Hide the thin line between the tabs and the main viewport. */
+      #     border-bottom: none !important;
+      #   }
+      #   #nav-bar {
+      #     background-color: light-dark(${light.colors.surface1}, ${dark.colors.surface1}) !important;
+      #   }
+      #   .tab-label-container {
+      #     height: 2.2em !important;
+      #   }
+      # '';
       # extraConfig = builtins.readFile
       #   /home/snead/dotfiles/firefox/.mozilla/firefox/profile/user.js;
     };
@@ -349,7 +349,7 @@
     nativeMessagingHosts = [ pkgs.tridactyl-native pkgs.fx-cast-bridge ];
     # package = pkgs.firefox-bin;
     profiles.default = {
-      extensions = with pkgs.nur.repos.rycee.firefox-addons; [
+      extensions.packages = with pkgs.nur.repos.rycee.firefox-addons; [
         # bitwarden
         ublock-origin
         # tridactyl
@@ -358,34 +358,34 @@
         #adsum-notabs
       ];
       isDefault = true;
-      search.default = "Kagi";
+      search.default = "kagi";
       search.engines = {
-        "Brave" = {
+        "brave" = {
           urls =
             [{ template = "https://search.brave.com/search?q={searchTerms}"; }];
         };
-        "Kagi" = {
+        "kagi" = {
           urls = [{ template = "https://kagi.com/search?q={searchTerms}"; }];
         };
-        "GitHub" = {
+        "github" = {
           urls = [{
             template =
               "https://github.com/search?q={searchTerms}&type=repositories";
           }];
           definedAliases = [ "!gh" ];
         };
-        "Amazon" = {
+        "amazon" = {
           urls = [{ template = "https://www.amazon.com/s?k={searchTerms}"; }];
           definedAliases = [ "!a" ];
         };
-        "YouTube" = {
+        "youtube" = {
           urls = [{
             template =
               "https://www.youtube.com/results?search_query={searchTerms}";
           }];
           definedAliases = [ "!y" ];
         };
-        "Wikipedia" = {
+        "wikipedia" = {
           urls = [{
             template =
               "https://en.wikipedia.org/wiki/Special:Search?go=Go&search={searchTerms}&ns0=1";
@@ -398,7 +398,7 @@
           }];
           definedAliases = [ "!so" ];
         };
-        "Google".metaData.alias = "!g";
+        "google".metaData.alias = "!g";
       };
       settings = {
         # Disable search suggestions

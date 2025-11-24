@@ -49,11 +49,10 @@
     noto-fonts
     noto-fonts-cjk-sans
     # noto-fonts-emoji
-    noto-fonts-extra
     google-fonts
     merriweather
     liberation_ttf
-    ubuntu_font_family
+    ubuntu-classic
     # migu
     # dejavu_fonts
 
@@ -234,8 +233,6 @@
     ];
   };
 
-  environment.pathsToLink = [ "/share" ];
-
   # Provide default settings for any X11 sessions.
   services.xserver = {
     enable = lib.mkDefault true;
@@ -290,9 +287,6 @@
   # };
 
   # Enable full OpenGL support.
-  nixpkgs.config.packageOverrides = pkgs: {
-    vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
-  };
   nixpkgs.config.chromium.enableWideVine = true;
   nixpkgs.config.chromium.proprietaryCodecs = true;
   nixpkgs.config.ungoogled-chromium.enableWideVine = true;
