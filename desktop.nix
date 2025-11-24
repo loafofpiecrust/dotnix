@@ -3,7 +3,6 @@
 {
   imports = [
     ./nixos.nix
-    ./gui.nix
     ./wifi.nix
     ./bluetooth.nix
     inputs.nixos-hardware.nixosModules.common-pc
@@ -58,4 +57,6 @@
 
   programs.java.enable = true;
   programs.dconf.enable = true;
+
+  security.polkit.enable = true;
 }

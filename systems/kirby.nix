@@ -92,7 +92,7 @@
     # jellyfin
     # jellyfin-web
     jellyfin-ffmpeg
-    python
+    python3
     gnome.gvfs
     # kodi
     sc-controller
@@ -409,7 +409,7 @@
   # Switch back to sudo for this build to maximize compatibility.
   security.sudo.wheelNeedsPassword = false;
 
-  services.logind.settings.Login = { HandlePowerKey = "poweroff"; };
+  services.logind.settings.Login = { HandlePowerKey = lib.mkForce "poweroff"; };
 
   services.jellyfin = {
     enable = true;

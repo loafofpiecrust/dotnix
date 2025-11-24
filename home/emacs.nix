@@ -12,7 +12,7 @@
         emojify
         vterm
         emacsql
-        emacsql-sqlite
+        # emacsql-sqlite
         mu4e
         pkgs.mu
       ];

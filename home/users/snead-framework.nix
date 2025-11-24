@@ -18,6 +18,7 @@
     openscad-unstable
     kicad-small
     orca-slicer
+    blender
 
     # game dev
     godot_4
@@ -33,6 +34,8 @@
     flac
     filezilla
     qimgv
+    dbeaver-bin
+    asunder # CD ripping
 
     fontforge-gtk
     transmission-remote-gtk
@@ -85,7 +88,7 @@
   programs.ssh = {
     enable = true;
     addKeysToAgent = "yes";
-    controlMaster = "auto";
+    # controlMaster = "auto";
     forwardAgent = true;
     extraConfig = ''
       Host kirby
