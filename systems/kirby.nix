@@ -15,7 +15,7 @@
 
   system.stateVersion = "22.11";
 
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
 
   jovian.steam.enable = true;
   jovian.steam.autoStart = true;
@@ -169,6 +169,11 @@
   ];
   nixpkgs.config.kodi.enableAdvancedLauncher = true;
 
+  systemd.targets.sleep.enable = false;
+  systemd.targets.suspend.enable = false;
+  systemd.targets.hibernate.enable = false;
+  systemd.targets.hybrid-sleep.enable = false;
+
   location = {
     latitude = 37.820248;
     longitude = -122.284792;
@@ -261,18 +266,20 @@
   # GNOME autologin workaround
   systemd.services."getty@tty1".enable = false;
   systemd.services."autovt@tty1".enable = false;
+  services.displayManager = {
+    autoLogin.enable = false;
+    autoLogin.user = "shelby";
+    gdm.enable = false;
+    gdm.wayland = true;
+    defaultSession = "gamescope-wayland";
+  };
   services.xserver = {
     enable = true;
-    displayManager.autoLogin.enable = false;
-    displayManager.autoLogin.user = "shelby";
-    displayManager.gdm.enable = false;
-    displayManager.gdm.wayland = true;
-    displayManager.defaultSession = "gamescope-wayland";
     desktopManager.mate.enable = true;
     desktopManager.kodi.enable = false;
     desktopManager.kodi.package = pkgs.kodi;
-    layout = "us";
-    xkbVariant = "";
+    xkb.layout = "us";
+    xkb.variant = "";
   };
 
   networking.nat = {
