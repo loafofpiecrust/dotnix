@@ -174,6 +174,13 @@
   systemd.targets.hibernate.enable = false;
   systemd.targets.hybrid-sleep.enable = false;
 
+  systemd.sleep.extraConfig = ''
+    AllowSuspend=no
+    AllowHibernate=no
+    AllowHybridSleep=no
+    AllowSuspendThenHibernate=no
+  '';
+
   location = {
     latitude = 37.820248;
     longitude = -122.284792;
