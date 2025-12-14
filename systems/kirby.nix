@@ -367,8 +367,8 @@
       services.openvpn.servers.bahamas = {
         config = "config /home/shelby/documents/openvpn-strong/bahamas.ovpn";
         autoStart = true;
-        authUserPass.username = "***REMOVED***";
-        authUserPass.password = "***REMOVED***";
+        authUserPass.username = "***";
+        authUserPass.password = "***";
         updateResolvConf = true;
       };
       systemd.services.transmission.partOf = [ "openvpn-bahamas.service" ];
