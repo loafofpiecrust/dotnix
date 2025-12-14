@@ -101,7 +101,7 @@
     # chromium
     jq
     # gnome.zenity
-    transmission_4
+    # transmission_4
     # wine
     ddcutil
     ddcui
