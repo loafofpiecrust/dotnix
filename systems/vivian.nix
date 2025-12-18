@@ -229,7 +229,7 @@
         config = "config ${../openvpn-strong/bahamas.ovpn}";
         autoStart = true;
         authUserPass = secrets.pia.path;
-        # updateResolvConf = true;
+        updateResolvConf = true;
       };
       systemd.services.transmission.partOf = [ "openvpn-bahamas.service" ];
       systemd.services.transmission.after = [ "openvpn-bahamas.service" ];
@@ -280,8 +280,8 @@
   # working though.
   networking.nat = {
     enable = true;
-    internalInterfaces = [ "lo" "eno1" "ve-+" ];
-    externalInterface = "eno1";
+    internalInterfaces = [ "lo" "enp0s31f6" "ve-+" ];
+    externalInterface = "enp0s31f6";
     enableIPv6 = true;
     # Turn this back on if I add a password to transmission RPC.
     forwardPorts = [{
@@ -299,5 +299,6 @@
     mokutil
     clevis
     vim
+    net-tools
   ];
 }
