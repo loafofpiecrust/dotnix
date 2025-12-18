@@ -54,13 +54,14 @@
     # Unattended disk decryption with TPM encrypted password
     initrd.clevis.enable = true;
     initrd.clevis.devices."enc".secretFile = ./vivian/luks.jwe;
-    # initrd.luks.devices."enc".device = "/dev/disk/by-partlabel/disk-main-linux";
-    # loader.systemd-boot.enable = true;
+    initrd.luks.devices."enc".crypttabExtraOpts = [ "tpm2-device=auto" ];
   };
 
+  # Enable TPM2 support
   systemd.tpm2.enable = true;
   security.tpm2.enable = true;
 
+  # Start systemd early so it can enable access to the TPM2 module for disk decryption.
   boot.initrd.systemd.enable = true;
 
   # Rough location and time zone
@@ -84,9 +85,6 @@
     };
   };
 
-  networking.wireless.enable = true;
-  networking.wireless.networks.home = { ssid = "Crows Use Tools"; };
-
   # Run a persistent systemd session for my user so I can run backups
   # automatically as a user service.
   users.manageLingering = true;
@@ -98,15 +96,14 @@
   # System volume (NVMe) is btrfs, storage pool (HDD) is ZFS, plus swap
   boot.supportedFilesystems.zfs = true;
   # Don't hang the boot on importing zfs pools
-  # boot.zfs.forceImportAll = false;
+  boot.zfs.forceImportAll = false;
   fileSystems = {
-    # "/media/pool" = {
-    #   fsType = "zfs";
-    #   device = "nas";
-    #   options = [ "nofail" ];
-    # };
+    "/media/pool" = {
+      fsType = "zfs";
+      device = "nas";
+      options = [ "nofail" ];
+    };
   };
-  boot.initrd.luks.devices."enc".crypttabExtraOpts = [ "tpm2-device=auto" ];
 
   # Disk management services
   services.btrfs.autoScrub.enable = true;
