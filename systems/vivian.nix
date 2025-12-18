@@ -301,5 +301,6 @@
     clevis
     vim
     net-tools
+    e2fsprogs
   ];
 }
