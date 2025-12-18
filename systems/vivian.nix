@@ -162,6 +162,7 @@
 
   # Import secrets like service passwords
   age.secrets = { pia.file = ../secrets/pia-password.age; };
+  age.identityPaths = [ "/root/.ssh/id_ed25519" ];
 
   # Isolated container for torrent downloads that can only connect to the
   # internet through a VPN.
@@ -291,5 +292,6 @@
     sbctl
     mokutil
     clevis
+    vim
   ];
 }
