@@ -203,10 +203,10 @@
     config = { config, pkgs, ... }: {
       system.stateVersion = "25.11";
       networking.firewall.enable = true;
-      networking.nameservers = [ "1.1.1.1" "1.0.0.1" ];
       networking.firewall.allowedUDPPorts = [ 51413 ];
       networking.firewall.allowedTCPPorts = [ 51413 ];
       networking.firewall.checkReversePath = false;
+      services.resolved.enable = true;
 
       environment.systemPackages = with pkgs; [ net-tools dig ];
 
