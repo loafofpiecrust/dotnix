@@ -161,7 +161,7 @@
   };
 
   # Import secrets like service passwords
-  # age.secrets = { pia.file = ../secrets/pia-password.age; };
+  age.secrets = { pia.file = ../secrets/pia-password.age; };
 
   # Isolated container for torrent downloads that can only connect to the
   # internet through a VPN.
@@ -180,7 +180,7 @@
         hostPath = "/media/pool";
       };
       # Share certain secrets with the container
-      # "${secrets.pia.path}".isReadOnly = true;
+      "${secrets.pia.path}".isReadOnly = true;
     };
     forwardPorts = [
       # Web interface
@@ -218,12 +218,12 @@
         ProtectHome = lib.mkForce false;
       };
 
-      # services.openvpn.servers.bahamas = {
-      #   config = "config ${../openvpn-strong/bahamas.ovpn}";
-      #   autoStart = true;
-      #   authUserPass = secrets.pia.path;
-      #   updateResolvConf = true;
-      # };
+      services.openvpn.servers.bahamas = {
+        config = "config ${../openvpn-strong/bahamas.ovpn}";
+        autoStart = true;
+        authUserPass = secrets.pia.path;
+        updateResolvConf = true;
+      };
       systemd.services.transmission.partOf = [ "openvpn-bahamas.service" ];
       systemd.services.transmission.after = [ "openvpn-bahamas.service" ];
 
