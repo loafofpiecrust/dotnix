@@ -58,6 +58,9 @@
     # loader.systemd-boot.enable = true;
   };
 
+  systemd.tpm2.enable = true;
+  security.tpm2.enable = true;
+
   # Rough location and time zone
   location = {
     latitude = 37.820248;
