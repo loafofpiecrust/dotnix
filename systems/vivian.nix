@@ -206,8 +206,8 @@
       networking.firewall.allowedUDPPorts = [ 51413 ];
       networking.firewall.allowedTCPPorts = [ 51413 ];
       networking.firewall.checkReversePath = false;
-      networking.useHostResolvConf = false;
-      services.resolved.enable = true;
+      # networking.useHostResolvConf = false;
+      # services.resolved.enable = true;
 
       environment.systemPackages = with pkgs; [ net-tools dig ];
 
