@@ -48,7 +48,7 @@
     initrd.network.ssh.enable = true;
 
     # Don't wait for system selection when booting. Hold space to choose.
-    loader.timeout = 0;
+    loader.timeout = 2;
 
     # Use Limine bootloader since it supports secure boot
     loader.limine.enable = true;
@@ -100,6 +100,7 @@
   # Don't hang the boot on importing zfs pools
   boot.zfs.forceImportAll = false;
   fileSystems = {
+    "/var/lib".neededForBoot = true;
     "/media/pool" = {
       fsType = "zfs";
       device = "nas";
