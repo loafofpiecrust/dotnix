@@ -209,7 +209,7 @@
       networking.firewall.allowedTCPPorts = [ 51413 ];
       networking.firewall.checkReversePath = false;
 
-      environment.systemPackages = with pkgs; [ net-tools ];
+      environment.systemPackages = with pkgs; [ net-tools dig ];
 
       # Fix required in a container, see: https://github.com/NixOS/nixpkgs/issues/258793
       systemd.services.transmission.serviceConfig = {
