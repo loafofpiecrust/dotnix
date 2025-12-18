@@ -203,8 +203,7 @@
     config = { config, pkgs, ... }: {
       system.stateVersion = "25.11";
       networking.firewall.enable = true;
-      networking.useHostResolvConf = true;
-      # networking.nameservers = [ "1.1.1.1" "1.0.0.1" ];
+      networking.nameservers = [ "1.1.1.1" "1.0.0.1" ];
       networking.firewall.allowedUDPPorts = [ 51413 ];
       networking.firewall.allowedTCPPorts = [ 51413 ];
       networking.firewall.checkReversePath = false;
@@ -280,7 +279,7 @@
   # working though.
   networking.nat = {
     enable = true;
-    internalInterfaces = [ "lo" "eno1" "ve-transmission" ];
+    internalInterfaces = [ "lo" "eno1" "ve-+" ];
     externalInterface = "eno1";
     enableIPv6 = true;
     # Turn this back on if I add a password to transmission RPC.
