@@ -61,6 +61,8 @@
   systemd.tpm2.enable = true;
   security.tpm2.enable = true;
 
+  boot.initrd.systemd.enable = true;
+
   # Rough location and time zone
   location = {
     latitude = 37.820248;
@@ -104,6 +106,7 @@
     #   options = [ "nofail" ];
     # };
   };
+  boot.initrd.luks.devices."enc".crypttabExtraOpts = [ "tpm2-device=auto" ];
 
   # Disk management services
   services.btrfs.autoScrub.enable = true;
