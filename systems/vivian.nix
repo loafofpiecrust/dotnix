@@ -127,7 +127,7 @@
   networking.hostId = "b84291b8";
 
   # Use Cloudflare for DNS
-  networking.nameservers = [ "1.1.1.1" "1.0.0.1" ];
+  # networking.nameservers = [ "1.1.1.1" "1.0.0.1" ];
 
   # Allow myself remote access
   services.openssh = {
@@ -203,7 +203,8 @@
     config = { config, pkgs, ... }: {
       system.stateVersion = "25.11";
       networking.firewall.enable = true;
-      networking.nameservers = [ "1.1.1.1" "1.0.0.1" ];
+      networking.useHostResolvConf = true;
+      # networking.nameservers = [ "1.1.1.1" "1.0.0.1" ];
       networking.firewall.allowedUDPPorts = [ 51413 ];
       networking.firewall.allowedTCPPorts = [ 51413 ];
       networking.firewall.checkReversePath = false;
