@@ -161,7 +161,10 @@
   };
 
   # Import secrets like service passwords
-  age.secrets = { pia.file = ../secrets/pia-password.age; };
+  age.secrets = {
+    pia.file = ../secrets/pia-password.age;
+    pia.mode = "755";
+  };
   age.identityPaths = [ "/root/.ssh/id_ed25519" ];
 
   # Isolated container for torrent downloads that can only connect to the
@@ -204,6 +207,8 @@
       networking.firewall.allowedUDPPorts = [ 51413 ];
       networking.firewall.allowedTCPPorts = [ 51413 ];
       networking.firewall.checkReversePath = false;
+
+      environment.systemPackages = with pkgs; [ net-tools ];
 
       # Fix required in a container, see: https://github.com/NixOS/nixpkgs/issues/258793
       systemd.services.transmission.serviceConfig = {
