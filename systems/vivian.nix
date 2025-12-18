@@ -229,7 +229,7 @@
         config = "config ${../openvpn-strong/bahamas.ovpn}";
         autoStart = true;
         authUserPass = secrets.pia.path;
-        updateResolvConf = true;
+        # updateResolvConf = true;
       };
       systemd.services.transmission.partOf = [ "openvpn-bahamas.service" ];
       systemd.services.transmission.after = [ "openvpn-bahamas.service" ];
