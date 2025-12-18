@@ -1,9 +1,16 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, inputs, ... }: {
+  imports = [ ./nixos.nix inputs.home-manager.nixosModules.home-manager ];
 
-{
-  imports = [ ./nixos.nix ];
+  # Home Manager setup
+  home-manager.extraSpecialArgs = {
+    inherit inputs;
+    systemConfig = config;
+  };
+  home-manager.backupFileExtension = "bak";
+  home-manager.useGlobalPkgs = true;
+  home-manager.useUserPackages = true;
+
   # Disable UI stuff
-  environment.noXlibs = true;
   services.udisks2.enable = lib.mkDefault false;
   xdg.autostart.enable = false;
   xdg.mime.enable = false;
@@ -18,8 +25,8 @@
   programs.zsh.enable = false;
 
   # Servers don't usually need to print.
-  services.printing.enable = false;
-  hardware.sane.enable = false;
+  services.printing.enable = lib.mkDefault false;
+  hardware.sane.enable = lib.mkDefault false;
 
   # Turn off X
   services.xserver.enable = false;
@@ -30,18 +37,17 @@
   networking.firewall.enable = true;
 
   # Ignore lid events, in case this is a laptop server.
-  services.logind.lidSwitch = "ignore";
+  services.logind.settings.Login.HandleLidSwitch = "ignore";
 
   # Turn OFF any bluetooth hardware for servers.
-  hardware.bluetooth.enable = false;
+  hardware.bluetooth.enable = lib.mkDefault false;
 
   # Turn off audio hardware for servers.
-  sound.enable = false;
   services.pipewire.enable = false;
 
   # Allow the server to be resolved by hostname on the local network ('steve.local')
   services.avahi.publish = {
-    enable = true;
+    enable = lib.mkDefault true;
     addresses = true;
     domain = true;
   };

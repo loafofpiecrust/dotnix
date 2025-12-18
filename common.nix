@@ -1,5 +1,5 @@
 { config, lib, pkgs, inputs, ... }: {
-  imports = [ ./cachix.nix ];
+  imports = [ ./cachix.nix ./overrides.nix ];
 
   environment.systemPackages = with pkgs; [
     zlib

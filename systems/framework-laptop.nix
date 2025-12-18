@@ -29,7 +29,7 @@
 
   # Setup basic boot options and kernel modules.
   boot = {
-    plymouth.enable = false;
+    # plymouth.enable = false;
     # Use the latest LTS kernel because those keep getting patch updates for 2+ years.
     # Let's try the latest version...
     kernelPackages = pkgs.linuxKernel.packages.linux_6_12;
@@ -120,7 +120,7 @@
   # over a minute while it looks for my phone.
   # networking.interfaces.enp0s20f0u1.useDHCP = true;
   # I don't need fwupd running since this machine has all the updates by now.
-  services.fwupd.enable = false;
+  # services.fwupd.enable = false;
 
   users.mutableUsers = false;
   users.defaultUserShell = pkgs.zsh;
@@ -155,19 +155,19 @@
         "$6$PFZjyXdf7W2cu3$55Iw6UjpcdB29fb4RIPcaYFY5Ehtuc9MFZaJBa9wlRbgYxRrDAP0tlApOiIsQY7hoeO9XG7xxiIcsjGYc9QXu1";
     };
 
-    work = {
-      inherit extraGroups;
-      isNormalUser = true;
-      hashedPassword =
-        "$6$KdJ7E2kLCXKj0knB$xh70j/AmbevG3fpQAqwDK6uX5lWvB7DT/36WsFB6rivFw/cndbhgWCf.krQ4fo77o8.zDjU693QfcbEzED7k.0";
-    };
+    # work = {
+    #   inherit extraGroups;
+    #   isNormalUser = true;
+    #   hashedPassword =
+    #     "$6$KdJ7E2kLCXKj0knB$xh70j/AmbevG3fpQAqwDK6uX5lWvB7DT/36WsFB6rivFw/cndbhgWCf.krQ4fo77o8.zDjU693QfcbEzED7k.0";
+    # };
 
     root.hashedPassword =
       "$6$PFZjyXdf7W2cu3$55Iw6UjpcdB29fb4RIPcaYFY5Ehtuc9MFZaJBa9wlRbgYxRrDAP0tlApOiIsQY7hoeO9XG7xxiIcsjGYc9QXu1";
   };
 
   home-manager.users.snead = ../home/users/snead-framework.nix;
-  home-manager.users.work = ../home/users/work.nix;
+  # home-manager.users.work = ../home/users/work.nix;
 
   # Sway is my primary WM since X doesn't do scaling well.
   programs.sway.enable = true;
@@ -258,7 +258,7 @@
 
   # Let's try out bluetooth!
   hardware.bluetooth.enable = true;
-  hardware.bluetooth.powerOnBoot = false;
+  hardware.bluetooth.powerOnBoot = true;
 
   # Open the shitload of ports apparently required to connect to my Bambu A1
   # printer over LAN.
@@ -388,7 +388,7 @@
   # This thing has an ambient light sensor?!
   # hardware.sensor.iio.enable = true;
 
-  services.power-profiles-daemon.package = pkgs.unstable.power-profiles-daemon;
+  # services.power-profiles-daemon.package = pkgs.unstable.power-profiles-daemon;
 
   programs.hyprland = {
     enable = true;

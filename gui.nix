@@ -108,7 +108,7 @@
       # Add extra dependencies for ranger to have improved file previews.
       ranger-plus = super.ranger.overrideAttrs (old: {
         propagatedBuildInputs = old.propagatedBuildInputs
-          ++ (with super; [ ueberzugpp mediainfo poppler_utils bat ]);
+          ++ (with super; [ ueberzugpp mediainfo poppler-utils bat ]);
       });
 
       xfce.xfburn = super.xfce.xfburn.overrideAttrs (old: {
@@ -199,7 +199,7 @@
   programs.xwayland.enable = true;
   # Configure sway if I happen to want it in my setup.
   programs.sway = {
-    package = pkgs.unstable.swayfx;
+    package = pkgs.swayfx;
     # package = pkgs.unstable.sway;
     # enable = true;
     extraPackages = with pkgs; [

@@ -74,7 +74,6 @@
       "bluetooth"
       "btmtk"
     ];
-    kernelParams = [ "quiet" ];
     kernel.sysctl = {
       "kernel.nmi_watchdog" = 0;
       "vm.dirty_writeback_centisecs" = 6000;
@@ -91,7 +90,7 @@
     sublime4
     # jellyfin
     # jellyfin-web
-    jellyfin-ffmpeg
+    # jellyfin-ffmpeg
     python3
     gnome.gvfs
     # kodi
@@ -107,12 +106,12 @@
     ddcui
   ];
 
-  systemd.services.jellyfin.wants = lib.mkForce [ "network-online.target" ];
-  systemd.services.jellyfin-proxy = {
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig.ExecStart =
-      "${pkgs.ssl-proxy}/bin/ssl-proxy -from 0.0.0.0:443 -to 127.0.0.1:8096 -domain=server.snead.xyz -redirectHTTP";
-  };
+  # systemd.services.jellyfin.wants = lib.mkForce [ "network-online.target" ];
+  # systemd.services.jellyfin-proxy = {
+  #   wantedBy = [ "multi-user.target" ];
+  #   serviceConfig.ExecStart =
+  #     "${pkgs.ssl-proxy}/bin/ssl-proxy -from 0.0.0.0:443 -to 127.0.0.1:8096 -domain=server.snead.xyz -redirectHTTP";
+  # };
 
   nixpkgs.config.permittedInsecurePackages =
     [ "python-2.7.18.8" "openssl-1.1.1w" ];
@@ -189,28 +188,27 @@
 
   # Do a monthly scrub of the btrfs volume.
   services.btrfs.autoScrub.enable = true;
-  services.btrfs.autoScrub.fileSystems = [ "/" "/drives/hdd" ];
-  services.zfs = {
-    # Periodically scrub my ZFS pool to do self-healing, avoiding bitrot.
-    autoScrub.enable = true;
-    autoScrub.pools = [ "nas" ];
-    autoScrub.interval = "weekly";
+  services.btrfs.autoScrub.fileSystems = [ "/" "/media/hdd" ];
+  # services.zfs = {
+  #   # Periodically scrub my ZFS pool to do self-healing, avoiding bitrot.
+  #   autoScrub.enable = true;
+  #   autoScrub.pools = [ "nas" ];
+  #   autoScrub.interval = "weekly";
 
-    # Since I got BIG BOI drives, automatically take plenty of snapshots.
-    autoSnapshot.enable = true;
-    # Name snapshots with UTC to avoid daylight savings issues.
-    autoSnapshot.flags = "-k -p --utc";
-    autoSnapshot.monthly = 6;
-  };
+  #   # Since I got BIG BOI drives, automatically take plenty of snapshots.
+  #   autoSnapshot.enable = true;
+  #   # Name snapshots with UTC to avoid daylight savings issues.
+  #   autoSnapshot.flags = "-k -p --utc";
+  #   autoSnapshot.monthly = 6;
+  # };
 
-  boot.supportedFilesystems.zfs = true;
+  # boot.supportedFilesystems.zfs = true;
   # This identifies the owner machine for the ZFS pool. Keep the host ID even if
   # the desktop dies, as long as it's an x86_64 linux machine. (currently all AMD)
   # The ZFS version mustn't be downgraded, nor the kernel version from 6.6
   networking.hostId = "aa544e7d";
   fileSystems = let
     front-nvme = "/dev/disk/by-label/linux";
-    rear-nvme = "/dev/disk/by-label/nvme";
     sata-ssd = "/dev/disk/by-label/zip-zap";
     hdd = "/dev/disk/by-label/slowboss";
     subvolume = disk: name: {
@@ -225,11 +223,6 @@
       fsType = "btrfs";
       options = [ "compress=zstd" "noatime" "nofail" ];
     };
-    "/media/rear-nvme" = {
-      device = rear-nvme;
-      fsType = "ntfs";
-      options = [ "noatime" ];
-    };
     "/media/sata-ssd" = {
       device = sata-ssd;
       fsType = "ntfs";
@@ -241,11 +234,11 @@
       fsType = "vfat";
     };
 
-    "/media/pool" = {
-      fsType = "zfs";
-      device = "nas"; # check name from zpool status
-      options = [ "nofail" ];
-    };
+    # "/media/pool" = {
+    #   fsType = "zfs";
+    #   device = "nas"; # check name from zpool status
+    #   options = [ "nofail" ];
+    # };
   };
   swapDevices = [{ device = "/dev/disk/by-label/swap"; }];
 
@@ -283,153 +276,149 @@
   services.xserver = {
     enable = true;
     desktopManager.mate.enable = true;
-    desktopManager.kodi.enable = false;
-    desktopManager.kodi.package = pkgs.kodi;
     xkb.layout = "us";
     xkb.variant = "";
   };
 
   networking.nat = {
     enable = true;
-    internalInterfaces = [ "lo" "eno1" "ve-transmission" ];
+    internalInterfaces = [ "lo" "eno1" ];
     externalInterface = "eno1";
     enableIPv6 = true;
-    # Turn this back on if I add a password to transmission RPC.
-    forwardPorts = [{
-      destination = "192.168.100.10:51413";
-      sourcePort = 51413;
-      proto = "udp";
-    }];
   };
 
   networking.firewall.enable = true;
   networking.firewall.allowedTCPPorts = [ 443 22 8096 80 ];
   networking.firewall.allowedUDPPorts = [ 1194 51413 ];
 
-  containers.transmission = {
-    autoStart = true;
-    enableTun = true;
-    privateNetwork = true;
-    hostAddress = "192.168.100.10";
-    localAddress = "192.168.100.11";
-    bindMounts.home = {
-      isReadOnly = false;
-      mountPoint = "/home/shelby";
-      hostPath = "/home/shelby";
-    };
-    bindMounts.hdd = {
-      isReadOnly = false;
-      mountPoint = "/media/hdd";
-      hostPath = "/media/hdd";
-    };
-    bindMounts.pool = {
-      isReadOnly = false;
-      mountPoint = "/media/pool";
-      hostPath = "/media/pool";
-    };
-    forwardPorts = [
-      {
-        protocol = "tcp";
-        hostPort = 9091;
-        containerPort = 9091;
-      }
-      {
-        protocol = "udp";
-        hostPort = 51413;
-        containerPort = 51413;
-      }
-    ];
-    config = { config, pkgs, ... }: {
-      system.stateVersion = "24.05";
-      networking.firewall.enable = true;
-      # environment.etc."resolv.conf".text = "nameserver 8.8.8.8";
-      networking.nameservers = [ "1.1.1.1" "1.0.0.1" ];
-      networking.firewall.allowedUDPPorts = [ 51413 ];
-      networking.firewall.allowedTCPPorts = [ 51413 ];
-      networking.firewall.checkReversePath = false;
-      # networking.firewall.trustedInterfaces = [ "eth0" ];
+  # age.secrets.pia.file = ../secrets/pia-password.age;
+  # age.identityPaths = [ "/home/shelby/.ssh/id_ed25519" ];
 
-      # Torrenting setup: Transmission server, allowing traffic only over VPN
-      # Fix required in a container, see: https://github.com/NixOS/nixpkgs/issues/258793
-      systemd.services.transmission.serviceConfig = {
-        RootDirectoryStartOnly = lib.mkForce false;
-        RootDirectory = lib.mkForce "";
-        BindReadOnlyPaths = lib.mkForce [ builtins.storeDir "/etc" ];
-        # Allow transmission to more easily write to my bound home directory.
-        # This is okay because we're already inside a container, isolating us
-        # from the host system.
-        BindPaths = [ "/home/shelby" "/media/hdd" "/media/pool" ];
-        PrivateMounts = lib.mkForce false;
-        PrivateUsers = lib.mkForce false;
-        ProtectHome = lib.mkForce false;
-      };
+  # containers.transmission = {
+  #   autoStart = true;
+  #   enableTun = true;
+  #   privateNetwork = true;
+  #   hostAddress = "192.168.100.10";
+  #   localAddress = "192.168.100.11";
+  #   bindMounts.home = {
+  #     isReadOnly = false;
+  #     mountPoint = "/home/shelby";
+  #     hostPath = "/home/shelby";
+  #   };
+  #   bindMounts.hdd = {
+  #     isReadOnly = false;
+  #     mountPoint = "/media/hdd";
+  #     hostPath = "/media/hdd";
+  #   };
+  #   bindMounts.pool = {
+  #     isReadOnly = false;
+  #     mountPoint = "/media/pool";
+  #     hostPath = "/media/pool";
+  #   };
+  #   bindMounts."${config.age.secrets.pia.path}".isReadOnly = true;
+  #   forwardPorts = [
+  #     {
+  #       protocol = "tcp";
+  #       hostPort = 9091;
+  #       containerPort = 9091;
+  #     }
+  #     {
+  #       protocol = "udp";
+  #       hostPort = 51413;
+  #       containerPort = 51413;
+  #     }
+  #   ];
+  #   config = let secrets = config.age.secrets;
+  #   in { config, pkgs, ... }: {
+  #     system.stateVersion = "24.05";
+  #     networking.firewall.enable = true;
+  #     # environment.etc."resolv.conf".text = "nameserver 8.8.8.8";
+  #     networking.nameservers = [ "1.1.1.1" "1.0.0.1" ];
+  #     networking.firewall.allowedUDPPorts = [ 51413 ];
+  #     networking.firewall.allowedTCPPorts = [ 51413 ];
+  #     networking.firewall.checkReversePath = false;
+  #     # networking.firewall.trustedInterfaces = [ "eth0" ];
 
-      services.openvpn.servers.bahamas = {
-        config = "config /home/shelby/documents/openvpn-strong/bahamas.ovpn";
-        autoStart = true;
-        authUserPass.username = "***";
-        authUserPass.password = "***";
-        updateResolvConf = true;
-      };
-      systemd.services.transmission.partOf = [ "openvpn-bahamas.service" ];
-      systemd.services.transmission.after = [ "openvpn-bahamas.service" ];
+  #     # Torrenting setup: Transmission server, allowing traffic only over VPN
+  #     # Fix required in a container, see: https://github.com/NixOS/nixpkgs/issues/258793
+  #     systemd.services.transmission.serviceConfig = {
+  #       RootDirectoryStartOnly = lib.mkForce false;
+  #       RootDirectory = lib.mkForce "";
+  #       BindReadOnlyPaths = lib.mkForce [ builtins.storeDir "/etc" ];
+  #       # Allow transmission to more easily write to my bound home directory.
+  #       # This is okay because we're already inside a container, isolating us
+  #       # from the host system.
+  #       BindPaths = [ "/home/shelby" "/media/hdd" "/media/pool" ];
+  #       PrivateMounts = lib.mkForce false;
+  #       PrivateUsers = lib.mkForce false;
+  #       ProtectHome = lib.mkForce false;
+  #     };
 
-      environment.systemPackages = with pkgs; [ http-server tcpdump ];
+  #     services.openvpn.servers.bahamas = {
+  #       config = "config ${../openvpn-strong/bahamas.ovpn}";
+  #       autoStart = true;
+  #       authUserPass = secrets.pia.path;
+  #       updateResolvConf = true;
+  #     };
+  #     systemd.services.transmission.partOf = [ "openvpn-bahamas.service" ];
+  #     systemd.services.transmission.after = [ "openvpn-bahamas.service" ];
 
-      services.transmission = {
-        enable = true;
-        package = pkgs.transmission_4;
-        user = "transmission";
-        group = "transmission";
-        openPeerPorts = true;
-        openRPCPort = true;
-        downloadDirPermissions = "777";
-        settings = {
-          message-level = 5;
-          umask = 0;
-          download-dir = "/home/shelby";
-          watch-dir-enabled = false;
-          watch-dir = "/home/shelby/torrents";
-          incomplete-dir-enabled = false;
-          trash-original-torrent-files = true;
-          preallocation = 0;
-          download-queue-size = 6;
-          speed-limit-down-enabled = true;
-          speed-limit-down = 4096;
-          speed-limit-up-enabled = true;
-          speed-limit-up = 90;
-          rpc-bind-address = "0.0.0.0";
-          rpc-whitelist-enabled = true;
-          rpc-whitelist = "192.168.*.*,127.0.0.1";
-          rpc-host-whitelist-enabled = false;
-          ratio-limit = 4.0;
-          ratio-limit-enabled = true;
-        };
-      };
+  #     environment.systemPackages = with pkgs; [ http-server tcpdump ];
 
-      # Only allow internet to transmission through the VPN.
-      # Also explicitly allow connections on port 9091 through eth0, which is
-      # required for RPC connections.
-      networking.firewall.extraCommands = ''
-        iptables -A OUTPUT -m owner --gid-owner transmission -p tcp --sport 9091 -o eth0 -j ACCEPT
-        iptables -A OUTPUT -m owner --gid-owner transmission -o tun0 -j ACCEPT
-        iptables -A OUTPUT -m owner --gid-owner transmission -o lo -j ACCEPT
-        iptables -A OUTPUT -m owner --gid-owner transmission -j REJECT
-      '';
+  #     services.transmission = {
+  #       enable = true;
+  #       package = pkgs.transmission_4;
+  #       user = "transmission";
+  #       group = "transmission";
+  #       openPeerPorts = true;
+  #       openRPCPort = true;
+  #       downloadDirPermissions = "777";
+  #       settings = {
+  #         message-level = 5;
+  #         umask = 0;
+  #         download-dir = "/home/shelby";
+  #         watch-dir-enabled = false;
+  #         watch-dir = "/home/shelby/torrents";
+  #         incomplete-dir-enabled = false;
+  #         trash-original-torrent-files = true;
+  #         preallocation = 0;
+  #         download-queue-size = 6;
+  #         speed-limit-down-enabled = true;
+  #         speed-limit-down = 4096;
+  #         speed-limit-up-enabled = true;
+  #         speed-limit-up = 90;
+  #         rpc-bind-address = "0.0.0.0";
+  #         rpc-whitelist-enabled = true;
+  #         rpc-whitelist = "192.168.*.*,127.0.0.1";
+  #         rpc-host-whitelist-enabled = false;
+  #         ratio-limit = 4.0;
+  #         ratio-limit-enabled = true;
+  #       };
+  #     };
 
-    };
-  };
+  #     # Only allow internet to transmission through the VPN.
+  #     # Also explicitly allow connections on port 9091 through eth0, which is
+  #     # required for RPC connections.
+  #     networking.firewall.extraCommands = ''
+  #       iptables -A OUTPUT -m owner --gid-owner transmission -p tcp --sport 9091 -o eth0 -j ACCEPT
+  #       iptables -A OUTPUT -m owner --gid-owner transmission -o tun0 -j ACCEPT
+  #       iptables -A OUTPUT -m owner --gid-owner transmission -o lo -j ACCEPT
+  #       iptables -A OUTPUT -m owner --gid-owner transmission -j REJECT
+  #     '';
+
+  #   };
+  # };
 
   # Switch back to sudo for this build to maximize compatibility.
   security.sudo.wheelNeedsPassword = false;
 
   services.logind.settings.Login = { HandlePowerKey = lib.mkForce "poweroff"; };
 
-  services.jellyfin = {
-    enable = true;
-    user = "shelby";
-    openFirewall = true;
-  };
+  # services.jellyfin = {
+  #   enable = true;
+  #   user = "shelby";
+  #   openFirewall = true;
+  # };
 
   # Allows SSH during boot to debug failed boot remotely.
   boot.initrd.network.ssh.enable = true;

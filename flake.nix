@@ -1,13 +1,12 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nixpkgs-bitwig.url = "github:nixos/nixpkgs/nixos-23.11";
     # nixpkgs-old.url = "github:nixos/nixpkgs/nixos-23.05";
     # Make sure the commit used here matches the one from jovian-nixos to ensure
     # a good build for Kirby, and avoiding using a too-new commit that has no
     # cached derivations yet.
-    nixpkgs-kirby.url =
-      "github:nixos/nixpkgs/b3d51a0365f6695e7dd5cdf3e180604530ed33b4";
+    nixpkgs-kirby.url = "github:nixos/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-wayland = {
       url = "github:nix-community/nixpkgs-wayland";
@@ -16,7 +15,7 @@
     nixos-hardware.url = "github:nixos/nixos-hardware/master";
     nur.url = "github:nix-community/nur";
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.05";
+      url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     emacs-overlay = {
@@ -34,10 +33,6 @@
     #   url = "github:hyprwm/Hyprland";
     #   inputs.nixpkgs.follows = "nixpkgs-unstable";
     # };
-    iwmenu = {
-      url = "github:e-tho/iwmenu";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     nix-colorizer.url = "github:nutsalhan87/nix-colorizer";
     spicetify-nix = {
       url = "github:Gerg-L/spicetify-nix";
@@ -51,6 +46,15 @@
         "github:Jovian-Experiments/Jovian-NixOS/6178d787ee61b8586fdb0ccb8644fbfd5317d0f3";
       inputs.nixpkgs.follows = "nixpkgs-kirby";
     };
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, nixpkgs, nix-darwin, mac-app-util, emacs-overlay
@@ -63,6 +67,7 @@
           nixos-hardware.flake = inputs.nixos-hardware;
           nixpkgs-unstable.flake = inputs.nixpkgs-unstable;
           nur.flake = inputs.nur;
+          agenix.flake = inputs.agenix;
         };
         nixpkgs.overlays = [
           (import emacs-overlay)
@@ -113,7 +118,7 @@
 
       nixosConfigurations = ((mkLinux nixpkgs) "x86_64-linux" "portable-spudger"
         ./systems/framework-laptop.nix)
-        // ((mkLinux nixpkgs-kirby) "x86_64-linux" "kirby" ./systems/kirby.nix);
-
+        // ((mkLinux nixpkgs-kirby) "x86_64-linux" "kirby" ./systems/kirby.nix)
+        // ((mkLinux nixpkgs) "x86_64-linux" "vivian" ./systems/vivian.nix);
     };
 }

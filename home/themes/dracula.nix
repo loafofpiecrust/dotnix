@@ -1,11 +1,7 @@
 { colorizer }:
 let
-  darken = color: percent:
-    colorizer.oklchToHex
-    (colorizer.darken (colorizer.hexToOklch color) percent);
-  lighten = color: percent:
-    colorizer.oklchToHex
-    (colorizer.lighten (colorizer.hexToOklch color) percent);
+  darken = color: percent: colorizer.hex.darken color percent;
+  lighten = color: percent: colorizer.hex.lighten color percent;
 in rec {
   dark = rec {
     commands = { emacs = "(load-theme 'modus-vivendi-tinted)"; };

@@ -34,7 +34,7 @@ let
 in {
   lib.meta.theme = theme;
   home.packages = with pkgs; [
-    inputs.iwmenu.packages.${pkgs.system}.default
+    iwmenu
     inotify-tools
     sunwait
     mako
@@ -42,9 +42,9 @@ in {
     pamixer
     swww
     clipman
-    rofi-wayland
+    rofi
     rofi-rbw-wayland
-    bitwarden
+    bitwarden-desktop
     nwg-wrapper
     swaynotificationcenter
     pamixer
@@ -72,7 +72,7 @@ in {
     # '')
     (pkgs.writeShellApplication {
       name = "generate-password";
-      runtimeInputs = [ dotool rbw rofi-wayland ];
+      runtimeInputs = [ dotool rbw rofi ];
       text = builtins.readFile ./scripts/generate-password.sh;
     })
     (pkgs.writeShellScriptBin "set-volume" ''
@@ -614,7 +614,7 @@ in {
         text = builtins.readFile ./scripts/auto-power-profile.sh;
         runtimeInputs = with pkgs; [
           inotify-tools
-          unstable.power-profiles-daemon
+          power-profiles-daemon
           coreutils
         ];
       };

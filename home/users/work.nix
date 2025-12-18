@@ -10,6 +10,9 @@
     ../sway.nix
     ../zsh.nix
   ];
+
+  home.stateVersion = lib.mkDefault "21.05";
+
   home.packages = with pkgs; [ # teams
     unstable.zoom-us
     unstable.slack

@@ -35,14 +35,14 @@
 
   services.logind = {
     # killUserProcesses = true;
-    lidSwitch = "suspend";
-    lidSwitchExternalPower = config.services.logind.lidSwitch;
+    lidSwitchExternalPower = "suspend";
     powerKey = "poweroff";
     powerKeyLongPress = "poweroff";
-    extraConfig = ''
-      IdleAction=suspend
-      IdleActionSec=600
-    '';
+    settings.Login = {
+      IdleAction = "suspend";
+      IdleActionSec = "600";
+      HandleLidSwitch = "suspend";
+    };
   };
   # systemd.sleep.extraConfig = ''
   #   HibernateDelaySec=1h

@@ -12,6 +12,9 @@
         emojify
         vterm
         emacsql
+        tree-sitter
+        tree-sitter-langs
+        treesit-grammars.with-all-grammars
         # emacsql-sqlite
         mu4e
         pkgs.mu

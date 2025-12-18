@@ -1,5 +1,5 @@
 { config, lib, pkgs, inputs, ... }: {
-  imports = [ ./common.nix ];
+  imports = [ ./common.nix inputs.agenix.nixosModules.default ];
 
   # IMPORTANT! Allows system to load firmware directly from hardware devices.
   hardware.enableRedistributableFirmware = true;
@@ -86,7 +86,7 @@
   environment.systemPackages = with pkgs; [
     # nixos necessities
     nix-prefetch-git
-    cachix
+    # cachix
     fzf
 
     # system tools

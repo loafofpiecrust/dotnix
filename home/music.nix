@@ -10,15 +10,24 @@
 
   home.packages = with pkgs; [
     # simple cli for mpd management
-    mpc-cli
+    mpc
     # Classic terminal mpd player
     ncmpcpp
     # Newer terminal mpd player with album art support
-    unstable.rmpc
+    rmpc
     mediainfo
     ffmpegthumbnailer
     # GTK player focused on album covers
     plattenalbum
+
+    # Music collection management
+    strawberry # pretty good music player
+    # deadbeef # simple backup music player, in case QT is broken.
+    flacon # extracts disc files into individual tracks
+    sox # resamples FLAC files
+    monkeysAudio # converts .ape files
+    normalize # normalizes volume within a folder, good for making mix CDs
+    wavpack
   ];
 
   # Default port should be localhost:6600
