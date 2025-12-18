@@ -167,7 +167,7 @@
   # internet through a VPN.
   containers.torrent = let secrets = config.age.secrets;
   in {
-    autoStart = false;
+    autoStart = true;
     enableTun = true;
     privateNetwork = true;
     hostAddress = "192.168.100.10";
