@@ -335,22 +335,7 @@
   services.gpg-agent.enableSshSupport = false;
   services.ssh-agent.enable = true;
 
-  programs.ssh = {
-    enable = true;
-    addKeysToAgent = "yes";
-    # controlMaster = "auto";
-    forwardAgent = true;
-    extraConfig = ''
-      Host kirby
-        IdentityFile ~/.ssh/id_ed25519
-        User shelby
-      # Automatically use LAN IP for my server when at home and public domain away from home.
-      Match host kirby exec "iwctl station wlan0 show | rg 'Crows Use Tools'"
-        Hostname 192.168.0.109
-      Match host kirby
-        Hostname server.snead.xyz
-    '';
-  };
+  home.file.".ssh/config".source = config.lib.meta.mkMutableSymlink ../ssh.conf;
 
   programs.rclone = {
     enable = true;

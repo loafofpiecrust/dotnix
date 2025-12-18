@@ -7,6 +7,9 @@
 #
 # Remote update steps:
 # nixos-rebuild boot --target-host shelby@vivian --flake .#vivian --fast --use-remote-sudo
+#
+# Except DO NOT do remote deploys on this machine because it fails to properly
+# copy over the LUKS secret to store in TPM.
 { config, lib, pkgs, inputs, ... }: {
   imports = [
     ../server.nix
@@ -44,9 +47,8 @@
     # Allows SSH during boot to debug failed boot remotely.
     initrd.network.ssh.enable = true;
 
-    # Don't wait long for system selection when booting.
+    # Don't wait for system selection when booting. Hold space to choose.
     loader.timeout = 0;
-    # loader.efi.efiSysMountPoint = "/boot/efi";
 
     # Use Limine bootloader since it supports secure boot
     loader.limine.enable = true;
@@ -110,11 +112,11 @@
   services.btrfs.autoScrub.fileSystems = [ "/" ];
   services.zfs = {
     # Weekly scrub to avoid bitrot
-    # autoScrub = {
-    #   enable = true;
-    #   pools = [ "nas" ];
-    #   interval = "weekly";
-    # };
+    autoScrub = {
+      enable = true;
+      pools = [ "nas" ];
+      interval = "weekly";
+    };
     autoSnapshot = {
       enable = true;
       # Use UTC to avoid conflicts at daylight savings time switch
@@ -127,7 +129,7 @@
   networking.hostId = "b84291b8";
 
   # Use Cloudflare for DNS
-  # networking.nameservers = [ "1.1.1.1" "1.0.0.1" ];
+  networking.nameservers = [ "1.1.1.1" "1.0.0.1" ];
 
   # Allow myself remote access
   services.openssh = {
@@ -163,6 +165,7 @@
   # Import secrets like service passwords
   age.secrets = {
     pia.file = ../secrets/pia-password.age;
+    # Make this secret accessible to containers
     pia.mode = "755";
   };
   age.identityPaths = [ "/root/.ssh/id_ed25519" ];
@@ -206,8 +209,6 @@
       networking.firewall.allowedUDPPorts = [ 51413 ];
       networking.firewall.allowedTCPPorts = [ 51413 ];
       networking.firewall.checkReversePath = false;
-      # networking.useHostResolvConf = false;
-      # services.resolved.enable = true;
 
       environment.systemPackages = with pkgs; [ net-tools dig ];
 
