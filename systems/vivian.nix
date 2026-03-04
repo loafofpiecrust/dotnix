@@ -147,7 +147,7 @@
   };
 
   # Open a few ports in the firewall for web hosting and such
-  networking.firewall.allowedTCPPorts = [ 443 22 8096 80 ];
+  networking.firewall.allowedTCPPorts = [ 443 22 8096 80 9000 ];
   networking.firewall.allowedUDPPorts = [ 1194 51413 ];
 
   # Jellyfin for media streaming
@@ -157,11 +157,6 @@
     openFirewall = true;
   };
   systemd.services.jellyfin.wants = lib.mkForce [ "network-online.target" ];
-  systemd.services.jellyfin-proxy = {
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig.ExecStart =
-      "${pkgs.ssl-proxy}/bin/ssl-proxy -from 0.0.0.0:443 -to 127.0.0.1:8096 -domain=server.snead.xyz -redirectHTTP";
-  };
 
   # Import secrets like service passwords
   age.secrets = { pia.file = ../secrets/pia-password.age; };
@@ -304,11 +299,36 @@
   services.listmonk = {
     enable = true;
     settings = { app.address = "0.0.0.0:9000"; };
+    database = { createLocally = true; };
   };
-  systemd.services.listmonk.wants = lib.mkForce [ "network-online.target" ];
-  systemd.services.listmonk-proxy = {
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig.ExecStart =
-      "${pkgs.ssl-proxy}/bin/ssl-proxy -from 0.0.0.0:443 -to 127.0.0.1:9000 -domain=newsletter.snead.xyz -redirectHTTP";
+  services.nginx = {
+    enable = true;
+    recommendedProxySettings = true;
+    recommendedTlsSettings = true;
+    virtualHosts = {
+      "server.snead.xyz" = {
+        enableACME = true;
+        forceSSL = true;
+        serverName = "server.snead.xyz";
+        locations."/" = {
+          proxyPass = "http://127.0.0.1:8096";
+          # extraConfig = "proxy_ssl_server_name on;";
+        };
+      };
+      "newsletter.snead.xyz" = {
+        enableACME = true;
+        serverName = "newsletter.snead.xyz";
+        forceSSL = true;
+        locations."/" = {
+          proxyPass = "http://127.0.0.1:9000";
+          # extraConfig = "proxy_ssl_server_name on;";
+        };
+      };
+    };
+  };
+
+  security.acme = {
+    acceptTerms = true;
+    defaults.email = "shelby@snead.xyz";
   };
 }
