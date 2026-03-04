@@ -307,16 +307,17 @@
     recommendedTlsSettings = true;
     virtualHosts = {
       "server.snead.xyz" = {
-        enableACME = true;
+        useACMEHost = "server.snead.xyz";
         forceSSL = true;
         serverName = "server.snead.xyz";
+        locations."/.well-known/".root = "/var/lib/acme/acme-challenge/";
         locations."/" = {
           proxyPass = "http://127.0.0.1:8096";
           # extraConfig = "proxy_ssl_server_name on;";
         };
       };
       "newsletter.snead.xyz" = {
-        enableACME = true;
+        useACMEHost = "server.snead.xyz";
         serverName = "newsletter.snead.xyz";
         forceSSL = true;
         locations."/" = {
@@ -330,5 +331,12 @@
   security.acme = {
     acceptTerms = true;
     defaults.email = "shelby@snead.xyz";
+    defaults.webroot = "/var/lib/acme/acme-challenge/";
+    certs = {
+      "server.snead.xyz" = {
+        group = config.services.nginx.group;
+        extraDomainNames = [ "newsletter.snead.xyz" ];
+      };
+    };
   };
 }
