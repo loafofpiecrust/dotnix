@@ -28,6 +28,9 @@
     monkeysAudio # converts .ape files
     normalize # normalizes volume within a folder, good for making mix CDs
     wavpack
+    alac
+    ttaenc
+    sacd
   ];
 
   # Default port should be localhost:6600

@@ -133,7 +133,7 @@
       Requires = [ "ssh-agent.service" ];
       Wants = [ "network-online.target" ];
       Description = "NAS mounted as an encrypted drive";
-      StartLimitBurst = "5";
+      StartLimitBurst = "3";
       StartLimitIntervalSec = "60";
     };
     Install.WantedBy = [ "default.target" ];
@@ -359,7 +359,7 @@
       };
       nas.config = {
         type = "sftp";
-        host = "192.168.0.109";
+        host = "192.168.0.169";
         user = "shelby";
         shell_type = "unix";
         md5sum_command = "md5sum";

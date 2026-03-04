@@ -300,4 +300,15 @@
     net-tools
     e2fsprogs
   ];
+
+  services.listmonk = {
+    enable = true;
+    settings = { app.address = "0.0.0.0:9000"; };
+  };
+  systemd.services.listmonk.wants = lib.mkForce [ "network-online.target" ];
+  systemd.services.listmonk-proxy = {
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig.ExecStart =
+      "${pkgs.ssl-proxy}/bin/ssl-proxy -from 0.0.0.0:443 -to 127.0.0.1:9000 -domain=newsletter.snead.xyz -redirectHTTP";
+  };
 }
