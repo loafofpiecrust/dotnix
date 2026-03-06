@@ -81,6 +81,7 @@
     initExtra = ''
       bindkey '^[[A' history-substring-search-up
       bindkey '^[[B' history-substring-search-down
+      eval "$(/opt/homebrew/bin/brew shellenv)"
     '';
   };
 

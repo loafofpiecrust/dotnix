@@ -36,6 +36,15 @@
     sqls
     (aspellWithDicts (dicts: with dicts; [ en en-computers en-science ]))
     gh
+    solargraph
+    rclone
+    sshfs
+    # Kubernetes tools
+    minikube
+    kubectl
+    kubectx
+    awscli2
+    ssm-session-manager-plugin
   ];
   nixpkgs.config.allowUnsupportedSystem = true;
   nixpkgs.config.allowUnfree = true;
@@ -157,7 +166,20 @@
 
   homebrew = {
     enable = true;
-    casks = [ "lunar" "macdroid" "bitwarden" ];
+    casks = [
+      "lunar"
+      "macdroid"
+      "bitwarden"
+      "docker"
+      "emacs-mac"
+      "spotify"
+      "macfuse"
+      "leapp"
+      "cursor"
+    ];
+    taps = [ "railwaycat/emacsmacport" ];
+    onActivation.autoUpdate = true;
+    onActivation.upgrade = true;
   };
 
   # services.tailscale.enable = true;

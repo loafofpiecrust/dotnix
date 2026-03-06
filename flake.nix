@@ -24,7 +24,7 @@
       inputs.nixpkgs-stable.follows = "nixpkgs";
     };
     nix-darwin = {
-      url = "github:lnl7/nix-darwin/nix-darwin-25.05";
+      url = "github:lnl7/nix-darwin/nix-darwin-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     mac-app-util.url = "github:hraban/mac-app-util";
@@ -113,7 +113,7 @@
       # $ darwin-rebuild switch --flake .#darwinConfigurations.careerbot13.system
       # After that:
       # $ darwin-rebuild switch --flake .
-      darwinConfigurations = (mkDarwin "aarch64-darwin" "PE-NTWDXW2TJW"
+      darwinConfigurations = (mkDarwin "aarch64-darwin" "ShelbySneadMB"
         ./systems/laptop-panorama-macos.nix);
 
       nixosConfigurations = ((mkLinux nixpkgs) "x86_64-linux" "portable-spudger"

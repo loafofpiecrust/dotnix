@@ -957,6 +957,7 @@ are ineffectual otherwise."
   )
 
 (use-package! obsidian
+  :disabled
   :after markdown-mode
   :config
   (setq! obsidian-directory "~/documents/notes/Personal"
