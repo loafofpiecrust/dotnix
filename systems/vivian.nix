@@ -147,7 +147,7 @@
   };
 
   # Open a few ports in the firewall for web hosting and such
-  networking.firewall.allowedTCPPorts = [ 443 22 8096 80 9000 ];
+  networking.firewall.allowedTCPPorts = [ 443 22 8096 80 ];
   networking.firewall.allowedUDPPorts = [ 1194 51413 ];
 
   # Jellyfin for media streaming
@@ -159,7 +159,10 @@
   systemd.services.jellyfin.wants = lib.mkForce [ "network-online.target" ];
 
   # Import secrets like service passwords
-  age.secrets = { pia.file = ../secrets/pia-password.age; };
+  age.secrets = {
+    pia.file = ../secrets/pia-password.age;
+    transmission.file = ../secrets/transmission-credentials.age;
+  };
   age.identityPaths = [ "/root/.ssh/id_ed25519" ];
 
   # Isolated container for torrent downloads that can only connect to the
@@ -180,6 +183,7 @@
       };
       # Share certain secrets with the container
       "${secrets.pia.path}".isReadOnly = true;
+      "${secrets.transmission.path}".isReadOnly = true;
     };
     forwardPorts = [
       # Web interface
@@ -235,6 +239,7 @@
         openPeerPorts = true;
         openRPCPort = true;
         downloadDirPermissions = "777";
+        credentialsFile = secrets.transmission.path;
         settings = {
           message-level = 5;
           umask = 0;
@@ -249,10 +254,12 @@
           speed-limit-down = 4096;
           speed-limit-up-enabled = true;
           speed-limit-up = 90;
+          rpc-authentication-required = true;
           rpc-bind-address = "0.0.0.0";
-          rpc-whitelist-enabled = true;
+          rpc-whitelist-enabled = false;
           rpc-whitelist = "192.168.*.*,127.0.0.1";
           rpc-host-whitelist-enabled = false;
+          rpc-host-whitelist = "server.snead.xyz";
           ratio-limit = 4.0;
           ratio-limit-enabled = true;
         };
@@ -329,12 +336,13 @@
       "server.snead.xyz" = {
         useACMEHost = "server.snead.xyz";
         forceSSL = true;
-        serverName = "server.snead.xyz";
         locations."/.well-known/".root = "/var/lib/acme/acme-challenge/";
-        locations."/" = {
-          proxyPass = "http://127.0.0.1:8096";
-          # extraConfig = "proxy_ssl_server_name on;";
-        };
+        locations."/".proxyPass = "http://127.0.0.1:8096";
+      };
+      "torrent.snead.xyz" = {
+        useACMEHost = "server.snead.xyz";
+        forceSSL = true;
+        locations."/".proxyPass = "http://192.168.100.10:9091";
       };
       "newsletter.fwb.snead.xyz" = {
         useACMEHost = "server.snead.xyz";
@@ -365,7 +373,7 @@
     certs = {
       "server.snead.xyz" = {
         group = config.services.nginx.group;
-        extraDomainNames = [ "newsletter.fwb.snead.xyz" ];
+        extraDomainNames = [ "newsletter.fwb.snead.xyz" "torrent.snead.xyz" ];
       };
       "news.fwboakland.com" = {
         group = config.services.nginx.group;
