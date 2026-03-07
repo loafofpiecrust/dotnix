@@ -115,6 +115,7 @@
     calc
     # unison # file sync
     dig
+    inputs.agenix.packages.x86_64-linux.default
   ];
 
   # Don't allow OTA firmware updates from the testing channel.
