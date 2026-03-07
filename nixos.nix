@@ -114,6 +114,7 @@
     playerctl
     calc
     # unison # file sync
+    dig
   ];
 
   # Don't allow OTA firmware updates from the testing channel.
