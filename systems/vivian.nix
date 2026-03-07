@@ -296,11 +296,31 @@
     e2fsprogs
   ];
 
-  services.listmonk = {
-    enable = true;
-    settings = { app.address = "0.0.0.0:9000"; };
-    database = { createLocally = true; };
+  containers.fwb-services = {
+    autoStart = true;
+    privateNetwork = true;
+    hostAddress = "192.168.100.12";
+    localAddress = "192.168.100.13";
+    forwardPorts = [{
+      protocol = "tcp";
+      hostPort = 9001;
+      containerPort = 9001;
+    }];
+    config = { config, pkgs, ... }: {
+      system.stateVersion = "25.11";
+      # Defer to host firewall
+      networking.firewall.enable = false;
+      services.listmonk = {
+        enable = true;
+        settings = { app.address = "0.0.0.0:9001"; };
+        database = { createLocally = true; };
+      };
+      # See discourse.nixos.org/t/how-to-enable-internet-access-inside-a-nixos-container/62458
+      networking.useHostResolvConf = false;
+      services.resolved.enable = true;
+    };
   };
+
   services.nginx = {
     enable = true;
     recommendedProxySettings = true;
@@ -316,12 +336,22 @@
           # extraConfig = "proxy_ssl_server_name on;";
         };
       };
-      "newsletter.snead.xyz" = {
+      "newsletter.fwb.snead.xyz" = {
         useACMEHost = "server.snead.xyz";
-        serverName = "newsletter.snead.xyz";
+        serverName = "newsletter.fwb.snead.xyz";
         forceSSL = true;
         locations."/" = {
-          proxyPass = "http://127.0.0.1:9000";
+          proxyPass = "http://192.168.100.12:9001";
+          # extraConfig = "proxy_ssl_server_name on;";
+        };
+      };
+      "news.fwboakland.com" = {
+        useACMEHost = "news.fwboakland.com";
+        serverName = "news.fwboakland.com";
+        forceSSL = true;
+        locations."/.well-known/".root = "/var/lib/acme/acme-challenge/";
+        locations."/" = {
+          proxyPass = "http://192.168.100.12:9001";
           # extraConfig = "proxy_ssl_server_name on;";
         };
       };
@@ -335,7 +365,11 @@
     certs = {
       "server.snead.xyz" = {
         group = config.services.nginx.group;
-        extraDomainNames = [ "newsletter.snead.xyz" ];
+        extraDomainNames = [ "newsletter.fwb.snead.xyz" ];
+      };
+      "news.fwboakland.com" = {
+        group = config.services.nginx.group;
+        extraDomainNames = [ ];
       };
     };
   };
