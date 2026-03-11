@@ -106,6 +106,11 @@
       device = "nas";
       options = [ "nofail" ];
     };
+    "/mnt/personal" = {
+      fsType = "zfs";
+      device = "nas/personal";
+      options = [ "nofail" ];
+    };
   };
 
   # Disk management services
