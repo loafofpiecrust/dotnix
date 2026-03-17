@@ -411,5 +411,13 @@
       };
     in "${script}/bin/backup-state";
   };
-
+  systemd.timers.backup-state = {
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      Unit = "backup-state.service";
+      Persistent = "true";
+      OnCalendar = "hourly";
+      RandomizedDelaySec = "120";
+    };
+  };
 }
