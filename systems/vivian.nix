@@ -396,4 +396,20 @@
   #   };
   # };
 
+  # Backup server state to NAS
+  systemd.services.backup-state = {
+    serviceConfig = { Type = "oneshot"; };
+    script = let
+      script = pkgs.writeShellApplication {
+        name = "backup-state";
+        runtimeInputs = with pkgs; [ rclone coreutils ];
+        text = ''
+          mkdir -p /mnt/personal/Backups/vivian
+          rclone sync /var /mnt/personal/Backups/vivian/var
+          rclone sync /etc /mnt/personal/Backups/vivian/etc
+        '';
+      };
+    in "${script}/bin/backup-state";
+  };
+
 }

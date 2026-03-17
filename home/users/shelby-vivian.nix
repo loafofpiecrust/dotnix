@@ -25,24 +25,6 @@ in {
   # };
 
   systemd.user = {
-    # Backup server state to NAS
-    services.backup-state = {
-      Service = {
-        Type = "oneshot";
-        ExecStart = let
-          config = "${home}/.config/rclone/rclone.conf";
-          script = pkgs.writeShellApplication {
-            name = "backup-state";
-            runtimeInputs = with pkgs; [ rclone coreutils ];
-            text = ''
-              mkdir -p /mnt/personal/Backups/vivian
-              rclone sync /var /mnt/personal/Backups/vivian/var --config ${config}
-              rclone sync /etc /mnt/personal/Backups/vivian/etc --config ${config}
-            '';
-          };
-        in "${script}/bin/backup-state";
-      };
-    };
     # Daily sync personal files between local and cloud storage
     services.sync-files = {
       Service = {
