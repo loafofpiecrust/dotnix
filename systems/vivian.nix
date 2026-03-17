@@ -405,8 +405,8 @@
         runtimeInputs = with pkgs; [ rclone coreutils ];
         text = ''
           mkdir -p /mnt/personal/Backups/vivian
-          rclone sync /var /mnt/personal/Backups/vivian/var
-          rclone sync /etc /mnt/personal/Backups/vivian/etc
+          rclone sync /var /mnt/personal/Backups/vivian/var --max-delete 100
+          rclone sync /etc /mnt/personal/Backups/vivian/etc --max-delete 100
         '';
       };
     in "${script}/bin/backup-state";
