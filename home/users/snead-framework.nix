@@ -365,27 +365,9 @@
         md5sum_command = "md5sum";
         sha1sum_command = "sha1sum";
       };
-      nas-secret = {
-        config = {
-          type = "crypt";
-          remote = "nas:/media/pool/Secret";
-        };
-        secrets = {
-          password = config.age.secrets.rclone-crypt-password1.path;
-          password2 = config.age.secrets.rclone-crypt-password2.path;
-        };
-      };
       nas-combined.config = {
         type = "combine";
-        upstreams =
-          "Public=nas:/media/pool/Public Private=nas-secret: Root=nas:/";
-      };
-      nas-union.config = {
-        type = "union";
-        upstreams = "nas-secret: nas:/media/pool/Public";
-        action_policy = "epall";
-        create_policy = "epff";
-        search_policy = "epff";
+        upstreams = "Private=nas:/mnt/personal Root=nas:/";
       };
     };
   };
