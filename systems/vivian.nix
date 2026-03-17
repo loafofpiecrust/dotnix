@@ -388,11 +388,12 @@
   };
 
   # Regular system backups to the pool
-  services.restic.backups = {
-    "var" = {
-      initialize = true;
-      paths = [ "/var" "/etc" "/root" ];
-      repository = "/mnt/personal/Backups/Home Server";
-    };
-  };
+  # services.restic.backups = {
+  #   "var" = {
+  #     initialize = true;
+  #     paths = [ "/var" "/etc" "/root" ];
+  #     repository = "/mnt/personal/Backups/Home Server";
+  #   };
+  # };
+
 }
