@@ -8,6 +8,8 @@ in {
   # Install some utils for myself
   home.packages = with pkgs; [ beets ];
 
+  # Required for mutable symlinks to work
+  lib.meta.configPath = "/home/shelby/nix";
   xdg.configFile."beets/config.yaml".source =
     config.lib.meta.mkMutableSymlink ../beets.yaml;
 

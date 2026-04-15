@@ -2,7 +2,7 @@
 # Define common configuration for any desktop or server user.
 {
   lib.meta = {
-    configPath = "/etc/nixos";
+    configPath = lib.mkDefault "/etc/nixos";
     mkMutableSymlink = path:
       config.lib.file.mkOutOfStoreSymlink (config.lib.meta.configPath
         + lib.removePrefix (toString inputs.self) (toString path));
