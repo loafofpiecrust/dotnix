@@ -1,13 +1,15 @@
 { config, lib, pkgs, inputs, ... }:
 let home = config.home.homeDirectory;
 in {
-  imports =
-    [ ../common.nix ../music.nix inputs.agenix.homeManagerModules.default ];
+  imports = [ ../common.nix inputs.agenix.homeManagerModules.default ];
 
   home.stateVersion = lib.mkDefault "25.11";
 
   # Install some utils for myself
   home.packages = with pkgs; [ beets ];
+
+  xdg.configFile."beets/config.yaml".source =
+    config.lib.meta.mkMutableSymlink ../beets.yaml;
 
   # Import encrypted passwords for various services
   age = {
