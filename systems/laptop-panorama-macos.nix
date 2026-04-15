@@ -2,6 +2,7 @@
 
 {
   imports = [ inputs.home-manager.darwinModules.home-manager ];
+  system.primaryUser = "ssnead";
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
   home-manager.users."ssnead" = ../home/users/panorama.nix;
@@ -48,6 +49,21 @@
   ];
   nixpkgs.config.allowUnsupportedSystem = true;
   nixpkgs.config.allowUnfree = true;
+
+  nixpkgs.overlays = [
+    # Copied from https://github.com/billimek/dotfiles/commit/eed207e535ec8d923ab7ccdec5d10972fe77d800
+    # Workaround for aarch64-darwin codesigning bug (nixpkgs#208951 / #507531):
+    # fish binaries from the binary cache occasionally have invalid ad-hoc
+    # signatures on Apple Silicon. Forcing a local rebuild ensures codesigning
+    # is applied on this machine with a valid signature.
+    (_final: prev: {
+      fish = prev.fish.overrideAttrs (_old: {
+        # Bust the cache key so fish is always built locally rather than
+        # substituted from the binary cache where the signature may be stale.
+        NIX_FORCE_LOCAL_REBUILD = "darwin-codesign-fix";
+      });
+    })
+  ];
   #nix.useSandbox = false;
 
   # Enable zsh completion on system packages.
@@ -86,12 +102,12 @@
 
   # Auto upgrade nix package and the daemon service.
   # services.nix-daemon.enable = true;
-  nix.useDaemon = true;
   nix.extraOptions = ''
     experimental-features = nix-command flakes
   '';
+  nix.settings.trusted-users = [ "@wheel" ];
+  nix.optimise.automatic = true;
   nix.gc.automatic = true;
-  nix.gc.user = "ssnead";
 
   # Create /etc/bashrc that loads the nix-darwin environment.
   programs.zsh.enable = true; # default shell on catalina
@@ -100,7 +116,7 @@
   # $ darwin-rebuild changelog
   system.stateVersion = 5;
 
-  security.pam.enableSudoTouchIdAuth = true;
+  security.pam.services.sudo_local.touchIdAuth = true;
 
   services.aerospace = {
     enable = true;

@@ -78,7 +78,7 @@
       #   };
       # }
     ];
-    initExtra = ''
+    initContent = ''
       bindkey '^[[A' history-substring-search-up
       bindkey '^[[B' history-substring-search-down
       eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -100,6 +100,7 @@
     delta.enable = true;
     #signing.key = "DAC12D13ED25377B7B1AE44C311B93DA14853F49";
     #signing.signByDefault = true;
+    ignores = [ ".projectile-cache.eld" ];
     extraConfig = {
       pull.rebase = true;
       init.defaultBranch = "main";
