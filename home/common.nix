@@ -82,12 +82,17 @@
 
   programs.git = {
     enable = true;
-    delta.enable = true;
     lfs.enable = true;
-    extraConfig = {
+    settings = {
       pull.rebase = true;
       init.defaultBranch = "main";
       core.askPass = "";
     };
+  };
+
+  # Nice git diffs with syntax highlighting
+  programs.delta = {
+    enable = true;
+    enableGitIntegration = true;
   };
 }
