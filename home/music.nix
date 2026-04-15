@@ -39,7 +39,7 @@
   # relative paths. Plus it's very capable of handling large libraries and runs
   # in the background unlike Strawberry.
   services.mpd = {
-    enable = true;
+    enable = false;
     extraConfig = ''
       follow_inside_symlinks "yes"
       follow_outside_symlinks "yes"
@@ -61,7 +61,7 @@
 
   # Support standard system media controls for the MPD server
   services.mpd-mpris = {
-    enable = true;
+    enable = false;
     mpd = {
       useLocal = false;
       host = config.services.mpd.network.listenAddress;
