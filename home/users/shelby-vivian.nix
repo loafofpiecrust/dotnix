@@ -1,7 +1,8 @@
 { config, lib, pkgs, inputs, ... }:
 let home = config.home.homeDirectory;
 in {
-  imports = [ ../common.nix inputs.agenix.homeManagerModules.default ];
+  imports =
+    [ ../common.nix ../music.nix inputs.agenix.homeManagerModules.default ];
 
   home.stateVersion = lib.mkDefault "25.11";
 
