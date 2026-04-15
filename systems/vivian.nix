@@ -113,6 +113,14 @@
     };
   };
 
+  system.activationScripts = {
+    # Link my fixed music dir for beets compatibility
+    linkMusic = {
+      text = "ln -sfT /mnt/personal/Music /mnt/music";
+      deps = [ ];
+    };
+  };
+
   # Disk management services
   services.btrfs.autoScrub.enable = true;
   services.btrfs.autoScrub.fileSystems = [ "/" ];
