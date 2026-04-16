@@ -186,12 +186,13 @@
       "lunar"
       "macdroid"
       "bitwarden"
-      "docker"
+      "docker-desktop"
       "emacs-mac"
       "spotify"
       "macfuse"
       "leapp"
       "cursor"
+      "aws-vpn-client"
     ];
     taps = [ "railwaycat/emacsmacport" ];
     onActivation.autoUpdate = true;

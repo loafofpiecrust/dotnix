@@ -55,6 +55,7 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    direnv-instant.url = "github:Mic92/direnv-instant";
   };
 
   outputs = { self, nixpkgs, nix-darwin, mac-app-util, emacs-overlay

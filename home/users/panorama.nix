@@ -1,4 +1,6 @@
 { config, lib, pkgs, inputs, ... }: {
+  imports = [ inputs.direnv-instant.homeModules.direnv-instant ];
+
   lib.meta = {
     configPath = "/Users/ssnead/nix";
     mkMutableSymlink = path:
@@ -6,7 +8,6 @@
         + lib.removePrefix (toString inputs.self) (toString path));
     monospaceFont = "Hack Nerd Font";
   };
-  # imports = [ inputs.nix-doom-emacs.hmModule ];
 
   home.stateVersion = "24.11";
 
@@ -130,16 +131,18 @@
   };
 
   programs.emacs = {
-    enable = true;
-    package = pkgs.emacs-macport;
+    enable = false;
+    #package = pkgs.emacs-macport;
     #extraPackages = emacsPackages: [ pkgs.coreutils ];
   };
 
   programs.direnv = {
     enable = true;
-    enableZshIntegration = true;
+    # enableZshIntegration = true;
     nix-direnv = { enable = true; };
+    config.global.log_filter = "^(un)?loading";
   };
+  programs.direnv-instant.enable = true;
 
   home.file.".aerospace.toml".source =
     config.lib.meta.mkMutableSymlink ../aerospace.toml;
