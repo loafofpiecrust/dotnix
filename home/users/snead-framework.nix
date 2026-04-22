@@ -288,7 +288,7 @@
     asunder # CD ripping
 
     fontforge-gtk
-    transmission-remote-gtk
+    unstable.transmission-remote-gtk
 
     whitesur-gtk-theme
     whitesur-cursors
