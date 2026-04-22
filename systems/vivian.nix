@@ -275,6 +275,9 @@
           rpc-host-whitelist = "server.snead.xyz";
           ratio-limit = 4.0;
           ratio-limit-enabled = true;
+          # Use final filename for partial files to support streaming
+          # in-progress downloads.
+          rename-partial-files = false;
         };
       };
 
