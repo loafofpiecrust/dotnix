@@ -1,4 +1,4 @@
-{ config, lib, pkgs, systemConfig, inputs, ... }:
+{ config, lib, pkgs, systemConfig, inputs, mojaveDynamicWallpaperRepo, ... }:
 let
   theme = (import ./themes/dracula.nix) { colorizer = inputs.nix-colorizer; };
   dropHash = x: builtins.substring 1 10 x;
@@ -474,7 +474,7 @@ in {
       toString systemConfig.location.latitude
     }N ${
       toString (-systemConfig.location.longitude)
-    }W '${systemConfig.lib.meta.dynamicBgRepo}/Dynamic_Wallpapers/Mojave/mojave_dynamic_'";
+    }W '${mojaveDynamicWallpaperRepo}/Dynamic_Wallpapers/Mojave/mojave_dynamic_'";
   };
 
   # Check for wallpaper updates every 15m.

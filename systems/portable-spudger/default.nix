@@ -1,14 +1,21 @@
 # For touchpad after hibernation:
 # it seems that disabling PS/2 mouse emulation in BIOS fixed the problem.
-{ config, lib, pkgs, inputs, ... }: {
+{ config, lib, pkgs, inputs, ... }:
+let
+  mojaveDynamicWallpaperRepo = import ../../lib/mojave-dynamic-wallpaper-repo.nix {
+    inherit pkgs;
+  };
+  mojaveDynamicWallpaper = index:
+    "${mojaveDynamicWallpaperRepo}/Dynamic_Wallpapers/Mojave/mojave_dynamic_${index}.jpeg";
+in {
   imports = [
     inputs.nixos-hardware.nixosModules.framework-13-7040-amd
-    ../laptop.nix
-    ../keyboard.nix
-    ../vpn.nix
-    ../dev.nix
-    ../printing.nix
-    # ../erasure.nix
+    ../../laptop.nix
+    ../../keyboard.nix
+    ../../vpn.nix
+    ../../dev.nix
+    ../../printing.nix
+    # ../../erasure.nix
   ];
 
   # Prevent nix from taking all available CPU time.
@@ -166,8 +173,8 @@
       "$6$PFZjyXdf7W2cu3$55Iw6UjpcdB29fb4RIPcaYFY5Ehtuc9MFZaJBa9wlRbgYxRrDAP0tlApOiIsQY7hoeO9XG7xxiIcsjGYc9QXu1";
   };
 
-  home-manager.users.snead = ../home/users/snead-framework.nix;
-  # home-manager.users.work = ../home/users/work.nix;
+  home-manager.users.snead = ./users/snead.nix;
+  # home-manager.users.work = ./users/work.nix;
 
   # Sway is my primary WM since X doesn't do scaling well.
   programs.sway.enable = true;
@@ -184,18 +191,6 @@
     };
   };
 
-  lib.meta = rec {
-    dynamicBgRepo = pkgs.fetchgit {
-      url = "https://github.com/saint-13/Linux_Dynamic_Wallpapers";
-      rev = "8904f832affb667c2926061d8e52b9131687451b";
-      # Avoid massive clone time by only fetching the wallpaper I use.
-      sparseCheckout = [ "Dynamic_Wallpapers/Mojave" ];
-      sha256 = "VW1xOSLtal6VGP7JHv8NKdu7YTXeAHRrwZhnJy+T9bQ=";
-    };
-    dynamicBg = index:
-      "${dynamicBgRepo}/Dynamic_Wallpapers/Mojave/mojave_dynamic_${index}.jpeg";
-  };
-
   programs.regreet = {
     enable = true;
     cageArgs = [ "-s" "-m" "last" ];
@@ -204,7 +199,7 @@
       GTK.font_name = lib.mkForce "sans 12";
       GTK.theme_name = lib.mkForce "WhiteSur-Light";
       GTK.icon_theme_name = lib.mkForce "WhiteSur-light";
-      background.path = config.lib.meta.dynamicBg "1";
+      background.path = mojaveDynamicWallpaper "1";
       background.fit = "Cover";
     };
   };

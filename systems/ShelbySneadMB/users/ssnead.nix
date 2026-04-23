@@ -91,18 +91,29 @@
     enableZshIntegration = true;
   };
 
-  programs.ssh.enable = true;
+  programs.ssh = {
+    enable = false;
+    extraConfig = ''
+      Host cs.animated-space-umbrella-7prxqr6pr7fxgr9.develop
+      	User codespace
+      	ProxyCommand /run/current-system/sw/bin/gh cs ssh -c animated-space-umbrella-7prxqr6pr7fxgr9 --stdio -- -i /Users/ssnead/.ssh/codespaces.auto
+      	UserKnownHostsFile=/dev/null
+      	StrictHostKeyChecking no
+      	LogLevel quiet
+      	ControlMaster auto
+      	IdentityFile /Users/ssnead/.ssh/codespaces.auto
+    '';
+  };
 
   programs.git = {
     enable = true;
-    userName = "Shelby Snead";
-    userEmail = "shelby.snead@panoramaed.com";
     lfs.enable = true;
-    delta.enable = true;
     #signing.key = "DAC12D13ED25377B7B1AE44C311B93DA14853F49";
     #signing.signByDefault = true;
     ignores = [ ".projectile-cache.eld" ];
-    extraConfig = {
+    settings = {
+      user.name = "Shelby Snead";
+      user.email = "shelby.snead@panoramaed.com";
       pull.rebase = true;
       init.defaultBranch = "main";
       core.editor = "emacsclient -r";
@@ -115,6 +126,11 @@
       # url."git@github.com:".insteadOf = "https://github.com/";
       # url."git@gitlab.com:".insteadOf = "https://gitlab.com/";
     };
+  };
+
+  programs.delta = {
+    enable = true;
+    enableGitIntegration = true;
   };
 
   programs.kitty = {
@@ -145,6 +161,6 @@
   programs.direnv-instant.enable = true;
 
   home.file.".aerospace.toml".source =
-    config.lib.meta.mkMutableSymlink ../aerospace.toml;
+    config.lib.meta.mkMutableSymlink ../../../aerospace.toml;
 
 }

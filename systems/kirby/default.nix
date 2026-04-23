@@ -1,6 +1,6 @@
 { config, lib, pkgs, inputs, ... }: {
   imports = [
-    ../desktop.nix
+    ../../desktop.nix
     #../steam-deck.nix
     (inputs.jovian + "/modules")
     inputs.nixos-hardware.nixosModules.common-gpu-amd
@@ -113,8 +113,6 @@
   #     "${pkgs.ssl-proxy}/bin/ssl-proxy -from 0.0.0.0:443 -to 127.0.0.1:8096 -domain=server.snead.xyz -redirectHTTP";
   # };
 
-  nixpkgs.config.permittedInsecurePackages =
-    [ "python-2.7.18.8" "openssl-1.1.1w" ];
   nixpkgs.overlays = [
     (self: super: {
       libbluray = super.libbluray.override {
@@ -261,7 +259,7 @@
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOVldsHCxoEpdN9K+cr9EKxS5dhvUBuCuhyLht3+8CJ2 snead@loafofpiecrust"
     ];
   };
-  home-manager.users.shelby = ../home/users/shelby-kirby.nix;
+  home-manager.users.shelby = ./users/shelby.nix;
 
   # GNOME autologin workaround
   systemd.services."getty@tty1".enable = false;

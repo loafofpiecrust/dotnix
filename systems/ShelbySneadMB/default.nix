@@ -5,7 +5,7 @@
   system.primaryUser = "ssnead";
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
-  home-manager.users."ssnead" = ../home/users/panorama.nix;
+  home-manager.users."ssnead" = ./users/ssnead.nix;
   # Pass flake inputs down to home manager.
   home-manager.extraSpecialArgs = {
     inherit inputs;
@@ -94,7 +94,7 @@
   };
 
   #fonts.enableFontDir = true;
-  fonts.packages = with pkgs; [ unstable.nerd-fonts.hack fira-code overpass ];
+  fonts.packages = with pkgs; [ nerd-fonts.hack fira-code overpass ];
 
   # Use a custom configuration.nix location.
   # $ darwin-rebuild switch -I darwin-config=$HOME/.config/nixpkgs/darwin/configuration.nix
@@ -195,8 +195,8 @@
       "aws-vpn-client"
     ];
     taps = [ "railwaycat/emacsmacport" ];
-    onActivation.autoUpdate = true;
-    onActivation.upgrade = true;
+    # onActivation.autoUpdate = true;
+    # onActivation.upgrade = true;
   };
 
   # services.tailscale.enable = true;

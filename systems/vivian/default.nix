@@ -12,7 +12,7 @@
 # copy over the LUKS secret to store in TPM.
 { config, lib, pkgs, inputs, ... }: {
   imports = [
-    ../server.nix
+    ../../server.nix
 
     inputs.nixos-hardware.nixosModules.common-pc
     inputs.nixos-hardware.nixosModules.common-pc-ssd
@@ -21,8 +21,8 @@
     inputs.nixos-hardware.nixosModules.common-gpu-intel
 
     inputs.disko.nixosModules.disko
-    ./vivian/disk-config.nix
-    ./vivian/hardware-configuration.nix
+    ./disk-config.nix
+    ./hardware-configuration.nix
   ];
 
   system.stateVersion = "25.11";
@@ -55,7 +55,7 @@
     loader.limine.secureBoot.enable = true;
     # Unattended disk decryption with TPM encrypted password
     initrd.clevis.enable = true;
-    initrd.clevis.devices."enc".secretFile = ./vivian/luks.jwe;
+    initrd.clevis.devices."enc".secretFile = ./luks.jwe;
     initrd.luks.devices."enc".crypttabExtraOpts = [ "tpm2-device=auto" ];
   };
 
@@ -92,7 +92,7 @@
   users.manageLingering = true;
   users.users.shelby.linger = true;
 
-  home-manager.users.shelby = ../home/users/shelby-vivian.nix;
+  home-manager.users.shelby = ./users/shelby.nix;
 
   # Disks!
   # System volume (NVMe) is btrfs, storage pool (HDD) is ZFS, plus swap
@@ -173,8 +173,8 @@
 
   # Import secrets like service passwords
   age.secrets = {
-    pia.file = ../secrets/pia-password.age;
-    transmission.file = ../secrets/transmission-credentials.age;
+    pia.file = ../../secrets/pia-password.age;
+    transmission.file = ../../secrets/transmission-credentials.age;
   };
   age.identityPaths = [ "/root/.ssh/id_ed25519" ];
 
@@ -236,7 +236,7 @@
       };
 
       services.openvpn.servers.bahamas = {
-        config = "config ${../openvpn-strong/bahamas.ovpn}";
+        config = "config ${../../openvpn-strong/bahamas.ovpn}";
         autoStart = true;
         authUserPass = secrets.pia.path;
         updateResolvConf = true;

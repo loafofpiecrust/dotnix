@@ -171,6 +171,7 @@ lastgenre:
   auto: no
   separator: "; "
   count: 1
+  # TODO put genre files in git
   canonical: ~/.config/beets/genre-tree.yaml
   min_weight: 20
   force: no

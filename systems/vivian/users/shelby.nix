@@ -1,7 +1,7 @@
 { config, lib, pkgs, inputs, ... }:
 let home = config.home.homeDirectory;
 in {
-  imports = [ ../common.nix inputs.agenix.homeManagerModules.default ];
+  imports = [ ../../../home/common.nix inputs.agenix.homeManagerModules.default ];
 
   home.stateVersion = lib.mkDefault "25.11";
 
@@ -11,16 +11,16 @@ in {
   # Required for mutable symlinks to work
   lib.meta.configPath = "/home/shelby/nix";
   xdg.configFile."beets/config.yaml".source =
-    config.lib.meta.mkMutableSymlink ../beets.yaml;
+    config.lib.meta.mkMutableSymlink ../../../home/beets.yaml;
 
   # Import encrypted passwords for various services
   age = {
     identityPaths = [ "${home}/.ssh/id_ed25519" ];
-    secrets.pcloud-access-token.file = ../../secrets/pcloud-access-token.age;
+    secrets.pcloud-access-token.file = ../../../secrets/pcloud-access-token.age;
     secrets.rclone-crypt-password1.file =
-      ../../secrets/rclone-crypt-password1.age;
+      ../../../secrets/rclone-crypt-password1.age;
     secrets.rclone-crypt-password2.file =
-      ../../secrets/rclone-crypt-password2.age;
+      ../../../secrets/rclone-crypt-password2.age;
   };
 
   # Enable SSH client so age can decrypt secrets

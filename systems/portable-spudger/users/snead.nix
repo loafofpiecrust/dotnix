@@ -2,19 +2,19 @@
 { config, lib, pkgs, inputs, ... }: {
   imports = [
     inputs.agenix.homeManagerModules.default
-    ../gui.nix
-    ../common.nix
-    ../email.nix
-    ../firefox.nix
-    ../chromium.nix
-    ../fish.nix
-    ../sway.nix
-    ../spotify.nix
-    ../hyprland.nix
-    ../zsh.nix
-    ../emacs.nix
-    ../midi.nix
-    ../music.nix
+    ../../../home/gui.nix
+    ../../../home/common.nix
+    ../../../home/email.nix
+    ../../../home/firefox.nix
+    ../../../home/chromium.nix
+    ../../../home/fish.nix
+    ../../../home/sway.nix
+    ../../../home/spotify.nix
+    ../../../home/hyprland.nix
+    ../../../home/zsh.nix
+    ../../../home/emacs.nix
+    ../../../home/midi.nix
+    ../../../home/music.nix
   ];
 
   home.stateVersion = lib.mkDefault "21.05";
@@ -233,11 +233,11 @@
   # Import encrypted passwords for various services
   age = {
     identityPaths = [ "/home/snead/.ssh/id_ed25519" ];
-    secrets.pcloud-access-token.file = ../../secrets/pcloud-access-token.age;
+    secrets.pcloud-access-token.file = ../../../secrets/pcloud-access-token.age;
     secrets.rclone-crypt-password1.file =
-      ../../secrets/rclone-crypt-password1.age;
+      ../../../secrets/rclone-crypt-password1.age;
     secrets.rclone-crypt-password2.file =
-      ../../secrets/rclone-crypt-password2.age;
+      ../../../secrets/rclone-crypt-password2.age;
   };
 
   xdg.mime.enable = true;
@@ -313,7 +313,7 @@
   # No longer necessary with AMD board, they tweaked the speaker config!
   # It now amplifies loud enough and with better EQ.
   xdg.configFile."easyeffects/output/fw13-easy-effects.json".source =
-    ../fw13-easy-effects.json;
+    ../config/fw13-easy-effects.json;
   services.easyeffects = {
     enable = false;
     # preset = "fw13-easy-effects";
@@ -335,7 +335,8 @@
   services.gpg-agent.enableSshSupport = false;
   services.ssh-agent.enable = true;
 
-  home.file.".ssh/config".source = config.lib.meta.mkMutableSymlink ../ssh.conf;
+  home.file.".ssh/config".source =
+    config.lib.meta.mkMutableSymlink ../config/ssh.conf;
 
   programs.rclone = {
     enable = true;

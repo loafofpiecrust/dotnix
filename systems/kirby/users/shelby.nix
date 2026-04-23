@@ -1,5 +1,5 @@
 { config, lib, pkgs, ... }: {
-  imports = [ ../common.nix ];
+  imports = [ ../../../home/common.nix ];
   home.stateVersion = lib.mkDefault "21.05";
   home.packages = with pkgs; [ transgui rclone librewolf-bin beets ];
 

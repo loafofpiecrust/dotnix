@@ -25,12 +25,11 @@
 
   nixpkgs.overlays = [
     (self: super: { ripgrep = super.ripgrep.override { withPCRE2 = true; }; })
-    (import inputs.emacs-overlay)
-    inputs.nur.overlays.default
-    # Provide nixpkgs-unstable for just a few packages.
+  ] ++ lib.optionals (inputs ? emacs-overlay) [ (import inputs.emacs-overlay) ]
+  ++ lib.optionals (inputs ? nur) [ inputs.nur.overlays.default ]
+  ++ lib.optionals (inputs ? nixpkgs-unstable && inputs ? emacs-overlay) [
     (self: super: {
       unstable = import inputs.nixpkgs-unstable {
-        # required to inherit from top-level nixpkgs.
         system = super.system;
         config.allowUnfree = true;
         overlays = [ (import inputs.emacs-overlay) ];

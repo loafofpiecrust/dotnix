@@ -15,6 +15,8 @@
   home-manager.extraSpecialArgs = {
     inherit inputs;
     systemConfig = config;
+    mojaveDynamicWallpaperRepo =
+      import ./lib/mojave-dynamic-wallpaper-repo.nix { inherit pkgs; };
   };
   home-manager.backupFileExtension = "bak";
   home-manager.useGlobalPkgs = true;

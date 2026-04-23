@@ -2,13 +2,13 @@
 
 {
   imports = [
-    ../common.nix
-    ../email.nix
-    ../firefox.nix
-    ../chromium.nix
-    ../fish.nix
-    ../sway.nix
-    ../zsh.nix
+    ../../../home/common.nix
+    ../../../home/email.nix
+    ../../../home/firefox.nix
+    ../../../home/chromium.nix
+    ../../../home/fish.nix
+    ../../../home/sway.nix
+    ../../../home/zsh.nix
   ];
 
   home.stateVersion = lib.mkDefault "21.05";
