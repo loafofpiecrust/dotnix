@@ -26,16 +26,17 @@
   nixpkgs.overlays = [
     (self: super: { ripgrep = super.ripgrep.override { withPCRE2 = true; }; })
   ] ++ lib.optionals (inputs ? emacs-overlay) [ (import inputs.emacs-overlay) ]
-  ++ lib.optionals (inputs ? nur) [ inputs.nur.overlays.default ]
-  ++ lib.optionals (inputs ? nixpkgs-unstable && inputs ? emacs-overlay) [
-    (self: super: {
-      unstable = import inputs.nixpkgs-unstable {
-        system = super.system;
-        config.allowUnfree = true;
-        overlays = [ (import inputs.emacs-overlay) ];
-      };
-    })
-  ];
+    ++ lib.optionals (inputs ? nur) [ inputs.nur.overlays.default ]
+    ++ lib.optionals (inputs ? nixpkgs-unstable) [
+      (self: super: {
+        unstable = import inputs.nixpkgs-unstable {
+          system = super.system;
+          config.allowUnfree = true;
+          overlays = lib.optionals (inputs ? emacs-overlay)
+            [ (import inputs.emacs-overlay) ];
+        };
+      })
+    ];
 
   # Ensure postgres can create a lockfile where it expects
   system.activationScripts = {

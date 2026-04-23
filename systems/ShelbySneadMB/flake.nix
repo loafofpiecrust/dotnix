@@ -22,14 +22,11 @@
     direnv-instant.url = "github:Mic92/direnv-instant";
   };
   outputs = inputs@{ self, nixpkgs, ... }:
-    let
-      repoRoot = ../../.;
-      inputs' = inputs // { self = repoRoot; };
-      sharedModule = import ../../lib/shared-host-module.nix "ShelbySneadMB";
+    let sharedModule = import ../../lib/shared-host-module.nix "ShelbySneadMB";
     in {
       darwinConfigurations.ShelbySneadMB = inputs.nix-darwin.lib.darwinSystem {
         system = "aarch64-darwin";
-        specialArgs = { inputs = inputs'; };
+        specialArgs = { inputs = inputs // { self = ../..; }; };
         modules = [
           sharedModule
           ./default.nix

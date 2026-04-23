@@ -1,8 +1,7 @@
 {
   description = "NixOS host kirby (separate nixpkgs / Jovian lock)";
   inputs = {
-    jovian.url =
-      "github:Jovian-Experiments/Jovian-NixOS/6178d787ee61b8586fdb0ccb8644fbfd5317d0f3";
+    jovian.url = "github:Jovian-Experiments/Jovian-NixOS";
     nixpkgs.follows = "jovian/nixpkgs";
     nixos-hardware.url = "github:nixos/nixos-hardware/master";
     nur.url = "github:nix-community/nur";

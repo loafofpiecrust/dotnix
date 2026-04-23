@@ -33,13 +33,11 @@
   };
   outputs = inputs@{ self, nixpkgs, ... }:
     let
-      repoRoot = ../../.;
-      inputs' = inputs // { self = repoRoot; };
       sharedModule = import ../../lib/shared-host-module.nix "portable-spudger";
     in {
       nixosConfigurations.portable-spudger = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        specialArgs = { inputs = inputs'; };
+        specialArgs = { inputs = inputs // { self = ../..; }; };
         modules = [ sharedModule ./default.nix ];
       };
     };
