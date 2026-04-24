@@ -74,13 +74,15 @@
       openssh.authorizedKeys.keys = [
         # Personal Laptop
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOVldsHCxoEpdN9K+cr9EKxS5dhvUBuCuhyLht3+8CJ2 snead@portable-spudger"
+        # Work laptop
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGXlF6Kh40z6NxPXtfG5t+DIZSJDn/oJAPKrnRkwRfPM shelby@snead.xyz"
       ];
       hashedPassword =
         "$6$PFZjyXdf7W2cu3$55Iw6UjpcdB29fb4RIPcaYFY5Ehtuc9MFZaJBa9wlRbgYxRrDAP0tlApOiIsQY7hoeO9XG7xxiIcsjGYc9QXu1";
     };
   };
 
-  # Run a persistent systemd session for my user so I can run backups
+  # Run a persistent session for my user so I can run backups
   # automatically as a user service.
   users.manageLingering = true;
   users.users.shelby.linger = true;
@@ -88,7 +90,7 @@
   home-manager.users.shelby = ./users/shelby.nix;
 
   # Disks!
-  # System volume (NVMe) is btrfs, storage pool (HDD) is ZFS, plus swap
+  # System volume (NVMe) is btrfs, storage pool (HDD) is ZFS.
   boot.supportedFilesystems.zfs = true;
   # Don't hang the boot on importing zfs pools
   boot.zfs.forceImportAll = false;
@@ -124,6 +126,7 @@
       pools = [ "nas" ];
       interval = "weekly";
     };
+    # Automatically snapshot data pool frequently
     autoSnapshot = {
       enable = true;
       # Use UTC to avoid conflicts at daylight savings time switch
@@ -152,7 +155,8 @@
     };
   };
 
-  # Open a few ports in the firewall for web hosting and such
+  # Open a few ports in the firewall for web hosting and such.
+  # Most of these should actually be opened by the corresponding service already.
   networking.firewall.allowedTCPPorts = [ 443 22 8096 80 ];
   networking.firewall.allowedUDPPorts = [ 1194 51413 ];
 
@@ -285,14 +289,15 @@
       '';
     };
   };
-  # Attempt to allow access to transmission from the outside world, not quite
-  # working though.
+
   networking.nat = {
     enable = true;
+    # Give internet access to containers via ethernet?
+    # Or is this exposing containers to the outside world?
     internalInterfaces = [ "lo" "enp0s31f6" "ve-+" ];
     externalInterface = "enp0s31f6";
     enableIPv6 = true;
-    # Turn this back on if I add a password to transmission RPC.
+    # Expose transmission RPC for public access? Not sure this does anything for me.
     forwardPorts = [{
       destination = "192.168.100.10:51413";
       sourcePort = 51413;
@@ -312,6 +317,7 @@
     e2fsprogs
   ];
 
+  # Container for Friends with Bikes
   containers.fwb-services = {
     autoStart = true;
     privateNetwork = true;
@@ -326,6 +332,7 @@
       system.stateVersion = "25.11";
       # Defer to host firewall
       networking.firewall.enable = false;
+      # Mailing list management
       services.listmonk = {
         enable = true;
         settings = { app.address = "0.0.0.0:9001"; };
@@ -337,6 +344,7 @@
     };
   };
 
+  # Expose many services at public domains
   services.nginx = {
     enable = true;
     recommendedProxySettings = true;
@@ -375,6 +383,7 @@
     };
   };
 
+  # Request SSL certificates to support HTTPS access to my services
   security.acme = {
     acceptTerms = true;
     defaults.email = "shelby@snead.xyz";
@@ -411,6 +420,7 @@
           mkdir -p /mnt/personal/Backups/vivian
           rclone sync /var /mnt/personal/Backups/vivian/var --max-delete 100 --retries 10 --local-no-check-updated
           rclone sync /etc /mnt/personal/Backups/vivian/etc --max-delete 100 --retries 10 --local-no-check-updated
+          rclone sync /home /mnt/personal/Backups/vivian/home --max-delete 100 --retries 10 --local-no-check-updated
         '';
       };
     in "${script}/bin/backup-state";
