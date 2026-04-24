@@ -10,7 +10,17 @@
 #
 # Except DO NOT do remote deploys on this machine because it fails to properly
 # copy over the LUKS secret to store in TPM.
-{ config, lib, pkgs, inputs, ... }: {
+{ config, lib, pkgs, inputs, ... }:
+let
+  # Collect application ports here to share their values across app, firewall,
+  # and reverse-proxy setup.
+  ports = {
+    transmission = 9091;
+    jellyfin = 8096;
+    navidrome = 4533;
+    fwb-newsletter = 9001;
+  };
+in {
   imports = [
     ../../server.nix
     inputs.disko.nixosModules.disko
@@ -160,13 +170,30 @@
   networking.firewall.allowedTCPPorts = [ 443 22 8096 80 ];
   networking.firewall.allowedUDPPorts = [ 1194 51413 ];
 
-  # Jellyfin for media streaming
+  # TODO Consider a container for media services.
+  # Jellyfin for video streaming
   services.jellyfin = {
     enable = true;
+    # Ideally I'd let jellyfin be its own user, but running it as my personal
+    # user makes sure it has access to all the files.
     user = "shelby";
     openFirewall = true;
   };
   systemd.services.jellyfin.wants = lib.mkForce [ "network-online.target" ];
+
+  # Navidrome for music streaming
+  services.navidrome = {
+    enable = true;
+    # Try running as its own user, giving read access to my music folder only.
+    settings = {
+      MusicFolder = "/mnt/music";
+      Port = ports.navidrome;
+      BaseUrl = "https://music.snead.xyz";
+      Agents = "";
+      EnableExternalServices = false;
+      EnableSharing = true;
+    };
+  };
 
   # Import secrets like service passwords
   age.secrets = {
@@ -199,8 +226,8 @@
       # Web interface
       {
         protocol = "tcp";
-        hostPort = 9091;
-        containerPort = 9091;
+        hostPort = ports.transmission;
+        containerPort = ports.transmission;
       }
       # RPC??
       {
@@ -272,6 +299,7 @@
           rpc-host-whitelist = "server.snead.xyz";
           ratio-limit = 4.0;
           ratio-limit-enabled = true;
+          rpc-port = ports.transmission;
           # Use final filename for partial files to support streaming
           # in-progress downloads.
           rename-partial-files = false;
@@ -282,7 +310,9 @@
       # Also explicitly allow connections on port 9091 through eth0, which is
       # required for RPC connections.
       networking.firewall.extraCommands = ''
-        iptables -A OUTPUT -m owner --gid-owner transmission -p tcp --sport 9091 -o eth0 -j ACCEPT
+        iptables -A OUTPUT -m owner --gid-owner transmission -p tcp --sport ${
+          toString ports.transmission
+        } -o eth0 -j ACCEPT
         iptables -A OUTPUT -m owner --gid-owner transmission -o tun0 -j ACCEPT
         iptables -A OUTPUT -m owner --gid-owner transmission -o lo -j ACCEPT
         iptables -A OUTPUT -m owner --gid-owner transmission -j REJECT
@@ -325,8 +355,8 @@
     localAddress = "192.168.100.13";
     forwardPorts = [{
       protocol = "tcp";
-      hostPort = 9001;
-      containerPort = 9001;
+      hostPort = ports.fwb-newsletter;
+      containerPort = ports.fwb-newsletter;
     }];
     config = { config, pkgs, ... }: {
       system.stateVersion = "25.11";
@@ -335,7 +365,9 @@
       # Mailing list management
       services.listmonk = {
         enable = true;
-        settings = { app.address = "0.0.0.0:9001"; };
+        settings = {
+          app.address = "0.0.0.0:${toString ports.fwb-newsletter}";
+        };
         database = { createLocally = true; };
       };
       # See discourse.nixos.org/t/how-to-enable-internet-access-inside-a-nixos-container/62458
@@ -354,20 +386,30 @@
         useACMEHost = "server.snead.xyz";
         forceSSL = true;
         locations."/.well-known/".root = "/var/lib/acme/acme-challenge/";
-        locations."/".proxyPass = "http://127.0.0.1:8096";
+        locations."/".proxyPass = "http://127.0.0.1:${toString ports.jellyfin}";
+      };
+      "music.snead.xyz" = {
+        useACMEHost = "server.snead.xyz";
+        forceSSL = true;
+        locations."/".proxyPass =
+          "http://127.0.0.1:${toString ports.navidrome}";
       };
       "torrent.snead.xyz" = {
         useACMEHost = "server.snead.xyz";
         forceSSL = true;
-        locations."/".proxyPass = "http://192.168.100.10:9091";
+        locations."/".proxyPass =
+          "http://${config.containers.torrent.hostAddress}:${
+            toString ports.transmission
+          }";
       };
       "newsletter.fwb.snead.xyz" = {
         useACMEHost = "server.snead.xyz";
         serverName = "newsletter.fwb.snead.xyz";
         forceSSL = true;
         locations."/" = {
-          proxyPass = "http://192.168.100.12:9001";
-          # extraConfig = "proxy_ssl_server_name on;";
+          proxyPass = "http://${config.containers.fwb-services.hostAddress}:${
+              toString ports.fwb-newsletter
+            }";
         };
       };
       "news.fwboakland.com" = {
@@ -376,8 +418,9 @@
         forceSSL = true;
         locations."/.well-known/".root = "/var/lib/acme/acme-challenge/";
         locations."/" = {
-          proxyPass = "http://192.168.100.12:9001";
-          # extraConfig = "proxy_ssl_server_name on;";
+          proxyPass = "http://${config.containers.fwb-services.hostAddress}:${
+              toString ports.fwb-newsletter
+            }";
         };
       };
     };
@@ -391,7 +434,8 @@
     certs = {
       "server.snead.xyz" = {
         group = config.services.nginx.group;
-        extraDomainNames = [ "newsletter.fwb.snead.xyz" "torrent.snead.xyz" ];
+        extraDomainNames =
+          [ "newsletter.fwb.snead.xyz" "torrent.snead.xyz" "music.snead.xyz" ];
       };
       "news.fwboakland.com" = {
         group = config.services.nginx.group;
