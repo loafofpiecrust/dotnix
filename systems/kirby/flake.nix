@@ -26,7 +26,7 @@
       nixosConfigurations.kirby = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = { inputs = inputs'; };
-        modules = [ ./nixpkgs-insecure.nix sharedModule ./default.nix ];
+        modules = [ ./nixpkgs-insecure.nix sharedModule ./configuration.nix ];
       };
     };
 }

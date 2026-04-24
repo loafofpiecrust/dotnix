@@ -24,7 +24,7 @@
       nixosConfigurations.vivian = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = { inputs = inputs // { self = ../..; }; };
-        modules = [ sharedModule ./default.nix ];
+        modules = [ sharedModule ./configuration.nix ];
       };
     };
 }

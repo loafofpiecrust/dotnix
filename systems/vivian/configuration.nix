@@ -13,13 +13,6 @@
 { config, lib, pkgs, inputs, ... }: {
   imports = [
     ../../server.nix
-
-    inputs.nixos-hardware.nixosModules.common-pc
-    inputs.nixos-hardware.nixosModules.common-pc-ssd
-    inputs.nixos-hardware.nixosModules.common-cpu-intel
-    # Enables the right drivers for Intel GPU, including for Quick Sync
-    inputs.nixos-hardware.nixosModules.common-gpu-intel
-
     inputs.disko.nixosModules.disko
     ./disk-config.nix
     ./hardware-configuration.nix

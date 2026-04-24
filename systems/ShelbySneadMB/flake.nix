@@ -29,7 +29,7 @@
         specialArgs = { inputs = inputs // { self = ../..; }; };
         modules = [
           sharedModule
-          ./default.nix
+          ./configuration.nix
           inputs.mac-app-util.darwinModules.default
         ];
       };
