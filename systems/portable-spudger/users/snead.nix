@@ -365,6 +365,7 @@
         shell_type = "unix";
         md5sum_command = "md5sum";
         sha1sum_command = "sha1sum";
+        key_file = "~/.ssh/id_ed25519";
       };
       nas-combined.config = {
         type = "combine";
