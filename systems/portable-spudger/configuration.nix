@@ -2,9 +2,8 @@
 # it seems that disabling PS/2 mouse emulation in BIOS fixed the problem.
 { config, lib, pkgs, inputs, ... }:
 let
-  mojaveDynamicWallpaperRepo = import ../../lib/mojave-dynamic-wallpaper-repo.nix {
-    inherit pkgs;
-  };
+  mojaveDynamicWallpaperRepo =
+    import ../../lib/mojave-dynamic-wallpaper-repo.nix { inherit pkgs; };
   mojaveDynamicWallpaper = index:
     "${mojaveDynamicWallpaperRepo}/Dynamic_Wallpapers/Mojave/mojave_dynamic_${index}.jpeg";
 in {
@@ -39,23 +38,19 @@ in {
     # plymouth.enable = false;
     # Use the latest LTS kernel because those keep getting patch updates for 2+ years.
     # Let's try the latest version...
-    kernelPackages = pkgs.linuxKernel.packages.linux_6_12;
+    kernelPackages = pkgs.linuxKernel.packages.linux_6_18;
     extraModulePackages = with config.boot.kernelPackages; [ ddcci-driver ];
-    initrd.availableKernelModules = [
-      "xhci_pci"
-      "thunderbolt"
-      "nvme"
-      "usb_storage"
-      "sd_mod"
-      "btusb"
-      "btintel"
-    ];
+    # Don't load bluetooth modules in initrd or it breaks.
+    initrd.availableKernelModules =
+      [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" ];
     kernelModules = [
       "kvm-amd"
       # Support updating external monitor brightness
       "i2c-dev"
       "ddcci"
       "ddcci_backlight"
+      "btusb"
+      "btintel"
     ];
     # blacklistedKernelModules = [ "i2c-designware-pci" ];
 
@@ -89,6 +84,9 @@ in {
       options iwlwifi disable_11ax=Y
     '';
   };
+
+  hardware.enableAllFirmware = true;
+  # hardware.firmware = [ pkgs.linux-firmware ];
 
   # Do a monthly scrub of the btrfs volume.
   services.btrfs.autoScrub.enable = true;
@@ -246,14 +244,24 @@ in {
     enableOnBoot = false;
     autoPrune.enable = true;
   };
-  virtualisation.virtualbox = {
-    host.enable = true;
-    # host.enableKvm = true;
-  };
+  # virtualisation.virtualbox = {
+  # host.enable = true;
+  # host.enableKvm = true;
+  # };
 
   # Let's try out bluetooth!
-  hardware.bluetooth.enable = true;
-  hardware.bluetooth.powerOnBoot = true;
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+    settings = {
+      General = {
+        ControllerMode = "bredr";
+        Experimental = true;
+        FastConnectable = true;
+      };
+      Policy = { AutoEnable = true; };
+    };
+  };
 
   # Open the shitload of ports apparently required to connect to my Bambu A1
   # printer over LAN.

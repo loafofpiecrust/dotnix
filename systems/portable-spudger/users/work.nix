@@ -13,10 +13,11 @@
 
   home.stateVersion = lib.mkDefault "21.05";
 
-  home.packages = with pkgs; [ # teams
-    unstable.zoom-us
-    unstable.slack
-  ];
+  home.packages = with pkgs;
+    [ # teams
+      # unstable.zoom-us
+      # unstable.slack
+    ];
   systemd.user.services.vpn-neu = {
     Unit = { Description = "Connect to Northeastern University VPN"; };
     Service = {

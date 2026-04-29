@@ -60,20 +60,18 @@
     loader.timeout = 1;
     loader.efi.efiSysMountPoint = "/boot/efi";
     kernelPackages = pkgs.linuxKernel.packages.linux_6_12;
-    kernelModules =
-      [ "kvm-amd" "mt7921e" "hid-playstation" "btusb" "bluetooth" "btmtk" ];
-    initrd.kernelModules = [ "amdgpu" "usbhid" "btmtk" "bluetooth" "btusb" ];
-    initrd.availableKernelModules = [
-      "xhci_pci"
-      "ahci"
-      "usbhid"
-      "nvme"
-      "usb_storage"
-      "sd_mod"
+    kernelModules = [
+      "kvm-amd"
+      "mt7921e"
+      "hid-playstation"
       "btusb"
       "bluetooth"
       "btmtk"
+      "usbhid"
     ];
+    initrd.kernelModules = [ "amdgpu" ];
+    initrd.availableKernelModules =
+      [ "xhci_pci" "ahci" "usbhid" "nvme" "usb_storage" "sd_mod" ];
     kernel.sysctl = {
       "kernel.nmi_watchdog" = 0;
       "vm.dirty_writeback_centisecs" = 6000;

@@ -243,11 +243,11 @@
   xdg.mime.enable = true;
   xdg.mimeApps.enable = false;
   home.packages = with pkgs; [
-    unstable.zoom-us
+    # unstable.zoom-us
     # discord
     # teams
     krita
-    slack
+    # slack
     # deluge
     # transmission_4-gtk
     zotero
@@ -271,7 +271,7 @@
     blender
 
     # game dev
-    godot_4
+    # godot_4
     # aseprite-unfree
 
     # custom keyboards

@@ -39,8 +39,6 @@ in {
 
   boot = {
     kernelPackages = pkgs.linuxKernel.packages.linux_6_12;
-    # initrd.availableKernelModules =
-    #   [ "xhci_pci" "ahci" "usbhid" "nvme" "usb_storage" "sd_mod" ];
     # Don't remember what these are for, maybe disk efficiency.
     kernel.sysctl = {
       # "kernel.nmi_watchdog" = 0;
