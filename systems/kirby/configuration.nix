@@ -2,7 +2,7 @@
   imports = [
     ../../desktop.nix
     #../steam-deck.nix
-    (inputs.jovian + "/modules")
+    inputs.jovian.nixosModules.default
     inputs.nixos-hardware.nixosModules.common-gpu-amd
     inputs.nixos-hardware.nixosModules.common-cpu-amd
     inputs.nixos-hardware.nixosModules.common-cpu-amd-pstate
@@ -17,15 +17,22 @@
 
   services.pulseaudio.enable = false;
 
-  jovian.steam.enable = true;
-  jovian.steam.autoStart = true;
-  jovian.hardware.has.amd.gpu = true;
-  jovian.steam.desktopSession = "mate";
-  jovian.steam.user = "shelby";
-  jovian.steamos.useSteamOSConfig = true;
-  # jovian.steamos.enableBluetoothConfig = false;
-  jovian.decky-loader.enable = true;
-  jovian.steam.updater.splash = "vendor";
+  jovian = {
+    steam.enable = true;
+    steam.autoStart = true;
+    # Configures AMD kernel module/driver
+    hardware.has.amd.gpu = true;
+    steam.desktopSession = "mate";
+    steam.user = "shelby";
+    # Configure bluetooth, kernel params, HDMI-CEC, zram swap similar to SteamOS
+    steamos.useSteamOSConfig = true;
+    # SteamOS plugin manager
+    decky-loader.enable = true;
+    steam.updater.splash = "vendor";
+    # Disable all the Steam Deck hardware customization.
+    devices.steamdeck.enable = false;
+  };
+
   # hardware.bluetooth.settings.General.Experimental = "true";
   hardware.bluetooth.settings.Policy.AutoEnable = "true";
   # hardware.bluetooth.settings.General.ClassicBondedOnly = "false";
@@ -68,7 +75,6 @@
       "btmtk"
       "usbhid"
     ];
-    initrd.kernelModules = [ "amdgpu" ];
     initrd.availableKernelModules =
       [ "xhci_pci" "ahci" "usbhid" "nvme" "usb_storage" "sd_mod" ];
     kernel.sysctl = {
@@ -97,58 +103,7 @@
     ddcui
   ];
 
-  nixpkgs.overlays = [
-    (self: super: {
-      libbluray = super.libbluray.override {
-        withAACS = true;
-        withBDplus = true;
-      };
-      # If I ever want to try kodi again.
-      # kodi = super.kodi-wayland.withPackages (p: with p; [ netflix youtube ]);
-
-      linuxPackages_jovian = self.linuxPackagesFor self.linux_jovian;
-      linux_jovian = super.callPackage "${inputs.jovian}/pkgs/linux-jovian" {
-        kernelPatches = with self; [
-          kernelPatches.bridge_stp_helper
-          kernelPatches.request_key_helper
-          kernelPatches.export-rt-sched-migrate
-        ];
-      };
-
-      mesa-radv-jupiter =
-        self.callPackage "${inputs.jovian}/pkgs/mesa-radv-jupiter" { };
-
-      jupiter-fan-control =
-        self.callPackage "${inputs.jovian}/pkgs/jupiter-fan-control" { };
-
-      jupiter-hw-support =
-        self.callPackage "${inputs.jovian}/pkgs/jupiter-hw-support" { };
-      steamdeck-hw-theme =
-        self.callPackage "${inputs.jovian}/pkgs/jupiter-hw-support/theme.nix"
-        { };
-      steamdeck-firmware =
-        self.callPackage "${inputs.jovian}/pkgs/jupiter-hw-support/firmware.nix"
-        { };
-      steamdeck-bios-fwupd = self.callPackage
-        "${inputs.jovian}/pkgs/jupiter-hw-support/bios-fwupd.nix" { };
-      jupiter-dock-updater-bin =
-        self.callPackage "${inputs.jovian}/pkgs/jupiter-dock-updater-bin" { };
-
-      opensd = super.callPackage "${inputs.jovian}/pkgs/opensd" { };
-
-      steamPackages = super.steamPackages.overrideScope
-        (scopeFinal: scopeSuper: {
-          steam = self.callPackage
-            "${inputs.jovian}/pkgs/steam-jupiter/unwrapped.nix" {
-              steam-original = scopeSuper.steam;
-            };
-          steam-fhsenv =
-            self.callPackage "${inputs.jovian}/pkgs/steam-jupiter/fhsenv.nix" {
-              steam-fhsenv = scopeSuper.steam-fhsenv;
-            };
-        });
-    })
-  ];
+  # Jovian config already adds the relevant overlay.
 
   # Disallow hibernation, we don't need it on this machine.
   systemd.targets.hibernate.enable = false;
