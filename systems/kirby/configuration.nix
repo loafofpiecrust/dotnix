@@ -65,6 +65,7 @@
     # plymouth.enable = false;
     loader.timeout = 2;
     loader.efi.efiSysMountPoint = "/boot/efi";
+    # Use latest LTS kernel for stability
     kernelPackages = pkgs.linuxKernel.packages.linux_6_18;
     kernelModules = [
       "kvm-amd"
@@ -182,17 +183,6 @@
   };
   home-manager.users.shelby = ./users/shelby.nix;
 
-  # GNOME autologin workaround
-  systemd.services."getty@tty1".enable = false;
-  systemd.services."autovt@tty1".enable = false;
-  # TODO: I think I can remove this since I'm having Steam auto-start as display manager.
-  services.displayManager = {
-    # autoLogin.enable = false;
-    # autoLogin.user = "shelby";
-    gdm.enable = false;
-    gdm.wayland = true;
-    defaultSession = "gamescope-wayland";
-  };
   # Enable MATE as the fallback desktop mode.
   services.xserver = {
     enable = true;
