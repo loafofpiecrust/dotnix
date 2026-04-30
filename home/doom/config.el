@@ -1142,6 +1142,7 @@ are ineffectual otherwise."
 
 ;; Allow easy NPM commands in most programming buffers.
 (use-package! npm-mode
+  :disabled t
   :hook ((prog-mode text-mode conf-mode) . npm-mode))
 
 ;; LSP formatting doesn't work well for JSX/TSX, so disable it.

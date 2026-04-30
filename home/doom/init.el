@@ -172,7 +172,7 @@
        markdown          ; writing docs for people to ignore
        ;;nim               ; python + lisp at the speed of c
        (nix +tree-sitter)               ; I hereby declare "nix geht mehr!"
-       (ocaml +lsp)             ; an objective camel
+       ;;(ocaml +lsp)             ; an objective camel
        (org +pretty +dragndrop +pomodoro +roam2)               ; organize your plain life in plain text
        ;;perl              ; write code no one else can comprehend
        ;; php               ; perl's insecure younger brother
@@ -180,7 +180,7 @@
        ;;purescript        ; javascript, but functional
        (python +tree-sitter)            ; beautiful is better than ugly
        ;;qt                ; the 'cutest' gui framework ever
-       racket            ; a DSL for DSLs
+       ;;racket            ; a DSL for DSLs
        rest              ; Emacs as a REST client
        ;;rst               ; ReST in peace
        (ruby +rails +lsp)     ; 1.step {|i| p "Ruby is #{i.even? ? 'love' : 'life'}"}
@@ -196,7 +196,7 @@
        (yaml +tree-sitter)               ; JSON, but readable
 
        :email
-       mu4e
+       ;;mu4e
        ;; notmuch
 
        :app

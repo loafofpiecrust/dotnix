@@ -46,11 +46,17 @@
     kubectx
     awscli2
     ssm-session-manager-plugin
+    # Use emacs v30 (stable) with MacOS patches from emacs-plus. Builds from
+    # source so hopefully it performs optimally on my machine.
+    # Should output a correctly linked Application with the mac-app-util
+    emacs-30
+    # lunar
   ];
   nixpkgs.config.allowUnsupportedSystem = true;
   nixpkgs.config.allowUnfree = true;
 
   nixpkgs.overlays = [
+    inputs.darwin-emacs.overlays.emacs
     # Copied from https://github.com/billimek/dotfiles/commit/eed207e535ec8d923ab7ccdec5d10972fe77d800
     # Workaround for aarch64-darwin codesigning bug (nixpkgs#208951 / #507531):
     # fish binaries from the binary cache occasionally have invalid ad-hoc
@@ -187,15 +193,14 @@
       "macdroid"
       "bitwarden"
       "docker-desktop"
-      "emacs-mac"
       "spotify"
       "macfuse"
       "leapp"
       "cursor"
       "aws-vpn-client"
     ];
-    taps = [ "railwaycat/emacsmacport" ];
-    # onActivation.autoUpdate = true;
+    taps = [ ];
+    onActivation.autoUpdate = true;
     # onActivation.upgrade = true;
   };
 
