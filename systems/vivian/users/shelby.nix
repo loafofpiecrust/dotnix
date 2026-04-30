@@ -1,7 +1,8 @@
 { config, lib, pkgs, inputs, ... }:
 let home = config.home.homeDirectory;
 in {
-  imports = [ ../../../home/common.nix inputs.agenix.homeManagerModules.default ];
+  imports =
+    [ ../../../home/common.nix inputs.agenix.homeManagerModules.default ];
 
   home.stateVersion = lib.mkDefault "25.11";
 
@@ -34,19 +35,13 @@ in {
     services.sync-files = {
       Service = {
         Type = "oneshot";
-        ExecStart = let
-          config = "${home}/.config/rclone/rclone.conf";
-          script = pkgs.writeShellApplication {
-            name = "sync-files";
-            runtimeInputs = with pkgs; [ rclone coreutils ];
-            text = ''
-              rclone bisync /mnt/personal pcloud-secret: --config ${config} --compare size,modtime,checksum --recover -MP --track-renames --conflict-resolve newer
-            '';
-          };
-        in "${script}/bin/sync-files";
+        ExecStart = let rclone = pkgs.lib.getExe pkgs.rclone;
+        in "${rclone} bisync /mnt/personal pcloud-secret: --config %h/.config/rclone/rclone.conf --recover -MP --conflict-resolve newer";
       };
     };
 
+    # Re-enable once initial sync is done.
+    # Sync state stored at ~/.cache/rclone
     # timers.sync-files = {
     #   Install.WantedBy = [ "timers.target" ];
     #   Timer = {
