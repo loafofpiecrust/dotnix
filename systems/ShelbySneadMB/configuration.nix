@@ -108,12 +108,15 @@
 
   # Auto upgrade nix package and the daemon service.
   # services.nix-daemon.enable = true;
-  nix.extraOptions = ''
-    experimental-features = nix-command flakes
-  '';
-  nix.settings.trusted-users = [ "@wheel" ];
-  nix.optimise.automatic = true;
-  nix.gc.automatic = true;
+  nix = {
+    extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
+    settings.trusted-users = [ "@wheel" "ssnead" ];
+    optimise.automatic = true;
+    gc.automatic = true;
+    linux-builder.enable = true;
+  };
 
   # Create /etc/bashrc that loads the nix-darwin environment.
   programs.zsh.enable = true; # default shell on catalina
