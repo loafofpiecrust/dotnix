@@ -1159,7 +1159,10 @@ are ineffectual otherwise."
             message-mode))
 
 (after! apheleia
-  (add-to-list 'apheleia-mode-alist '(markdown-mode . prettier-markdown)))
+  (add-to-list 'apheleia-mode-alist '(markdown-mode . prettier-markdown))
+  (add-to-list 'apheleia-mode-alist '(ruby-mode . rubocop))
+  ;; (add-to-list 'apheleia-formatters '(rubocop "rubocop" inplace "-a" "--stderr" "--format" "quiet" "--fail-level" "fatal"))
+  (setq! apheleia-remote-algorithm 'remote))
 
 (after! vterm
   (setq vterm-buffer-name-string "vterm %s"))
@@ -1505,7 +1508,8 @@ Position is calculated base on WIDTH and HEIGHT of childframe text window"
   (defun +snead/fix-ssh-env ()
     (exec-path-from-shell-copy-env "SSH_AGENT_PID")
     (exec-path-from-shell-copy-env "SSH_AUTH_SOCK"))
-  (add-hook! 'magit-status-mode-hook '+snead/fix-ssh-env))
+  ;; (add-hook! 'magit-status-mode-hook '+snead/fix-ssh-env)
+  )
 
 (use-package! prisma-mode
   :mode (("\\.prisma\\'" . prisma-mode)))
@@ -1547,3 +1551,26 @@ Position is calculated base on WIDTH and HEIGHT of childframe text window"
   (setq-default corfu-auto-delay 0.15))
 
 (setq! mac-command-modifier 'control)
+
+;; Hotfix to make file search work on remote servers
+(after! projectile
+  (defadvice! rallyemax--projectile-get-ext-command-a (vcs)
+    :override #'projectile-get-ext-command
+    (pcase vcs
+      ('git projectile-git-command)
+      ('hg projectile-hg-command)
+      ('fossil projectile-fossil-command)
+      ('bzr projectile-bzr-command)
+      ('darcs projectile-darcs-command)
+      ('pijul projectile-pijul-command)
+      ('svn projectile-svn-command)
+      ('sapling projectile-sapling-command)
+      ('jj projectile-jj-command)
+      (_ projectile-generic-command))))
+
+(after! tramp
+  ;; Hotfix to get eglot working in remote buffers
+  (setq! vc-ignore-dir-regexp (format "%s\\|%s"
+                                      vc-ignore-dir-regexp
+                                      "[/\\\\]node_modules"))
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
