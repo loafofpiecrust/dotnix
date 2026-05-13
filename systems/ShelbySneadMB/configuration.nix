@@ -49,7 +49,6 @@
     # Use emacs v30 (stable) with MacOS patches from emacs-plus. Builds from
     # source so hopefully it performs optimally on my machine.
     # Should output a correctly linked Application with the mac-app-util
-    emacs-30
     # lunar
   ];
   nixpkgs.config.allowUnsupportedSystem = true;
@@ -57,6 +56,7 @@
 
   nixpkgs.overlays = [
     inputs.darwin-emacs.overlays.emacs
+    inputs.darwin-emacs-packages.overlays.package
     # Copied from https://github.com/billimek/dotfiles/commit/eed207e535ec8d923ab7ccdec5d10972fe77d800
     # Workaround for aarch64-darwin codesigning bug (nixpkgs#208951 / #507531):
     # fish binaries from the binary cache occasionally have invalid ad-hoc
@@ -100,7 +100,8 @@
   };
 
   #fonts.enableFontDir = true;
-  fonts.packages = with pkgs; [ nerd-fonts.hack fira-code overpass ];
+  fonts.packages = (with pkgs; [ overpass ubuntu-sans ])
+    ++ (with pkgs.nerd-fonts; [ hack ubuntu-mono fira-code meslo-lg lilex ]);
 
   # Use a custom configuration.nix location.
   # $ darwin-rebuild switch -I darwin-config=$HOME/.config/nixpkgs/darwin/configuration.nix
@@ -116,6 +117,9 @@
     optimise.automatic = true;
     gc.automatic = true;
     linux-builder.enable = true;
+    # Use latest nix, it has some recent optimizations around Git operations
+    # that should improve performance on MacOS.
+    package = pkgs.unstable.nix;
   };
 
   # Create /etc/bashrc that loads the nix-darwin environment.

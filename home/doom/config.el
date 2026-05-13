@@ -219,7 +219,7 @@
 
 ;; Always show line numbers.
 (after! display-line-numbers
-  (setq-default display-line-numbers-type 'relative
+  (setq-default display-line-numbers-type t ;;'relative
                 display-line-numbers-grow-only t))
 
 (after! prog-mode
@@ -847,6 +847,7 @@ are ineffectual otherwise."
            #'disable-line-numbers)
 
 (use-package! olivetti
+  :disabled
   :hook ((org-mode markdown-mode magit-status-mode forge-topic-mode gnus-article-mode-hook) . olivetti-mode)
   :bind (:map doom-leader-map
               ("tz" . olivetti-mode))
@@ -1295,7 +1296,7 @@ directory, the file name, and its state (modified, read-only or non-existent)."
   )
 
 (after! evil-escape
-  (setq evil-escape-delay 0.04))
+  (setq evil-escape-delay 0.1))
 
 (defvar +snead/volume nil)
 ;;(defun +snead/volume-update ()
@@ -1574,3 +1575,13 @@ Position is calculated base on WIDTH and HEIGHT of childframe text window"
                                       vc-ignore-dir-regexp
                                       "[/\\\\]node_modules"))
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
+
+
+;; Apparently speeds things up on MacOS where ptys are slow as hell.
+;; https://irreal.org/blog/?p=13567
+(setq! process-connection-type nil)
+;; I don't need password prompts for magit or tramp, I use ssh keys.
+(after! magit
+  (setq! magit-process-connection-type nil))
+(after! tramp
+  (setq! tramp-process-connection-type nil))

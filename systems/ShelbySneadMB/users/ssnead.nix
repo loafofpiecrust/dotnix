@@ -6,7 +6,7 @@
     mkMutableSymlink = path:
       config.lib.file.mkOutOfStoreSymlink (config.lib.meta.configPath
         + lib.removePrefix (toString inputs.self) (toString path));
-    monospaceFont = "Hack Nerd Font";
+    monospaceFont = "Lilex Nerd Font";
   };
 
   home.stateVersion = "24.11";
@@ -147,9 +147,17 @@
   };
 
   programs.emacs = {
-    enable = false;
-    #package = pkgs.emacs-macport;
-    #extraPackages = emacsPackages: [ pkgs.coreutils ];
+    enable = true;
+    package = pkgs.emacs-30;
+    extraPackages = epkgs:
+      with pkgs; [
+        tree-sitter
+        tree-sitter-langs
+        treesit-grammars.with-all-grammars
+        vterm
+        emacsql
+        emojify
+      ];
   };
 
   programs.direnv = {
