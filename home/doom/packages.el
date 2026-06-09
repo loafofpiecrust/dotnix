@@ -20,6 +20,10 @@
 
 (package! eglot-booster :recipe (:host github :repo "jdtsmith/eglot-booster"))
 
+(package! shell-maker)
+(package! acp)
+(package! agent-shell)
+
 ;; Extra languages
 ;; (package! graphql-mode)
 (package! polymode)

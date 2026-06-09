@@ -37,14 +37,14 @@
 
     # formatters + language servers
     editorconfig-core-c
-    nixfmt-classic
+    nixfmt
     html-tidy
     pipenv
     # python37Packages.python-language-server
     black
-    nodePackages.typescript-language-server
-    nodePackages.prettier
-    nodePackages.vscode-langservers-extracted
+    typescript-language-server
+    prettier
+    vscode-langservers-extracted
     rust-analyzer
     pgformatter
     python312Packages.sqlparse

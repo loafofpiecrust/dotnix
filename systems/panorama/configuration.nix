@@ -1,4 +1,9 @@
-{ config, pkgs, inputs, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
 
 {
   imports = [ inputs.home-manager.darwinModules.home-manager ];
@@ -11,15 +16,16 @@
     inherit inputs;
     systemConfig = config;
   };
-  home-manager.sharedModules =
-    [ inputs.mac-app-util.homeManagerModules.default ];
+  # home-manager.sharedModules =
+  #   [ inputs.mac-app-util.homeManagerModules.default ];
 
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
   environment.systemPackages = with pkgs; [
     #_1password
-    nixfmt-classic
+    nixfmt
     tableplus
+    nix-prefetch-git
     tailscale
     emacs-lsp-booster
     karabiner-elements
@@ -33,9 +39,15 @@
     shfmt
     libtool
     gnupg
-    nodePackages.typescript-language-server
+    typescript-language-server
     sqls
-    (aspellWithDicts (dicts: with dicts; [ en en-computers en-science ]))
+    (aspellWithDicts (
+      dicts: with dicts; [
+        en
+        en-computers
+        en-science
+      ]
+    ))
     gh
     solargraph
     rclone
@@ -55,6 +67,7 @@
   nixpkgs.config.allowUnfree = true;
 
   nixpkgs.overlays = [
+    (import ../../pkgs)
     inputs.darwin-emacs.overlays.emacs
     inputs.darwin-emacs-packages.overlays.package
     # Copied from https://github.com/billimek/dotfiles/commit/eed207e535ec8d923ab7ccdec5d10972fe77d800
@@ -100,8 +113,18 @@
   };
 
   #fonts.enableFontDir = true;
-  fonts.packages = (with pkgs; [ overpass ubuntu-sans ])
-    ++ (with pkgs.nerd-fonts; [ hack ubuntu-mono fira-code meslo-lg lilex ]);
+  fonts.packages =
+    (with pkgs; [
+      overpass
+      ubuntu-sans
+    ])
+    ++ (with pkgs.nerd-fonts; [
+      hack
+      ubuntu-mono
+      fira-code
+      meslo-lg
+      lilex
+    ]);
 
   # Use a custom configuration.nix location.
   # $ darwin-rebuild switch -I darwin-config=$HOME/.config/nixpkgs/darwin/configuration.nix
@@ -113,7 +136,10 @@
     extraOptions = ''
       experimental-features = nix-command flakes
     '';
-    settings.trusted-users = [ "@wheel" "ssnead" ];
+    settings.trusted-users = [
+      "@wheel"
+      "ssnead"
+    ];
     optimise.automatic = true;
     gc.automatic = true;
     linux-builder.enable = true;
@@ -124,6 +150,9 @@
 
   # Create /etc/bashrc that loads the nix-darwin environment.
   programs.zsh.enable = true; # default shell on catalina
+  programs.bash.enable = true;
+  programs.bash.completion.enable = true;
+  environment.shells = [ pkgs.bash ];
 
   # Used for backwards compatibility, please read the changelog before changing.
   # $ darwin-rebuild changelog
@@ -196,14 +225,15 @@
   homebrew = {
     enable = true;
     casks = [
-      "lunar"
+      # "lunar"
       "macdroid"
       "bitwarden"
       "docker-desktop"
       "spotify"
       "macfuse"
       "leapp"
-      "cursor"
+      "brave-browser"
+      # "cursor"
       "aws-vpn-client"
     ];
     taps = [ ];
